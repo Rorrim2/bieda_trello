@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>Welcome to the dark side, we have cookies</h1>
+    <h1>Welcome to the dark side, we have cookies and cuties</h1>
     <div v-for="user_ql in users">
       <UserBubble :name="user_ql.name" :id="user_ql.id" :lastName="user_ql.lastName"> </UserBubble>
     </div>
