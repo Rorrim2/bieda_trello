@@ -14,14 +14,19 @@
     "apollo-boost": "^0.4.9",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-link-http": "^1.5.17",
+    "bootstrap": "^4.5.3",
     "core-js": "^2.6.5",
+    "express": "^4.17.1",
     "graphql": "^15.4.0",
+    "jquery": "^3.5.1",
+    "node-sass": "^5.0.0",
+    "popper.js": "^1.16.1",
+    "sass-loader": "^10.0.5",
     "vue": "^2.6.10",
     "vue-apollo": "^3.0.5",
     "vue-class-component": "^7.0.2",
     "vue-property-decorator": "^8.1.0",
-    "vue-router": "^3.0.3",
-    "express": "^4.17.1"
+    "vue-router": "^3.0.3"
   },
   "devDependencies": {
     "@types/jest": "^23.1.4",
