@@ -6,7 +6,7 @@
           <h1 class="text-white text-left">Start being organized</h1>
           <p class="mb-3 text-white pr-3">With our boards you can plan your day, week, month or whole life! No more procrastinating, start being productive today.</p>
         </div>
-        <div class="col-lg-8 order-2 order-lg-2 p-0 h-100"> <img class="img-fluid d-block h-100" height="300px" style="	border-radius: 20px;	box-shadow: 2px 2px 4px  #0a97b0;" src="../assets/home.jpg"> </div>
+        <div class="col-lg-8 order-2 order-lg-2 p-0 h-100"> <img class="img-fluid d-block"  style="	border-radius: 20px;	box-shadow: 2px 2px 4px  #0a97b0;" src="../assets/home.jpg"> </div>
       </div>
     </div>
   </div>
