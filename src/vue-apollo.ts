@@ -3,6 +3,8 @@ import { ApolloClient } from 'apollo-client'
 import { HttpLink } from 'apollo-link-http'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import VueApollo from 'vue-apollo'
+import {setContext} from 'apollo-link-context'
+import {getToken} from './main'
 
 const httpLink = new HttpLink({
     // You should use an absolute URL here
@@ -11,9 +13,19 @@ const httpLink = new HttpLink({
     uri: 'https://bieda-trello-backend.herokuapp.com/graphql/',
 })
 
+const token_header = setContext((_: any, {headers}: any) => {
+    const jwt = getToken()
+    return {
+        headers: {
+            ...headers,
+            authorization: jwt !== "" ? `Bearer {jwt}` : null
+        }
+    }
+})
+
 // Create the apollo client
 const apolloClient = new ApolloClient({
-    link: httpLink,
+    link: token_header.concat(httpLink),
     cache: new InMemoryCache(),
     connectToDevTools: true,
 })
