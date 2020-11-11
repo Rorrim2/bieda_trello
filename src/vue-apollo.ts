@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import { ApolloClient } from 'apollo-client'
-import { HttpLink } from 'apollo-link-http'
-import { InMemoryCache } from 'apollo-cache-inmemory'
-import VueApollo from 'vue-apollo'
-import {setContext} from 'apollo-link-context'
-import {getToken} from './main'
+import Vue from 'vue';
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import VueApollo from 'vue-apollo';
+import {setContext} from 'apollo-link-context';
+import {getToken} from './main';
 
 const httpLink = new HttpLink({
     // You should use an absolute URL here

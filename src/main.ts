@@ -2,7 +2,10 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import apolloProvider from '@/vue-apollo';
-import './theme.scss'
+import './theme.scss';
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+
+Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
 let token: string;
 token = "";

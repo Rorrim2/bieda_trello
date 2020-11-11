@@ -1,7 +1,10 @@
 // Options
 // 
 // Quickly modify global styling by enabling or disabling optional features.
-  
+
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+@import 'node_modules/bootstrap-vue/src/index.scss';
+
 $enable-rounded:            true !default;
 $enable-shadows:            true;
 $enable-transitions:        true;
@@ -42,3 +45,4 @@ $lead-font-size:   1.50rem;
 $spacer: 2rem;
 
 @import '~bootstrap';
+@import '~bootstrap-vue';
