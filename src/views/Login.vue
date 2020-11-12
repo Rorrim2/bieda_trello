@@ -17,11 +17,10 @@
 </template>
 <script lang="ts">
 
-import {useMutation} from '@vue/apollo-composable';
-import {Vue} from 'vue-property-decorator';
-
-import {gql, FetchResult} from "apollo-boost";
-import Component from "vue-class-component";
+import {Prop, Vue} from 'vue-property-decorator';
+import {setToken} from "@/main";
+import {gql} from "apollo-boost";
+import {Credentials, LoginUser} from "@/types";
 
 const LoginMutation = gql`
     mutation LoginUser($email: String!, $password: String!) {
@@ -34,57 +33,65 @@ const LoginMutation = gql`
             success
             token
         }
-    }
-`;
-
-interface User {
-  id: string;
-  name: string;
-  lastName: string;
-}
-
-interface LoginUser {
-  user: User;
-  success: boolean;
-  token: string;
-}
-
-interface Credentials {
-  email: string;
-  password: string;
-}
+    }`;
 
 export default class Login extends Vue {
-   credentials: Credentials = {email:'', password: ''};
 
-   mutate(cred: Credentials) {
+  @Prop()
+   credentials: Credentials = {
+     email:'',
+     password: ''
+   };
+
+  @Prop()
+   loginResult: LoginUser = {
+     user: {
+       id: '',
+       name: '',
+       lastName: ''
+     },
+     success: false,
+     token:''
+   };
+
+   async mutate(cred: Credentials) {
      const credentials = cred;
+     const component = this;
+     component.credentials = {
+       email:"",
+       password:""
+     };
 
      this.$apollo.mutate({
        mutation: LoginMutation,
-       variables:{
+       variables: {
          email: credentials.email,
          password: credentials.password
        },
-
-
      }).then((data) => {
-       // Result
-       console.debug(data)
+       let loginUser = data.data.loginuser;
+       console.debug(loginUser.success);
+       if (loginUser.success === true) {
+         setToken(loginUser.token)
+         component.loginResult = {
+           token: loginUser.token,
+           success: loginUser.success,
+           user: {
+             id:loginUser.user.id,
+             name:loginUser.user.name,
+             lastName:loginUser.user.lastName
+           }};
+       }
      }).catch((error) => {
-       // Error
        console.debug(error)
-       // We restore the initial user input
-       this.credentials = credentials
+       component.credentials = credentials
      })
    };
 
     public onSubmit ()  {
-      console.log('heres')
-      console.debug('heres')
       let loginData = this.credentials;
       this.mutate(loginData);
-      alert(JSON.stringify(this.credentials))
+      this.$forceUpdate();
     };
 };
 
