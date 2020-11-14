@@ -17,24 +17,12 @@
 </template>
 <script lang="ts">
 
-import {Prop, Vue} from 'vue-property-decorator';
-import {setToken} from "@/main";
-import {gql} from "apollo-boost";
-import {Credentials, LoginUser} from "@/types";
+import {Component, Prop, Vue} from 'vue-property-decorator';
+import {setToken, cacheRefreshToken} from "@/main";
+import {Credentials, LoginUser} from "@/data_models/types";
+import {LoginMutation} from "@/data_models/mutations";
 
-const LoginMutation = gql`
-    mutation LoginUser($email: String!, $password: String!) {
-        loginuser(email: $email, password: $password) {
-            user {
-                id
-                name
-                lastName
-            }
-            success
-            token
-        }
-    }`;
-
+@Component
 export default class Login extends Vue {
 
   @Prop()
@@ -51,10 +39,11 @@ export default class Login extends Vue {
        lastName: ''
      },
      success: false,
-     token:''
+     token:'',
+     refreshToken:''
    };
 
-   async mutate(cred: Credentials) {
+   mutate(cred: Credentials) {
      const credentials = cred;
      const component = this;
      component.credentials = {
@@ -73,18 +62,25 @@ export default class Login extends Vue {
        console.debug(loginUser.success);
        if (loginUser.success === true) {
          setToken(loginUser.token)
+         cacheRefreshToken(loginUser.refreshToken)
          component.loginResult = {
            token: loginUser.token,
+           refreshToken: loginUser.refreshToken,
            success: loginUser.success,
            user: {
              id:loginUser.user.id,
              name:loginUser.user.name,
              lastName:loginUser.user.lastName
            }};
+
+         localStorage.setItem("active_user", JSON.stringify(component.loginResult.user));
+
+         component.$router.push(`u/${component.loginResult.user.id}/boards`)
        }
      }).catch((error) => {
        console.debug(error)
        component.credentials = credentials
+
      })
    };
 
