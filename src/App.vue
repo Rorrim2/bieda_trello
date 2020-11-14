@@ -22,13 +22,14 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from "vue-property-decorator";
+
+import {Component, Vue} from "vue-property-decorator";
 import {refreshToken} from "@/utils";
 import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
 
 @Component
 export default class App extends Vue {
-  @Prop() timer: number = 0;
+  private timer: number = 0;
 
   checkToken() {
     let tok = getToken()

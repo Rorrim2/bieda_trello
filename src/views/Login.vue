@@ -17,7 +17,7 @@
 </template>
 <script lang="ts">
 
-import {Component, Prop, Vue} from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 import {setToken, cacheRefreshToken} from "@/main";
 import {Credentials, LoginUser} from "@/data_models/types";
 import {LoginMutation} from "@/data_models/mutations";
@@ -25,23 +25,21 @@ import {LoginMutation} from "@/data_models/mutations";
 @Component
 export default class Login extends Vue {
 
-  @Prop()
-   credentials: Credentials = {
-     email:'',
-     password: ''
-   };
+  private credentials: Credentials = {
+    email:'',
+    password: ''
+  };
 
-  @Prop()
-   loginResult: LoginUser = {
-     user: {
-       id: '',
-       name: '',
-       lastName: ''
-     },
-     success: false,
-     token:'',
-     refreshToken:''
-   };
+  private loginResult: LoginUser = {
+    user: {
+      id: '',
+      name: '',
+      lastName: ''
+    },
+    success: false,
+    token:'',
+    refreshToken:''
+  };
 
    mutate(cred: Credentials) {
      const credentials = cred;

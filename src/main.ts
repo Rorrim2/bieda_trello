@@ -10,17 +10,18 @@ Vue.use(VueCookies)
 Vue.use(BootstrapVue);
 
 Vue.config.productionTip = false;
-let token: string;
-token = "";
 
 export const vm = new Vue({
   router,
+  data: {
+    token: ""
+  },
   apolloProvider: apolloProvider,
   render: (h) => h(App),
 }).$mount('#app');
 
 export function setToken(tkn: string) {
-  token = tkn;
+  vm.token = tkn;
 }
 
 export function cacheRefreshToken(r_tkn: string){
@@ -33,6 +34,6 @@ export function getTokenFromCache(): string {
 }
 
 export function getToken(): string {
-  return token;
+  return vm.token;
 }
 
