@@ -21,3 +21,34 @@
   </div>
 </template>
 
+<script lang="ts">
+import {Component, Prop, Vue} from "vue-property-decorator";
+import {refreshToken} from "@/utils";
+import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
+
+@Component
+export default class App extends Vue {
+  @Prop() timer: number = 0;
+
+  checkToken() {
+    let tok = getToken()
+
+    if(!tok || tok === ""){
+      const refreshTkn = getTokenFromCache();
+      console.debug(`refresh token from timer: ${refreshTkn}`);
+      refreshToken(refreshTkn, (value: any) => {
+        console.debug(value.data.refreshToken);
+        if(value.data.refreshToken.refreshToken){
+          cacheRefreshToken(value.data.refreshToken.refreshToken);
+          setToken(value.data.refreshToken.token);
+        }
+      })
+    }
+  }
+
+  mounted (){
+    this.timer = window.setInterval(this.checkToken, 1000)
+  }
+}
+
+</script>
