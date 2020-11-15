@@ -4,6 +4,7 @@ import Home from './views/Home.vue';
 import Boards from './views/Boards.vue';
 import BoardView from './views/BoardView.vue';
 import {User} from "@/data_models/types";
+import {getToken, vm} from "@/main";
 
 Vue.use(Router);
 
@@ -21,6 +22,18 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/Login.vue'),
+      beforeEnter: (to, from, next) => {
+          let item = localStorage.getItem('active_user');
+          let user = JSON.parse(item ? item : "" );
+          let tkn = getToken();
+          let r_tkn = vm.$cookies.get('r_tkn');
+          if((r_tkn || tkn ) && user){
+              next(`u/${user.id}/boards`);
+          }
+          else {
+              next();
+          }
+      }
     },
     {
       path: '/signup',
@@ -38,7 +51,7 @@ export default new Router({
           console.debug("Path check");
           let id = to.path.split('/')[2];
           let item = localStorage.getItem('active_user');
-          let user = JSON.parse(item ? item : "" ) ;
+          let user = JSON.parse(item ? item : "" );
           console.debug(user.id);
           if(user.id === id){
             console.debug("go to boards")
