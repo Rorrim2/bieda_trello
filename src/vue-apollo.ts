@@ -6,19 +6,22 @@ import VueApollo from 'vue-apollo';
 import {setContext} from 'apollo-link-context';
 import {getToken} from './main';
 
+
 const httpLink = new HttpLink({
     // You should use an absolute URL here
     //TODO
-    // uri: 'http://127.0.0.1:8000/graphql/',
+     //uri: 'http://127.0.0.1:8000/graphql/',
     uri: 'https://bieda-trello-backend.herokuapp.com/graphql/',
 })
 
-const token_header = setContext((_: any, {headers}: any) => {
+const token_header = setContext( (_: any, {headers}: any) => {
     const jwt = getToken()
+    console.debug(jwt);
     return {
         headers: {
             ...headers,
-            authorization: jwt !== "" ? `Bearer {jwt}` : null
+            authorization: jwt !== "" ? `Bearer ${jwt}` : null,
+
         }
     }
 })
@@ -37,4 +40,5 @@ const apolloProvider = new VueApollo({
 // Install the vue plugin
 Vue.use(VueApollo)
 
-export default apolloProvider
+
+export default apolloProvider;
