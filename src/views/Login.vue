@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-12">
-          <form class="form-inline" @submit="onSubmit()">
+          <form class="form-inline" @submit="onSubmit">
             <div class="form-group">
               <input type="email" v-model="credentials.email" class="form-control" id="inputmailinline" placeholder="E-mail"> </div>
             <div class="form-group">
@@ -25,29 +25,14 @@ import {LoginMutation} from "@/data_models/mutations";
 @Component
 export default class Login extends Vue {
 
-  private credentials: Credentials = {
-    email:'',
-    password: ''
-  };
+  private credentials: Credentials = <Credentials>{};
 
-  private loginResult: LoginUser = {
-    user: {
-      id: '',
-      name: '',
-      lastName: ''
-    },
-    success: false,
-    token:'',
-    refreshToken:''
-  };
+  private loginResult: LoginUser = <LoginUser>{};
 
    mutate(cred: Credentials) {
      const credentials = cred;
      const component = this;
-     component.credentials = {
-       email:"",
-       password:""
-     };
+     component.credentials = <Credentials>{};
 
      this.$apollo.mutate({
        mutation: LoginMutation,
@@ -56,33 +41,24 @@ export default class Login extends Vue {
          password: credentials.password
        },
      }).then((data) => {
-       let loginUser = data.data.loginuser;
+       let loginUser = <LoginUser>data.data.loginuser;
        console.debug(loginUser.success);
-       if (loginUser.success === true) {
+       if (loginUser.success) {
          setToken(loginUser.token)
          cacheRefreshToken(loginUser.refreshToken)
-         component.loginResult = {
-           token: loginUser.token,
-           refreshToken: loginUser.refreshToken,
-           success: loginUser.success,
-           user: {
-             id:loginUser.user.id,
-             name:loginUser.user.name,
-             lastName:loginUser.user.lastName
-           }};
-
          localStorage.setItem("active_user", JSON.stringify(component.loginResult.user));
 
+         component.loginResult = loginUser;
          component.$router.push(`u/${component.loginResult.user.id}/boards`)
        }
      }).catch((error) => {
        console.debug(error)
        component.credentials = credentials
-
      })
    };
 
-    public onSubmit ()  {
+    public onSubmit (evt: Event)  {
+      evt.preventDefault();
       let loginData = this.credentials;
       this.mutate(loginData);
       this.$forceUpdate();

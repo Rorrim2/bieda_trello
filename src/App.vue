@@ -26,10 +26,13 @@
 import {Component, Vue} from "vue-property-decorator";
 import {refreshToken} from "@/utils";
 import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
+import {Tokens, User} from "@/data_models/types";
 
 @Component
 export default class App extends Vue {
+  
   private timer: number = 0;
+  private user: User = <User> {};
 
   checkToken() {
     let tok = getToken()
@@ -37,11 +40,11 @@ export default class App extends Vue {
     if(!tok || tok === ""){
       const refreshTkn = getTokenFromCache();
       console.debug(`refresh token from timer: ${refreshTkn}`);
-      refreshToken(refreshTkn, (value: any) => {
-        console.debug(value.data.refreshToken);
-        if(value.data.refreshToken.refreshToken){
-          cacheRefreshToken(value.data.refreshToken.refreshToken);
-          setToken(value.data.refreshToken.token);
+      refreshToken(refreshTkn, (value: Tokens) => {
+        console.debug(value);
+        if(value.refreshToken){
+          cacheRefreshToken(value.refreshToken);
+          setToken(value.token);
         }
       })
     }
