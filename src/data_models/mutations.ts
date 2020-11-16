@@ -21,3 +21,17 @@ export const RefreshMutation = gql`
             refreshToken
         }
     }`;
+
+export const RegisterMutation = gql`
+    mutation RegisterUser($email: String!, $password: String!, $name: String!, $lastName: String!) {
+        registeruser(email: $email, password: $password, name: $name, lastName: $lastName) {
+            user {
+                id
+                name
+                lastName
+            }
+            success
+            token
+            refreshToken
+        }
+    }`;

@@ -20,3 +20,9 @@ export interface Tokens {
     token: string;
     refreshToken: string;
 }
+
+export interface RegisterCredentials extends Credentials{
+    name: string;
+    lastName: string;
+    confirmPassword: string;
+}
