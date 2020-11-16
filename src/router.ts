@@ -24,9 +24,10 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/Login.vue'),
       beforeEnter: (to, from, next) => {
           let item = localStorage.getItem('active_user');
-          let user = JSON.parse(item ? item : "" );
+          let user = item ? JSON.parse(item) : item;
           let tkn = getToken();
           let r_tkn = vm.$cookies.get('r_tkn');
+
           if((r_tkn || tkn ) && user){
               next(`u/${user.id}/boards`);
           }
@@ -51,20 +52,20 @@ export default new Router({
           console.debug("Path check");
           let id = to.path.split('/')[2];
           let item = localStorage.getItem('active_user');
-          let user = JSON.parse(item ? item : "" );
+          let user = item ? JSON.parse(item) : item;
+
           console.debug(user.id);
-          if(user.id === id){
+          if(user && user.id === id){
             console.debug("go to boards")
             next();
           }
-          else if(user.id){
+          else if(user && user.id){
             console.debug("go to your boards")
             next(`/u/${user.id}/boards`);
           }
           else{
             next(from.path);
           }
-
       }
     },
     {

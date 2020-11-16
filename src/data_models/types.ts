@@ -4,7 +4,7 @@ export interface User {
     lastName: string;
 }
 
-export interface LoginUser {
+export interface AuthResult {
     user: User;
     success: boolean;
     token: string;

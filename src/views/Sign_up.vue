@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts">
-import {LoginUser, RegisterCredentials} from "@/data_models/types";
+import {AuthResult, RegisterCredentials} from "@/data_models/types";
 import {Component, Vue} from "vue-property-decorator";
 import {RegisterMutation} from "@/data_models/mutations";
 import {cacheRefreshToken, setToken} from "@/main";
@@ -47,7 +47,7 @@ export default class Sign_up extends Vue {
 
   private user: RegisterCredentials = {} as RegisterCredentials;
 
-  private loginResult: LoginUser = {} as LoginUser;
+  private loginResult: AuthResult = {} as AuthResult;
 
   get validation() : boolean{
     return this.user.password === this.user.confirmPassword
@@ -68,14 +68,13 @@ export default class Sign_up extends Vue {
         lastName: reg_user.lastName
       }
     }).then((data) => {
-      let registerUser = <LoginUser>data.data.registeruser;
+      let authResult = <AuthResult>data.data.registeruser;
+      if(authResult.success){
+          setToken(authResult.token);
+          cacheRefreshToken(authResult.refreshToken);
+          localStorage.setItem("active_user", JSON.stringify(authResult))
 
-      if(registerUser.success){
-          setToken(registerUser.token);
-          cacheRefreshToken(registerUser.refreshToken);
-          localStorage.setItem("active_user", JSON.stringify(registerUser))
-
-          component.loginResult = registerUser;
+          component.loginResult = authResult;
           component.$router.push(`u/${component.loginResult.user.id}/boards`)
       }
     }).catch((error) => {

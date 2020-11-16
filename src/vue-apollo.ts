@@ -29,7 +29,7 @@ const token_header = setContext( (_: any, {headers}: any) => {
 // Create the apollo client
 const apolloClient = new ApolloClient({
     link: token_header.concat(httpLink),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({addTypename: false}),
     connectToDevTools: true,
 })
 

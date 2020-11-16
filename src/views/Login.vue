@@ -19,7 +19,7 @@
 
 import {Component, Vue} from 'vue-property-decorator';
 import {setToken, cacheRefreshToken} from "@/main";
-import {Credentials, LoginUser} from "@/data_models/types";
+import {Credentials, AuthResult} from "@/data_models/types";
 import {LoginMutation} from "@/data_models/mutations";
 
 @Component
@@ -27,7 +27,7 @@ export default class Login extends Vue {
 
   private credentials: Credentials = <Credentials>{};
 
-  private loginResult: LoginUser = <LoginUser>{};
+  private loginResult: AuthResult = <AuthResult>{};
 
    mutate(cred: Credentials) {
      const credentials = cred;
@@ -41,14 +41,14 @@ export default class Login extends Vue {
          password: credentials.password
        },
      }).then((data) => {
-       let loginUser = <LoginUser>data.data.loginuser;
-       console.debug(loginUser.success);
-       if (loginUser.success) {
-         setToken(loginUser.token)
-         cacheRefreshToken(loginUser.refreshToken)
-         localStorage.setItem("active_user", JSON.stringify(component.loginResult.user));
+       let authResult = <AuthResult>data.data.loginuser;
+       if (authResult.success) {
+         setToken(authResult.token)
+         cacheRefreshToken(authResult.refreshToken)
+         localStorage.setItem("active_user", JSON.stringify(authResult.user));
 
-         component.loginResult = loginUser;
+         component.loginResult = authResult;
+         component.$emit('update-user', {user:authResult.user});
          component.$router.push(`u/${component.loginResult.user.id}/boards`)
        }
      }).catch((error) => {
