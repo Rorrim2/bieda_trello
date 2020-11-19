@@ -34,6 +34,6 @@ export function getTokenFromCache(): string {
 }
 
 export function getToken(): string {
-  return vm.token;
+  return vm ? vm.token : "";
 }
 

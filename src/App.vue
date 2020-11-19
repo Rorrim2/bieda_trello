@@ -14,6 +14,9 @@
           <a class="btn navbar-btn ml-md-2 btn-light text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="	box-shadow: 0px 0px 4px  #0a97b0;">
             <router-link to="/signup"><b style="" class="text-primary"><b>Sign up</b></b></router-link>
           </a>
+
+            <router-link to="/login"><b style="" class="text-primary"><b><a @click="logout" class="btn navbar-btn ml-md-2 btn-light text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="	box-shadow: 0px 0px 4px  #0a97b0;">Log out</a></b></b></router-link>
+
         </div>
       </div>
     </nav>
@@ -24,7 +27,7 @@
 <script lang="ts">
 
 import {Component, Vue} from "vue-property-decorator";
-import {refreshToken} from "@/utils";
+import {logoutUser, refreshToken} from "@/utils";
 import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
 import {Tokens, User} from "@/data_models/types";
 
@@ -39,9 +42,16 @@ export default class App extends Vue {
     this.user = user;
   }
 
+  logout(evt: Event) {
+      const refreshTkn = getTokenFromCache();
+      logoutUser(refreshTkn, (value: any)=>{
+        console.debug(`data from log out: ${value}`);
+      })
+  }
+
   checkToken() {
     let tok = getToken()
-
+    console.debug('======= check whether token is empty/null =======')
     if(!tok || tok === ""){
       const refreshTkn = getTokenFromCache();
       console.debug(`refresh token from timer: ${refreshTkn}`);

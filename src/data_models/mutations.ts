@@ -14,11 +14,21 @@ export const LoginMutation = gql`
         }
     }`;
 
+export const LogoutMutation = gql`
+    mutation LogoutUser($refreshToken: String!){
+        logoutuser(refreshToken: $refreshToken){
+            success
+        }
+    }
+`;
+
 export const RefreshMutation = gql`
     mutation RefreshToken($refreshToken: String!) {
         refreshToken(refreshToken: $refreshToken) {
             token
-            refreshToken
+            refreshToken    
+            payload
+            refreshExpiresIn
         }
     }`;
 

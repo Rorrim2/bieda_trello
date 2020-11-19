@@ -26,7 +26,7 @@ export default new Router({
           let item = localStorage.getItem('active_user');
           let user = item ? JSON.parse(item) : item;
           let tkn = getToken();
-          let r_tkn = vm.$cookies.get('r_tkn');
+          let r_tkn = vm? vm.$cookies.get('r_tkn') : "";
 
           if((r_tkn || tkn ) && user){
               next(`u/${user.id}/boards`);
