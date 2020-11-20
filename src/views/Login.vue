@@ -10,6 +10,7 @@
               <input type="password" v-model="credentials.password" class="form-control mx-2" id="inputpasswordinline" placeholder="Password"> </div>
             <button type="submit" class="btn text-white btn-secondary">Log in</button>
           </form>
+          <b-form-invalid-feedback :state="loginValidation" v-text="loginError"></b-form-invalid-feedback>
         </div>
       </div>
     </div>
@@ -26,10 +27,15 @@ import {LoginMutation} from "@/data_models/mutations";
 export default class Login extends Vue {
 
   private credentials: Credentials = <Credentials>{};
-
+  private loginError: string = "";
   private loginResult: AuthResult = <AuthResult>{};
 
-   mutate(cred: Credentials) {
+  get loginValidation(): boolean{
+    console.debug(`loginValidation is ${!this.loginError || this.loginError === ""}`)
+    return !this.loginError || this.loginError === "";
+  };
+
+  mutate(cred: Credentials) {
      const credentials = cred;
      const component = this;
      component.credentials = <Credentials>{};
@@ -54,6 +60,7 @@ export default class Login extends Vue {
      }).catch((error) => {
        console.debug(error)
        component.credentials = credentials
+       component.loginError = error.message;
      })
    };
 

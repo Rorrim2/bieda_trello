@@ -58,6 +58,8 @@ export default class App extends Vue {
     console.debug('======= check whether token is empty/null =======')
     if(!tok || tok === ""){
       const refreshTkn = getTokenFromCache();
+
+      if (!refreshTkn || refreshTkn === '') {return;}
       console.debug(`refresh token from timer: ${refreshTkn}`);
       refreshToken(refreshTkn, (value: Tokens) => {
         console.debug(value);

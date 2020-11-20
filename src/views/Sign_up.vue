@@ -6,19 +6,21 @@
           <form id="c_form-h" class="" @submit="onSubmit">
             <div class="form-group row"> <label for="inputmailh" class="col-2 col-form-label text-white">E-mail</label>
               <div class="col-10">
-                <input type="email" v-model="user.email" class="form-control" id="inputmailh" placeholder="mail@example.com"> </div>
+                <input type="email" required v-model="user.email" class="form-control" id="inputmailh" placeholder="mail@example.com">
+                <b-form-invalid-feedback :state="emailValidation" v-text="registerError"></b-form-invalid-feedback>
+              </div>
             </div>
             <div class="form-group row"> <label for="inputnameh" class="col-2 col-form-label text-white">Name</label>
               <div class="col-10">
-                <input type="text" v-model="user.name" class="form-control" id="inputnameh" placeholder="Name"> </div>
+                <input type="text" required v-model="user.name" class="form-control" id="inputnameh" placeholder="Name"> </div>
             </div>
-            <div class="form-group row"> <label for="inputlastnameh" class="col-2 col-form-label text-white">Last name</label>
+            <div class="form-group row"> <label for="inputlastnameh"  class="col-2 col-form-label text-white">Last name</label>
               <div class="col-10">
-                <input type="text" v-model="user.lastName" class="form-control" id="inputlastnameh" placeholder="Last name"> </div>
+                <input type="text" required v-model="user.lastName" class="form-control" id="inputlastnameh" placeholder="Last name"> </div>
             </div>
             <div class="form-group row"> <label for="inputpasswordh" class="col-2 col-form-label text-white">Password</label>
               <div class="col-10">
-                <input type="password" v-model="user.password" class="form-control" id="inputpasswordh" placeholder="Password"> </div>
+                <input type="password" required v-model="user.password" class="form-control" id="inputpasswordh" placeholder="Password"> </div>
             </div>
             <div class="form-group row" @submit.stop.prevent> <label for="inputrepeatpasswordh" class="col-2 col-form-label text-white">Repeat password</label>
               <div class="col-10">
@@ -46,8 +48,13 @@ import {cacheRefreshToken, setToken} from "@/main";
 export default class Sign_up extends Vue {
 
   private user: RegisterCredentials = {} as RegisterCredentials;
-
+  private registerError: string = "";
   private loginResult: AuthResult = {} as AuthResult;
+
+  get emailValidation(): boolean{
+    console.debug(`emailValidation is ${!this.registerError || this.registerError === ""}`)
+    return !this.registerError || this.registerError === "";
+  };
 
   get validation() : boolean{
     return this.user.password === this.user.confirmPassword
@@ -80,6 +87,7 @@ export default class Sign_up extends Vue {
     }).catch((error) => {
       console.debug(error)
       component.user = reg_user;
+      component.registerError = error.message;
     })
   }
 
