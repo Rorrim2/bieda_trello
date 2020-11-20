@@ -46,6 +46,10 @@ export default class App extends Vue {
       const refreshTkn = getTokenFromCache();
       logoutUser(refreshTkn, (value: any)=>{
         console.debug(`data from log out: ${value}`);
+        localStorage.removeItem("active_user");
+        setToken("");
+        this.$cookies.remove("r_tkn");
+        this.$router.push("/login")
       })
   }
 
