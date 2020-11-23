@@ -2,7 +2,7 @@
   <div>
   <!-- Card -->
     <b-card-group deck><div v-for="board_s in boardsList"><single-board :board="board_s"></single-board></div></b-card-group>
-  <div class="card bg-light text-primary" style="width: 15vw; margin: 3vw;" @submit="onCreate">
+  <div class="card text-primary" style="width: 15vw; margin: 3vw; background-color: rgba(245,245,245, 0.3);" @submit="onCreate">
     <div class="card-body">
       <form>
         <p class="h3 text-center">Create board</p>

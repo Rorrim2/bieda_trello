@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="bg-primary flex-fill h-100 " style="min-height: 100vw;" @update-user="storeUser">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="	box-shadow: 0px 0px 4px primary;">
-      <div class="container"> <a class="navbar-brand mr-5" href="#">
+      <div class="container"> <a class="navbar-brand mr-5" href="/">
         <img class="img-fluid d-block rounded-circle float-left mr-2" src="./assets/racoon.png" width="100px">
         <b class="h1 mr-10 pr-5 mt-2 align-items-center d-inline-flex"><b class="text-center mr-5 my-2" style="">BiedaTrello</b></b>
       </a> <button class="navbar-toggler navbar-toggler-right border-0" type="button" data-toggle="collapse" data-target="#navbar11" style="">

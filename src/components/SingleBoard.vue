@@ -5,10 +5,9 @@
         :img-src="board.background_url"
         img-alt="Image"
         img-top
-        style="max-width: 20rem;"
+        style="max-width: 20rem;  background-color: rgba(245,245,245, 0.3);"
         class="mb-2"
-        bg-variant="light"
-    >
+    text-variant="light">
       <router-link to="/board"><b-button variant="primary" style="margin: 1vw;">Go to board</b-button></router-link>
     </b-card>
   </div>

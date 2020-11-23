@@ -2,7 +2,7 @@
   <div class="about py-5">
     <div class="container">
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-lg-8 order-lg-2 order-2 align-self-center">
           <form class="form-inline" @submit="onSubmit">
             <div class="form-group">
               <input type="email" v-model="credentials.email" class="form-control" id="inputmailinline" placeholder="E-mail"> </div>
@@ -12,6 +12,7 @@
           </form>
           <b-form-invalid-feedback :state="loginValidation" v-text="loginError"></b-form-invalid-feedback>
         </div>
+        <div class="col-lg-4 order-1 order-lg-1 p-0"> <img class="img-fluid d-block" src="../assets/welcome_back.png"></div>
       </div>
     </div>
   </div>

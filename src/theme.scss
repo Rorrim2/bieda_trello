@@ -14,12 +14,14 @@ $enable-print-styles:       true;
 
 // Variables
 //
+
+
 // Colors
 
 $theme-colors: (
   primary: #1b6ca8,
   secondary: #0a97b0,
-  light: #fce8d5,
+  light: #e5fffe,
   dark: #40514e,
   info: #ffd3e1,
   success: #28a988,
@@ -43,6 +45,10 @@ $headings-font-weight: 200;
 $lead-font-size:   1.50rem;
 
 $spacer: 2rem;
+
+.semi-transparent {
+  background-color: rgba(0,0,0, 0.4);
+}
 
 @import '~bootstrap';
 @import '~bootstrap-vue';
