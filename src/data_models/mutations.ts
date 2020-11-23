@@ -14,9 +14,33 @@ export const LoginMutation = gql`
         }
     }`;
 
+export const LogoutMutation = gql`
+    mutation LogoutUser($refreshToken: String!){
+        logoutuser(refreshToken: $refreshToken){
+            success
+        }
+    }
+`;
+
 export const RefreshMutation = gql`
     mutation RefreshToken($refreshToken: String!) {
         refreshToken(refreshToken: $refreshToken) {
+            token
+            refreshToken    
+            payload
+            refreshExpiresIn
+        }
+    }`;
+
+export const RegisterMutation = gql`
+    mutation RegisterUser($email: String!, $password: String!, $name: String!, $lastName: String!) {
+        registeruser(email: $email, password: $password, name: $name, lastName: $lastName) {
+            user {
+                id
+                name
+                lastName
+            }
+            success
             token
             refreshToken
         }

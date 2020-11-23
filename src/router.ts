@@ -1,11 +1,28 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import Router, {NavigationGuardNext, Route} from 'vue-router';
 import Home from './views/Home.vue';
 import Boards from './views/Boards.vue';
 import BoardView from './views/BoardView.vue';
-import {User} from "@/data_models/types";
+import {getToken, vm} from "@/main";
 
 Vue.use(Router);
+
+function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGuardNext){
+    let item = localStorage.getItem('active_user');
+    let user = item ? JSON.parse(item) : item;
+    let tkn = getToken();
+    let r_tkn = vm? vm.$cookies.get('r_tkn') : "";
+
+    if((r_tkn || tkn ) && user ){
+        console.debug(from.path)
+        if(from.path !== `/u/${user.id}/boards`) {
+            next(`u/${user.id}/boards`);
+        }
+    }
+    else {
+        next();
+    }
+}
 
 export default new Router({
   routes: [
@@ -21,6 +38,7 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/Login.vue'),
+      beforeEnter: checkIfLoginSignUpIsAllowed
     },
     {
       path: '/signup',
@@ -29,29 +47,30 @@ export default new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/Sign_up.vue'),
+      beforeEnter: checkIfLoginSignUpIsAllowed
     },
     {
-      path: '/u/*/boards',
+      path: '/u/(.{16})/boards',
       name: 'boards',
       component: Boards,
       beforeEnter: (to, from, next) => {
           console.debug("Path check");
           let id = to.path.split('/')[2];
           let item = localStorage.getItem('active_user');
-          let user = JSON.parse(item ? item : "" ) ;
+          let user = item ? JSON.parse(item) : item;
+
           console.debug(user.id);
-          if(user.id === id){
+          if(user && user.id === id){
             console.debug("go to boards")
             next();
           }
-          else if(user.id){
+          else if(user && user.id){
             console.debug("go to your boards")
             next(`/u/${user.id}/boards`);
           }
           else{
             next(from.path);
           }
-
       }
     },
     {

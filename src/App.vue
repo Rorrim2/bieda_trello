@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="bg-primary flex-fill h-100 " style="min-height: 100vw;">
+  <div id="app" class="bg-primary flex-fill h-100 " style="min-height: 100vw;" @update-user="storeUser">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="	box-shadow: 0px 0px 4px primary;">
       <div class="container"> <a class="navbar-brand mr-5" href="/">
         <img class="img-fluid d-block rounded-circle float-left mr-2" src="./assets/racoon.png" width="100px">
@@ -14,6 +14,9 @@
           <a class="btn navbar-btn ml-md-2 btn-light text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="	box-shadow: 0px 0px 4px  #0a97b0;">
             <router-link to="/signup"><b style="" class="text-primary"><b>Sign up</b></b></router-link>
           </a>
+
+            <router-link to="/login"><b style="" class="text-primary"><b><a @click="logout" class="btn navbar-btn ml-md-2 btn-light text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="	box-shadow: 0px 0px 4px  #0a97b0;">Log out</a></b></b></router-link>
+
         </div>
       </div>
     </nav>
@@ -22,25 +25,47 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue} from "vue-property-decorator";
-import {refreshToken} from "@/utils";
+
+import {Component, Vue} from "vue-property-decorator";
+import {logoutUser, refreshToken} from "@/utils";
 import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
+import {Tokens, User} from "@/data_models/types";
 
 @Component
 export default class App extends Vue {
-  @Prop() timer: number = 0;
+  
+  private timer: number = 0;
+  private user: User = <User> {};
+
+  storeUser(user: User){
+    console.debug(`user is: ${user}`);
+    this.user = user;
+  }
+
+  logout(evt: Event) {
+      const refreshTkn = getTokenFromCache();
+      logoutUser(refreshTkn, (value: any)=>{
+        console.debug(`data from log out: ${value}`);
+        localStorage.removeItem("active_user");
+        setToken("");
+        this.$cookies.remove("r_tkn");
+        this.$router.push("/login")
+      })
+  }
 
   checkToken() {
     let tok = getToken()
-
+    console.debug('======= check whether token is empty/null =======')
     if(!tok || tok === ""){
       const refreshTkn = getTokenFromCache();
+
+      if (!refreshTkn || refreshTkn === '') {return;}
       console.debug(`refresh token from timer: ${refreshTkn}`);
-      refreshToken(refreshTkn, (value: any) => {
-        console.debug(value.data.refreshToken);
-        if(value.data.refreshToken.refreshToken){
-          cacheRefreshToken(value.data.refreshToken.refreshToken);
-          setToken(value.data.refreshToken.token);
+      refreshToken(refreshTkn, (value: Tokens) => {
+        console.debug(value);
+        if(value.refreshToken){
+          cacheRefreshToken(value.refreshToken);
+          setToken(value.token);
         }
       })
     }

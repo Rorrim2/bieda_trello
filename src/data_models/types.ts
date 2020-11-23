@@ -4,7 +4,7 @@ export interface User {
     lastName: string;
 }
 
-export interface LoginUser {
+export interface AuthResult {
     user: User;
     success: boolean;
     token: string;
@@ -19,4 +19,10 @@ export interface Credentials {
 export interface Tokens {
     token: string;
     refreshToken: string;
+}
+
+export interface RegisterCredentials extends Credentials{
+    name: string;
+    lastName: string;
+    confirmPassword: string;
 }

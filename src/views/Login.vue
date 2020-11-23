@@ -4,55 +4,42 @@
       <div class="row">
         <div class="col-lg-8 order-lg-2 order-2 align-self-center">
           <form class="form-inline" @submit="onSubmit">
-
             <div class="form-group">
               <input type="email" v-model="credentials.email" class="form-control" id="inputmailinline" placeholder="E-mail"> </div>
             <div class="form-group">
               <input type="password" v-model="credentials.password" class="form-control mx-2" id="inputpasswordinline" placeholder="Password"> </div>
             <button type="submit" class="btn text-white btn-secondary">Log in</button>
           </form>
+          <b-form-invalid-feedback :state="loginValidation" v-text="loginError"></b-form-invalid-feedback>
         </div>
         <div class="col-lg-4 order-1 order-lg-1 p-0"> <img class="img-fluid d-block" src="../assets/welcome_back.png"></div>
-
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
 
-import {Component, Prop, Vue} from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 import {setToken, cacheRefreshToken} from "@/main";
-import {Credentials, LoginUser} from "@/data_models/types";
+import {Credentials, AuthResult} from "@/data_models/types";
 import {LoginMutation} from "@/data_models/mutations";
 
 @Component
 export default class Login extends Vue {
 
-  @Prop()
-   credentials: Credentials = {
-     email:'',
-     password: ''
-   };
+  private credentials: Credentials = <Credentials>{};
+  private loginError: string = "";
+  private loginResult: AuthResult = <AuthResult>{};
 
-  @Prop()
-   loginResult: LoginUser = {
-     user: {
-       id: '',
-       name: '',
-       lastName: ''
-     },
-     success: false,
-     token:'',
-     refreshToken:''
-   };
+  get loginValidation(): boolean{
+    console.debug(`loginValidation is ${!this.loginError || this.loginError === ""}`)
+    return !this.loginError || this.loginError === "";
+  };
 
-   mutate(cred: Credentials) {
+  mutate(cred: Credentials) {
      const credentials = cred;
      const component = this;
-     component.credentials = {
-       email:"",
-       password:""
-     };
+     component.credentials = <Credentials>{};
 
      this.$apollo.mutate({
        mutation: LoginMutation,
@@ -61,33 +48,25 @@ export default class Login extends Vue {
          password: credentials.password
        },
      }).then((data) => {
-       let loginUser = data.data.loginuser;
-       console.debug(loginUser.success);
-       if (loginUser.success === true) {
-         setToken(loginUser.token)
-         cacheRefreshToken(loginUser.refreshToken)
-         component.loginResult = {
-           token: loginUser.token,
-           refreshToken: loginUser.refreshToken,
-           success: loginUser.success,
-           user: {
-             id:loginUser.user.id,
-             name:loginUser.user.name,
-             lastName:loginUser.user.lastName
-           }};
+       let authResult = <AuthResult>data.data.loginuser;
+       if (authResult.success) {
+         setToken(authResult.token)
+         cacheRefreshToken(authResult.refreshToken)
+         localStorage.setItem("active_user", JSON.stringify(authResult.user));
 
-         localStorage.setItem("active_user", JSON.stringify(component.loginResult.user));
-
+         component.loginResult = authResult;
+         component.$emit('update-user', {user:authResult.user});
          component.$router.push(`u/${component.loginResult.user.id}/boards`)
        }
      }).catch((error) => {
        console.debug(error)
        component.credentials = credentials
-
+       component.loginError = error.message;
      })
    };
 
-    public onSubmit ()  {
+    public onSubmit (evt: Event)  {
+      evt.preventDefault();
       let loginData = this.credentials;
       this.mutate(loginData);
       this.$forceUpdate();
