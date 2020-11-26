@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="bg-primary flex-fill h-100 " style="min-height: 100vw;" @update-user="storeUser">
+  <div id="app" class="bg-primary flex-fill h-100 " style="min-height: 100vw;">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="	box-shadow: 0px 0px 4px primary;">
       <div class="container"> <a class="navbar-brand mr-5" href="/">
         <img class="img-fluid d-block rounded-circle float-left mr-2" src="./assets/racoon.png" width="100px">
@@ -8,14 +8,32 @@
         <span class="navbar-toggler-icon"></span>
       </button>
         <div class="collapse navbar-collapse ml-5 justify-content-end" id="navbar11">
-          <a class="btn btn-primary navbar-btn ml-md-2 text-light btn-lg px-3 m-1 ml-5 mr-1" style="	box-shadow: 1px 1px 4px  #0a97b0;">
-            <router-link to="/login"><b class="text-white">Log in</b></router-link>
-          </a>
-          <a class="btn navbar-btn ml-md-2 btn-light text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="	box-shadow: 0px 0px 4px  #0a97b0;">
-            <router-link to="/signup"><b style="" class="text-primary"><b>Sign up</b></b></router-link>
-          </a>
+          <router-link to="/login" v-if="!isLoggedIn">
+            <b class="text-white">
+              <a class="btn btn-primary navbar-btn ml-md-2 text-light btn-lg px-3 m-1 ml-5 mr-1" style="	box-shadow: 1px 1px 4px  #0a97b0;">
+                Log in
+              </a>
+            </b>
+          </router-link>
+          <router-link style="text-decoration: none" to="/signup" v-if="!isLoggedIn">
+            <b style="text-decoration: none" class="text-primary">
+              <b>
+                <a class="btn navbar-btn ml-md-2 btn-light text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="text-decoration: none; 	box-shadow: 0px 0px 4px  #0a97b0;">
+                  Sign up
+                </a>
+              </b>
+            </b>
+          </router-link>
 
-            <router-link to="/login"><b style="" class="text-primary"><b><a @click="logout" class="btn navbar-btn ml-md-2 btn-light text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="	box-shadow: 0px 0px 4px  #0a97b0;">Log out</a></b></b></router-link>
+          <router-link to="/login" v-if="isLoggedIn">
+            <b style="" class="text-primary">
+              <b>
+                <a @click="logout"  class="btn ml-md-2 text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="text-decoration: none;">
+                  <UserBubble :user="user"></UserBubble>
+                </a>
+              </b>
+            </b>
+          </router-link>
 
         </div>
       </div>
@@ -27,19 +45,34 @@
 <script lang="ts">
 
 import {Component, Vue} from "vue-property-decorator";
-import {logoutUser, refreshToken} from "@/utils";
+import {getFromLocalStorage, logoutUser, refreshToken} from "@/utils";
 import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
 import {Tokens, User} from "@/data_models/types";
+import UserBubble from "@/components/UserBubble.vue";
+import databus from "@/databus";
 
-@Component
+@Component({
+  components: {UserBubble}
+})
 export default class App extends Vue {
   
   private timer: number = 0;
-  private user: User = <User> {};
+  private user!: User;
 
-  storeUser(user: User){
-    console.debug(`user is: ${user}`);
-    this.user = user;
+  get isLoggedIn():boolean{
+    if (!this.user){
+      this.load_user();
+    }
+    let tkn = getToken();
+    let r_tkn = this? this.$cookies.get('r_tkn') : "";
+
+    return ((r_tkn || tkn ) && !!this.user);
+  }
+
+  load_user(){
+    let item = getFromLocalStorage("active_user")
+    if (!item) {console.debug("item is empty");return;}
+    this.user = <User> item ?? <User>{};
   }
 
   logout(evt: Event) {
@@ -48,8 +81,10 @@ export default class App extends Vue {
         console.debug(`data from log out: ${value}`);
         localStorage.removeItem("active_user");
         setToken("");
+        this.user = <User>{};
         this.$cookies.remove("r_tkn");
         this.$router.push("/login")
+        this.$forceUpdate();
       })
   }
 
@@ -71,9 +106,24 @@ export default class App extends Vue {
     }
   }
 
+  created() {
+    databus.$on('updateUser', ()=>{
+      this.load_user();
+    });
+  }
+
   mounted (){
-    this.timer = window.setInterval(this.checkToken, 1000)
+    this.timer = window.setInterval(this.checkToken, 1000);
+    this.load_user();
   }
 }
 
 </script>
+<style scoped>
+li a {
+  text-decoration: none;
+}
+span {
+  text-decoration: none;
+}
+</style>
