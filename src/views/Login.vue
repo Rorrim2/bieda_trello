@@ -23,6 +23,8 @@ import {Component, Vue} from 'vue-property-decorator';
 import {setToken, cacheRefreshToken} from "@/main";
 import {Credentials, AuthResult} from "@/data_models/types";
 import {LoginMutation} from "@/data_models/mutations";
+import dataBus from "@/databus";
+import {storeInLocalStorage} from "@/utils";
 
 @Component
 export default class Login extends Vue {
@@ -52,10 +54,10 @@ export default class Login extends Vue {
        if (authResult.success) {
          setToken(authResult.token)
          cacheRefreshToken(authResult.refreshToken)
-         localStorage.setItem("active_user", JSON.stringify(authResult.user));
+         storeInLocalStorage("active_user", authResult.user)
 
          component.loginResult = authResult;
-         component.$emit('update-user', {user:authResult.user});
+         dataBus.$emit('updateUser');
          component.$router.push(`u/${component.loginResult.user.id}/boards`)
        }
      }).catch((error) => {

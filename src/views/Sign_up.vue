@@ -44,6 +44,7 @@ import {AuthResult, RegisterCredentials} from "@/data_models/types";
 import {Component, Vue} from "vue-property-decorator";
 import {RegisterMutation} from "@/data_models/mutations";
 import {cacheRefreshToken, setToken} from "@/main";
+import {storeInLocalStorage} from "@/utils";
 
 @Component
 export default class Sign_up extends Vue {
@@ -80,7 +81,7 @@ export default class Sign_up extends Vue {
       if(authResult.success){
           setToken(authResult.token);
           cacheRefreshToken(authResult.refreshToken);
-          localStorage.setItem("active_user", JSON.stringify(authResult))
+          storeInLocalStorage("active_user", authResult.user)
 
           component.loginResult = authResult;
           component.$router.push(`u/${component.loginResult.user.id}/boards`)

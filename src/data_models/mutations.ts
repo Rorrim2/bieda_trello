@@ -11,6 +11,7 @@ export const LoginMutation = gql`
             success
             token
             refreshToken
+            payload
         }
     }`;
 
@@ -42,6 +43,7 @@ export const RegisterMutation = gql`
             success
             token
             refreshToken
+            payload
         }
     }`;
 
@@ -62,24 +64,8 @@ export const CreateNewBoardMutation = gql`
                 isVisible
                 users {
                     id
-                    lastName
-                    name
                 }
                 title
-                lists {
-                    id
-                    title
-                    positionOnBoard
-                    isHidden
-                    cards{
-                        id
-                        cover
-                        description
-                        dueDate
-                        title
-                        positionInList
-                    }
-                }
             }
         }
     }`;
