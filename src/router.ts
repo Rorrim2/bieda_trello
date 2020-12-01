@@ -17,7 +17,7 @@ function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGua
 
     if((r_tkn || tkn ) && user ){
         console.debug(from.path)
-        if(from.path !== `/u/${user.id}/boards`) {
+        if(from.path !== `/u/${user.id}/boards` && from.path.startsWith('/u/')) {
             next(`u/${user.id}/boards`);
         }
     }

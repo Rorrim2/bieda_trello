@@ -29,7 +29,7 @@
             <b style="" class="text-primary">
               <b>
                 <a @click="logout"  class="btn ml-md-2 text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="text-decoration: none;">
-                  <UserBubble :user="user"></UserBubble>
+                  <UserBubble v-bind:user="user"></UserBubble>
                 </a>
               </b>
             </b>
@@ -47,9 +47,11 @@
 import {Component, Vue} from "vue-property-decorator";
 import {getFromLocalStorage, logoutUser, refreshToken} from "@/utils";
 import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
-import {Tokens, User} from "@/data_models/types";
+import {dummyUser, Tokens, User} from "@/data_models/types";
 import UserBubble from "@/components/UserBubble.vue";
 import databus from "@/databus";
+
+
 
 @Component({
   components: {UserBubble}
@@ -57,35 +59,35 @@ import databus from "@/databus";
 export default class App extends Vue {
   
   private timer: number = 0;
-  private user!: User;
+  private user: User = dummyUser;
 
   get isLoggedIn():boolean{
-    if (!this.user){
+    if (this.user === dummyUser){
       this.load_user();
     }
     let tkn = getToken();
-    let r_tkn = this? this.$cookies.get('r_tkn') : "";
-
-    return ((r_tkn || tkn ) && !!this.user);
+    let r_tkn = this? getFromLocalStorage('r_tkn') : "";
+    console.debug(((r_tkn || tkn ) && this.user !== dummyUser))
+    return ((r_tkn || tkn ) && this.user !== dummyUser) as boolean;
   }
 
   load_user(){
     let item = getFromLocalStorage("active_user")
-    if (!item) {console.debug("item is empty");return;}
-    this.user = <User> item ?? <User>{};
+    if (!item || JSON.stringify(item)==='{}') {console.debug("item is empty");return;}
+    this.user = <User> item ?? dummyUser;
   }
 
   logout(evt: Event) {
       const refreshTkn = getTokenFromCache();
+      const component = this
       logoutUser(refreshTkn, (value: any)=>{
         console.debug(`data from log out: ${value}`);
         localStorage.removeItem("active_user");
         setToken("");
-        this.user = <User>{};
-        this.$cookies.remove("r_tkn");
-        this.$router.push("/login")
-        this.$forceUpdate();
-      })
+        component.user = dummyUser;
+        localStorage.removeItem("r_tkn");
+        component.$router.push("/login");
+      });
   }
 
   checkToken() {
@@ -110,11 +112,11 @@ export default class App extends Vue {
     databus.$on('updateUser', ()=>{
       this.load_user();
     });
+    this.load_user();
   }
 
   mounted (){
     this.timer = window.setInterval(this.checkToken, 1000);
-    this.load_user();
   }
 }
 

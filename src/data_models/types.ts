@@ -26,3 +26,9 @@ export interface RegisterCredentials extends Credentials{
     lastName: string;
     confirmPassword: string;
 }
+
+export const dummyUser:User = <User>{};
+export const dummyCredentials = <Credentials>{};
+export const dummyTokens = <Tokens>{};
+export const dummyRegisterCredentials = <RegisterCredentials>{};
+export const dummyAuthResult = <AuthResult>{};

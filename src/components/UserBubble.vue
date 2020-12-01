@@ -5,37 +5,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import {User} from "@/data_models/types";
-import {getFromLocalStorage} from "@/utils";
+import {Component, Prop, Vue} from 'vue-property-decorator';
+import {dummyUser, User} from "@/data_models/types";
 
 @Component
 export default class UserBubble extends Vue{
 
-  public get user(): User {
-    return this._user;
-  }
-
-  public set user(value: User) {
-    console.debug(`user is from value: ${value.id} + ${value.lastName} + ${value.name}`)
-    this._user = value;
-  }
+  @Prop()  user!: User;
 
   get shortenUser(): string{
-    return this._user.name.substring(0,1) + this._user.lastName.substring(0,1);
+    return this.user.name.substring(0,1) + this.user.lastName.substring(0,1);
   }
 
   get title(): string{
-    return `${this._user.name} ${this._user.lastName} ,id: ${this._user.id}`;
+    return `${this.user.name} ${this.user.lastName} ,id: ${this.user.id}`;
   }
-
-  created(){
-      if(!this.user){
-        this.user = <User> getFromLocalStorage("active_user") ?? <User> {};
-      }
-  }
-
-  private _user: User = <User> {};
 }
 
 
