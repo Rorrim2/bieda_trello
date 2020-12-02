@@ -91,9 +91,9 @@ export const ReopenBoardMutation = gql`
         }
     }`;
 
-export const PermanentlyDeleteMutation = gql`
-    mutation PermanentlyDelete($board_id: String!){
-        permanentlydelete(boardId: $board_id){
+export const DeleteBoardMutation = gql`
+    mutation DeleteBoard($board_id: String!){
+        deleteboard(boardId: $board_id){
             board{
                 id
             }
@@ -249,5 +249,51 @@ export const VerifyTokenMutation = gql`
     mutation VerifyToken($token: String!){
         verifyToken(token: $token){
             payload
+        }
+    }`;
+
+export const RevokeJTIMutation = gql`
+    mutation RevokeJTI($jti: String!, $userId: String!){
+        revokejti(jti: $jti, userId: $userId){
+            success
+        }
+    }`;
+
+export const CopyListMutation = gql`
+        mutation CopyList($listId: String!){
+            copylist(listId: $listId){
+                list{
+                    id
+                }
+            }
+        }`;
+
+export const DeleteCardMutation = gql`
+    mutation DeleteCard($cardId: String!){
+        deletecard(cardId: $cardId){
+            success
+            card{
+                id
+            }
+        }
+    }`;
+
+export const MoveListMutation = gql`
+    mutation MoveList($listId: String!, $newBoardId: String!, $newPositionOnBoard: Int!){
+        movelist(listId: $listId, newBoardId: $newBoardId, newPositionOnBoard: $newPositionOnBoard){
+            list{
+                id
+            }
+        }
+    }`;
+
+export const UpdateListMutation = gql`
+    mutation UpdateList($listId: String!, $positionOnBoard: Int, $title: String){
+        updatelist(listId: $listId, positionOnBoard: $positionOnBoard, title: $title){
+            list{
+                id
+                positionOnBoard
+                title
+            }
         }
     }`;

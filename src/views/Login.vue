@@ -58,6 +58,7 @@ export default class Login extends Vue {
 
          component.loginResult = authResult;
          dataBus.$emit('updateUser');
+
          component.$router.push(`u/${component.loginResult.user.id}/boards`)
        }
      }).catch((error) => {
@@ -71,7 +72,6 @@ export default class Login extends Vue {
       evt.preventDefault();
       let loginData = this.credentials;
       this.mutate(loginData);
-      this.$forceUpdate();
     };
 };
 
