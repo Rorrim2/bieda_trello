@@ -5,11 +5,9 @@ import apolloProvider from '@/vue-apollo';
 import './theme.scss';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import VueCookies from "vue-cookies";
-import {getFromLocalStorage, storeInLocalStorage} from "@/utils";
 
 Vue.use(VueCookies)
 Vue.use(BootstrapVue);
-
 Vue.config.productionTip = false;
 
 export const vm = new Vue({
@@ -23,15 +21,6 @@ export const vm = new Vue({
 
 export function setToken(tkn: string) {
   vm.token = tkn;
-}
-
-export function cacheRefreshToken(r_tkn: string){
-  console.debug(`refresh token ${r_tkn}`);
-  storeInLocalStorage('r_tkn', r_tkn);
-}
-
-export function getTokenFromCache(): string {
-  return getFromLocalStorage("r_tkn") as string;
 }
 
 export function getToken(): string {

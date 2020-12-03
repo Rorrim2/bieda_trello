@@ -1,11 +1,34 @@
-import {vm} from "@/main";
-import {LogoutMutation, RefreshMutation} from "@/data_models/mutations";
+import {LogoutMutation,
+        RefreshMutation,
+        RevokeJTIMutation} from "@/data_models/mutations";
 import {Tokens} from "@/data_models/types";
+import dataBus from "@/databus";
+import {vm} from "@/main";
 
 const empty = Object()
 
 export function refreshToken(tok:string, fn: any){
     if(!tok || tok === "" || tok === empty) return;
+
+    let jti = getFromLocalStorage("jti") as string;
+    let user_id = getFromLocalStorage("active_user").id as string;
+
+    vm.$apollo.mutate({
+        mutation:RevokeJTIMutation,
+        variables:{
+            jti:jti,
+            userId:user_id
+        },
+
+    }).then(value => {
+        console.log(value.data.revokejti.success);
+        if (value.data.success == true){
+            localStorage.removeItem("jti");
+        }
+    }).catch(error=>{
+        console.debug(error.graphQLErrors[0])
+    })
+
     vm.$apollo.mutate({
         mutation: RefreshMutation,
         variables: {
@@ -18,6 +41,7 @@ export function refreshToken(tok:string, fn: any){
         console.debug(error.graphQLErrors[0])
     });
 }
+
 const crypto = require('crypto');
 
 const secret: string = 'hGMCmjxFNZC4yi1PGdM8Fl6tXpMk0m0b';
@@ -35,7 +59,7 @@ export function storeInLocalStorage(key: string, value: object|any){
     localStorage.setItem(key, encrypted_token)
 }
 
-export function getFromLocalStorage(key: string): object|string|undefined {
+export function getFromLocalStorage(key: string): object|string|undefined|any {
     let encrypted_token = localStorage.getItem(key);
     let split = encrypted_token?.split('.');
     if (!split) return empty;
@@ -60,7 +84,7 @@ export function logoutUser(tok: string, fn: any){
     });
 }
 
-export function parseJWT(token: string): object{
+export function parseJWT(token: string): any{
     let base64Url = token.split('.')[1];
     console.log(base64Url);
 
@@ -69,4 +93,13 @@ export function parseJWT(token: string): object{
         .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
 
     return JSON.parse(jsonPayload);
+}
+
+export function cacheRefreshToken(r_tkn: string){
+    console.debug(`refresh token ${r_tkn}`);
+    storeInLocalStorage('r_tkn', r_tkn);
+}
+
+export function getTokenFromCache(): string {
+    return getFromLocalStorage("r_tkn") as string;
 }
