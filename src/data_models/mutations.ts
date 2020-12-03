@@ -6,12 +6,13 @@ export const LoginMutation = gql`
             user {
                 id
                 name
+                email
                 lastName
             }
             success
             token
             refreshToken
-            payload
+            
         }
     }`;
 
@@ -26,8 +27,7 @@ export const RefreshMutation = gql`
     mutation RefreshToken($refreshToken: String!) {
         refreshToken(refreshToken: $refreshToken) {
             token
-            refreshToken    
-            payload
+            refreshToken
             refreshExpiresIn
         }
     }`;
@@ -38,12 +38,12 @@ export const RegisterMutation = gql`
             user {
                 id
                 name
+                email
                 lastName
             }
             success
             token
             refreshToken
-            payload
         }
     }`;
 
@@ -54,8 +54,6 @@ export const CreateNewBoardMutation = gql`
             board{
                 maker{
                     id
-                    lastName
-                    name
                 }
                 background
                 description
@@ -233,6 +231,7 @@ export const SetNewPasswordMutation = gql`
             user{
                 id
                 name
+                email
                 lastName
             }
         }

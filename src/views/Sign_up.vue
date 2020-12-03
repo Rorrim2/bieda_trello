@@ -43,8 +43,8 @@
 import {AuthResult, RegisterCredentials} from "@/data_models/types";
 import {Component, Vue} from "vue-property-decorator";
 import {RegisterMutation} from "@/data_models/mutations";
-import {cacheRefreshToken, setToken} from "@/main";
-import {storeInLocalStorage} from "@/utils";
+import {setToken} from "@/main";
+import {cacheRefreshToken, storeInLocalStorage} from "@/utils";
 
 @Component
 export default class Sign_up extends Vue {

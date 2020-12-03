@@ -28,8 +28,9 @@
           <router-link to="/login" v-if="isLoggedIn">
             <b style="" class="text-primary">
               <b>
-                <a @click="logout"  class="btn ml-md-2 text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="text-decoration: none;">
+                <a class="ml-md-2 text-primary btn-lg m-1 mx-0 ml-5 px-3 text-center" style="text-decoration: none;">
                   <UserBubble v-bind:user="user"></UserBubble>
+
                 </a>
               </b>
             </b>
@@ -45,11 +46,11 @@
 <script lang="ts">
 
 import {Component, Vue} from "vue-property-decorator";
-import {getFromLocalStorage, logoutUser, refreshToken} from "@/utils";
-import {cacheRefreshToken, getToken, getTokenFromCache, setToken} from "@/main";
+import {cacheRefreshToken, getFromLocalStorage, getTokenFromCache, logoutUser, refreshToken} from "@/utils";
+import { getToken, setToken} from "@/main";
 import {dummyUser, Tokens, User} from "@/data_models/types";
 import UserBubble from "@/components/UserBubble.vue";
-import databus from "@/databus";
+import dataBus from "@/databus";
 
 
 
@@ -109,7 +110,7 @@ export default class App extends Vue {
   }
 
   created() {
-    databus.$on('updateUser', ()=>{
+    dataBus.$on('updateUser', ()=>{
       this.load_user();
     });
     this.load_user();

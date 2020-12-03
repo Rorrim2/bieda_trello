@@ -15,16 +15,17 @@
         <div class="col-lg-4 order-1 order-lg-1 p-0"> <img class="img-fluid d-block" src="../assets/welcome_back.png"></div>
       </div>
     </div>
+
   </div>
 </template>
 <script lang="ts">
 
 import {Component, Vue} from 'vue-property-decorator';
-import {setToken, cacheRefreshToken} from "@/main";
+import {setToken} from "@/main";
 import {Credentials, AuthResult} from "@/data_models/types";
 import {LoginMutation} from "@/data_models/mutations";
 import dataBus from "@/databus";
-import {storeInLocalStorage} from "@/utils";
+import {cacheRefreshToken, parseJWT, storeInLocalStorage} from "@/utils";
 
 @Component
 export default class Login extends Vue {
@@ -53,6 +54,9 @@ export default class Login extends Vue {
        let authResult = <AuthResult>data.data.loginuser;
        if (authResult.success) {
          setToken(authResult.token)
+         let payload = parseJWT(authResult.token)
+         storeInLocalStorage("jti", payload.jti);
+         storeInLocalStorage("exp", payload.exp)
          cacheRefreshToken(authResult.refreshToken)
          storeInLocalStorage("active_user", authResult.user)
 
