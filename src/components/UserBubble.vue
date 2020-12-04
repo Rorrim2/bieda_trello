@@ -1,35 +1,49 @@
 <template>
   <div>
-    <b-dropdown @hide="check_if_can_hide($event)" right no-caret no-flip toggle-class="rounded-circle px-0 py-0" ref="d_down" @show="show_overlay($event)">
+    <b-dropdown @hide="check_if_can_hide($event)" no-caret no-flip toggle-class="rounded-circle px-0 py-0"
+                ref="d_down" @show="show_overlay($event)">
       <template #button-content>
-        <b-avatar :title="title" class="bg-secondary" :id="`user_menu`">
+        <b-avatar :title="title" class="bg-secondary text-decoration-none" :id="`user_menu`">
           <span>{{ shortenUser }}</span>
         </b-avatar>
       </template>
-      <b-dropdown-header variant="success" class="m-0 p-0">
-        <div class="container-fluid m-0 p-0">
-          <p class="p-0 pl-5 m-0">Account</p>
+      <b-dropdown-header variant="dark" class="m-0 p-0">
+        <div class="d-flex flex-row m-0 p-0">
+          <b-container class="d-flex flex-row flex-nowrap p-0 m-0">
+            <b-avatar size="3em" style="min-width: 0;" :title="title" class="bg-secondary mr-3" :id="`user_menu`">
+              <span>{{ shortenUser }}</span>
+            </b-avatar>
+            <div class="d-flex flex-column">
+              <p class="m-0 p-0">
+                <b><b v-text="fullName"></b></b>
+              </p>
+              <span class="p-0 m-0 small w-100 mx-auto"
+                    style="min-width: 100px; max-width: 200px"> @{{user.id}}</span>
+
+            </div>
+          </b-container>
 
           <b-button @click="hide_overlay($event)"
-                    class="close pl-1 pb-2 pr-1"
-                    aria-label="Close">
-            <span aria-hidden="true" style="display: block;">&times</span>
+                    class="close p-0 m-0 ml-4 float-right"
+                    aria-label="Close" style="width: 25px; height:25px">
+            <span aria-hidden="true" style="alignment: top" class="text-center mx-auto my-auto">&times</span>
           </b-button>
         </div>
       </b-dropdown-header>
-      <b-dropdown-divider></b-dropdown-divider>
-      <b-dropdown-item>
-
-      </b-dropdown-item>
+      <b-dropdown-divider class="w-100 "></b-dropdown-divider>
+      <b-dropdown-group>
+        <b-dropdown-item>Change user's permissions</b-dropdown-item>
+        <b-dropdown-item>View user's activity on this board</b-dropdown-item>
+        <b-dropdown-item variant="danger">Leave board :)</b-dropdown-item>
+      </b-dropdown-group>
     </b-dropdown>
-
   </div>
 </template>
 
 <script lang="ts">
 import {Component, Prop, Vue} from 'vue-property-decorator';
 import {User} from "@/data_models/types";
-import { BDropdown } from 'bootstrap-vue';
+import {BDropdown} from 'bootstrap-vue';
 
 @Component({
   components: {}
@@ -37,7 +51,11 @@ import { BDropdown } from 'bootstrap-vue';
 export default class UserBubble extends Vue {
 
   @Prop() user!: User;
-  private show: boolean = false;
+  protected show: boolean = false;
+
+  get fullName(): string {
+    return `${this.user.name} ${this.user.lastName}`;
+  }
 
   get shortenUser(): string {
     return this.user.name.substring(0, 1) + this.user.lastName.substring(0, 1);
@@ -53,8 +71,8 @@ export default class UserBubble extends Vue {
     dropdown.hide();
   }
 
-  check_if_can_hide(evt: Event){
-    if(this.show){
+  check_if_can_hide(evt: Event) {
+    if (this.show) {
       evt.preventDefault();
     }
   }
@@ -66,12 +84,6 @@ export default class UserBubble extends Vue {
 }
 </script>
 
-<style scoped>
-header {
-  padding: 1px;
-  margin: 1px;
-  flex-direction: row;
-  flex: 1 1 content !important;
-}
+<style>
 
 </style>
