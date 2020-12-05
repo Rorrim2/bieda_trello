@@ -1,41 +1,42 @@
 <template>
-  <div class="sign">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-8 order-lg-1 order-1 align-self-center">
-          <form id="c_form-h" class="" @submit="onSubmit">
-            <div class="form-group row"> <label for="inputmailh" class="col-2 col-form-label text-white">E-mail</label>
-              <div class="col-8">
-                <input type="email" required v-model="user.email" class="form-control" id="inputmailh" placeholder="mail@example.com">
-                <b-form-invalid-feedback :state="emailValidation" v-text="registerError"></b-form-invalid-feedback>
-              </div>
-            </div>
-            <div class="form-group row"> <label for="inputnameh" class="col-2 col-form-label text-white">Name</label>
-              <div class="col-8">
-                <input type="text" required v-model="user.name" class="form-control" id="inputnameh" placeholder="Name"> </div>
-            </div>
-            <div class="form-group row"> <label for="inputlastnameh"  class="col-2 col-form-label text-white">Last name</label>
-              <div class="col-8">
-                <input type="text" required v-model="user.lastName" class="form-control" id="inputlastnameh" placeholder="Last name"> </div>
-            </div>
-            <div class="form-group row"> <label for="inputpasswordh" class="col-2 col-form-label text-white">Password</label>
-              <div class="col-8">
-                <input type="password" required v-model="user.password" class="form-control" id="inputpasswordh" placeholder="Password"> </div>
-            </div>
-            <div class="form-group row" @submit.stop.prevent> <label for="inputrepeatpasswordh" class="col-2 col-form-label text-white">Repeat password</label>
-              <div class="col-8">
-                <input type="password" v-model="user.confirmPassword" :state="validation" class="form-control" id="inputrepeatpasswordh" placeholder="Repeat password">
-                <b-form-invalid-feedback :state="validation">Repeated password is not the same</b-form-invalid-feedback>
-                <b-form-valid-feedback :state="validation">Repeated password is the same</b-form-valid-feedback>
-              </div>
+  <div class="about py-auto bg-primary h-100">
+    <b-container class="align-content-center flex-fill" fluid="lg md">
+      <b-row align-content="center" >
 
-            </div>
-            <button type="submit" class="btn btn-secondary">Submit</button>
-          </form>
-        </div>
-        <div class="col-lg-4 order-2 order-lg-2 p-0"> <img class="img-fluid d-block" src="../assets/chibi_vader.png"></div>
-      </div>
-    </div>
+        <b-col cols="7" order-lg="1" order="1" class="align-self-center d-inline-flex">
+          <b-form id="c_form-h" @submit.prevent="onSubmit" class="align-content-center w-100">
+            <b-form-group class="my-1" label="Email address" label-for="inputmailh">
+              <b-form-input type="email" required v-model="user.email" id="inputmailh"
+                            placeholder="Enter email"/>
+              <b-form-invalid-feedback :state="emailValidation" v-text="registerError"/>
+            </b-form-group>
+            <b-form-group class="my-1" label="Name" label-for="inputnameh">
+              <b-form-input type="text" required v-model="user.name" id="inputnameh"
+                            placeholder="Name"/>
+            </b-form-group>
+            <b-form-group class="my-1" label="Last name" label-for="inputlastnameh">
+              <b-form-input type="text" required v-model="user.lastName" id="inputlastnameh"
+                            placeholder="Last name"/>
+            </b-form-group>
+            <b-form-group class="my-1" label="Password" label-for="inputpasswordh">
+              <b-form-input type="password" required v-model="user.password" id="inputpasswordh"
+                            placeholder="Password"/>
+            </b-form-group>
+            <b-form-group class="my-1" label="Repeat password" label-for="inputrepeatpasswordh">
+              <b-form-input type="password" v-model="user.confirmPassword" required :state="validation"
+                            id="inputrepeatpasswordh" placeholder="Repeat password"/>
+              <b-form-invalid-feedback :state="validation" v-text="`Repeated password is not the same`"/>
+              <b-form-valid-feedback :state="validation" v-text="`Repeated password is the same`"/>
+
+            </b-form-group>
+            <b-button type="submit" class="text-white btn-secondary m-1">Submit</b-button>
+          </b-form>
+        </b-col>
+        <b-col cols="5" order-lg="2" order="2" class="p-0">
+          <b-img fluid-grow src="../assets/chibi_vader.png"/>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
@@ -53,20 +54,25 @@ export default class Sign_up extends Vue {
   private registerError: string = "";
   private loginResult: AuthResult = {} as AuthResult;
 
-  get emailValidation(): boolean{
+  get form_validation(): boolean {
+    console.debug(`is form valid? ${this.emailValidation && this.validation}`);
+    return this.emailValidation && this.validation;
+  }
+  get emailValidation(): boolean {
     console.debug(`emailValidation is ${!this.registerError || this.registerError === ""}`)
     return !this.registerError || this.registerError === "";
   };
 
-  get validation() : boolean{
-    return this.user.password === this.user.confirmPassword
+  get validation(): boolean {
+    console.debug(`is passwords valid? ${this.user.password === this.user.confirmPassword} -> ${this.user.password} === ${this.user.confirmPassword}`);
+    return this.user.password === this.user.confirmPassword;
   };
 
-  mutate(){
+  mutate() {
     const reg_user = this.user;
     const component = this;
 
-    component.user = <RegisterCredentials> {};
+    component.user = <RegisterCredentials>{};
 
     this.$apollo.mutate({
       mutation: RegisterMutation,
@@ -78,13 +84,13 @@ export default class Sign_up extends Vue {
       }
     }).then((data) => {
       let authResult = <AuthResult>data.data.registeruser;
-      if(authResult.success){
-          setToken(authResult.token);
-          cacheRefreshToken(authResult.refreshToken);
-          storeInLocalStorage("active_user", authResult.user)
+      if (authResult.success) {
+        setToken(authResult.token);
+        cacheRefreshToken(authResult.refreshToken);
+        storeInLocalStorage("active_user", authResult.user)
 
-          component.loginResult = authResult;
-          component.$router.push(`u/${component.loginResult.user.id}/boards`)
+        component.loginResult = authResult;
+        component.$router.push(`u/${component.loginResult.user.id}/boards`)
       }
     }).catch((error) => {
       console.debug(error)
@@ -94,10 +100,14 @@ export default class Sign_up extends Vue {
   }
 
   public onSubmit(evt: Event) {
-      console.debug(evt);
-      evt.preventDefault();
+    console.debug(evt);
+    evt.preventDefault();
+    if(this.form_validation) {
       console.debug(this.user);
       this.mutate();
+      return;
+    }
+    console.debug("form is invalid, and this message shouldn't be visible");
   }
 
 }
