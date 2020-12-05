@@ -29,7 +29,7 @@
               </b>
             </b>
           </router-link>
-          <UserNavBubble v-if="isLoggedIn" v-bind:user="user"></UserNavBubble>
+          <UserNavBubble v-if="isLoggedIn" v-bind:user="user" @logout="logout($event)"></UserNavBubble>
 
         </div>
       </div>
