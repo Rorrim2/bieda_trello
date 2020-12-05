@@ -82,4 +82,5 @@ export default new Router({
       component: BoardView,
     },
   ],
+    mode: 'history',
 });
