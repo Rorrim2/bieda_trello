@@ -1,26 +1,30 @@
 <template>
-  <div id="app" class="bg-primary align-self-stretch w-100 p-0 m-0" style="height: 100vh!important;">
-    <b-navbar toggleable="lg" type="dark" variant="primary">
-      <b-navbar-brand href="/">
-        <b-img width="100px" class="mr-2" src="./assets/racoon.png"/>
-        <b-nav-text class="h1 text-white" v-text="`BiedaTrello`"/>
-      </b-navbar-brand>
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-      <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav class="ml-auto">
-          <UserNavBubble v-if="isLoggedIn" v-bind:user="user" @logout="logout($event)"/>
-          <b-button-group v-if="!isLoggedIn">
-            <b-button to="/login" class="btn btn-lg btn-primary ml-md-2 text-light"
-                      style="text-decoration: none; 	box-shadow: 0px 0px 4px  #0a97b0;">Log in
-            </b-button>
-            <b-button to="/signup" class="btn btn-lg btn-light ml-md-2 text-primary"
-                      style="text-decoration: none; 	box-shadow: 1px 1px 4px  #0a97b0;">Sign up
-            </b-button>
-          </b-button-group>
-        </b-navbar-nav>
-      </b-collapse>
-    </b-navbar>
-    <router-view class="h-100"/>
+  <div id="app" class="w-100 h-100 p-0 m-0">
+    <div class="bg-darker-primary">
+      <b-navbar class="bg-darker-primary" toggleable="lg"  v-bind:class="isLoggedIn ? 'd-inline-flex' : ''"
+                variant="primary">
+        <b-navbar-brand href="/" class="flex-row p-0">
+          <b-img width="80px" class="mr-2" src="./assets/racoon.png"/>
+          <b-nav-text class="h1 text-white" v-text="`BiedaTrello`"/>
+        </b-navbar-brand>
+        <b-navbar-toggle v-if="!isLoggedIn" target="nav-collapse"></b-navbar-toggle>
+        <b-collapse v-if="!isLoggedIn" id="nav-collapse" is-nav>
+          <b-navbar-nav class="ml-auto">
+            <b-button-group>
+              <b-button to="/login" class="btn btn-lg btn-primary ml-md-2 text-light"
+                        style="text-decoration: none; 	box-shadow: 0px 0px 4px  #0a97b0;">Log in
+              </b-button>
+              <b-button to="/signup" class="btn btn-lg btn-light ml-md-2 text-primary"
+                        style="text-decoration: none; 	box-shadow: 1px 1px 4px  #0a97b0;">Sign up
+              </b-button>
+            </b-button-group>
+          </b-navbar-nav>
+        </b-collapse>
+      </b-navbar>
+      <UserNavBubble class="d-inline-flex float-right align-self-center mt-sm-2 pt-md-4 pt-lg-3 pt-4 pr-4" v-if="isLoggedIn" v-bind:user="user"
+                     @logout="logout($event)"/>
+    </div>
+    <router-view class="h-100 pt-4"/>
   </div>
 </template>
 
@@ -109,6 +113,7 @@ export default class App extends Vue {
 
 </script>
 <style scoped>
+
 li a {
   text-decoration: none;
 }

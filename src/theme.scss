@@ -1,10 +1,10 @@
 // Options
-// 
+//
 // Quickly modify global styling by enabling or disabling optional features.
 
 @import 'node_modules/bootstrap/scss/bootstrap.scss';
 @import 'node_modules/bootstrap-vue/src/index.scss';
-
+@import 'node_modules/bootstrap/scss/functions';
 
 $enable-rounded:            true !default;
 $enable-shadows:            true;
@@ -21,6 +21,7 @@ $enable-responsive-font-sizes: true;
 
 $theme-colors: (
   primary: #1b6ca8,
+  darker-primary: darken(#1b6ca8, 7%),
   secondary: #0a97b0,
   light: #e5fffe,
   dark: #40514e,
@@ -33,6 +34,9 @@ $theme-colors: (
 $body-bg: white;
 $body-color: #333;
 
+@each $color, $value in $theme-colors {
+  @include bg-variant('.bg-#{$color}', $value);
+}
 
 $body-color-inverse: invert($body-color) !default;
 $link-color: #12bbad;

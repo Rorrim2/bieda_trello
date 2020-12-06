@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-nav-item-dropdown @hide="check_if_can_hide($event)" right no-caret no-flip toggle-class="align-top rounded-circle px-0 py-0"
+    <b-dropdown @hide="check_if_can_hide($event)" right no-caret no-flip toggle-class="align-top rounded-circle px-0 py-0"
                 ref="d_down" @show="show_overlay($event)">
       <template #button-content>
         <b-avatar :title="title"  class="d-block bg-secondary text-decoration-none" :id="`user_menu`">
@@ -48,7 +48,7 @@
           Logout
         </b-button>
       </b-dropdown-item>
-    </b-nav-item-dropdown>
+    </b-dropdown>
   </div>
 </template>
 
