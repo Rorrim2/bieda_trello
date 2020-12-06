@@ -1,5 +1,5 @@
 <template>
-  <div class="py-5 w-100 h-75 bg-primary" style="">
+  <div class="py-5 w-100 bg-primary">
     <div class="container">
       <div class="row">
         <div class="col-lg-4 d-flex flex-column align-items-start justify-content-center order-1 order-lg-1">

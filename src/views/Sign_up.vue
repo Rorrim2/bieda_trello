@@ -1,5 +1,5 @@
 <template>
-  <div class="about py-auto bg-primary h-100">
+  <div class="about py-auto bg-primary">
     <b-container class="align-content-center flex-fill" fluid="lg md">
       <b-row align-content="center" >
 

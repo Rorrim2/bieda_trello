@@ -1,5 +1,5 @@
 <template>
-  <div class="about py-auto h-100 bg-primary">
+  <div class="about py-auto bg-primary" >
     <b-container class="flex-row h-100">
       <b-col lg="4" class="order-1 order-lg-1 p-0 d-inline-flex">
         <b-img fluid-grow src="../assets/welcome_back2.png"/>
