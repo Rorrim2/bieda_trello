@@ -1,8 +1,5 @@
-import {LogoutMutation,
-        RefreshMutation,
-        RevokeJTIMutation} from "@/data_models/mutations";
-import {Tokens} from "@/data_models/types";
-import dataBus from "@/databus";
+import {LogoutMutation, RefreshMutation, RevokeJTIMutation} from "@/data_models/mutations";
+import {StorageDescriptor, Tokens} from "@/data_models/types";
 import {vm} from "@/main";
 
 const empty = Object()
@@ -10,8 +7,8 @@ const empty = Object()
 export function refreshToken(tok:string, fn: any){
     if(!tok || tok === "" || tok === empty) return;
 
-    let jti = getFromLocalStorage("jti") as string;
-    let user_id = getFromLocalStorage("active_user").id as string;
+    let jti = getFromStorage("jti", StorageDescriptor.local) as string;
+    let user_id = getFromStorage("active_user", StorageDescriptor.local).id as string;
 
     vm.$apollo.mutate({
         mutation:RevokeJTIMutation,
@@ -33,7 +30,8 @@ export function refreshToken(tok:string, fn: any){
         mutation: RefreshMutation,
         variables: {
             refreshToken: tok
-        }
+        },
+
     }).then(value => {
         let tokens = <Tokens>value.data.refreshToken;
         fn(tokens);
@@ -50,17 +48,39 @@ export function getSecret(): string{
     return secret;
 }
 
-export function storeInLocalStorage(key: string, value: object|any){
+export function storeInStorage(key:string, value: object|any, storage:StorageDescriptor){
     let iv = crypto.randomBytes(32).toString('hex');
     let cipher = crypto.createCipheriv("aes-256-gcm", Buffer.from(secret, 'utf-8'), Buffer.from(iv, 'hex'));
     let encrypted = cipher.update(typeof<object>(value) ? JSON.stringify(value) : value);
     let finalBuff = Buffer.concat([encrypted, cipher.final()]);
     let encrypted_token = iv + '.' + finalBuff.toString('hex');
-    localStorage.setItem(key, encrypted_token)
+
+    if(storage === StorageDescriptor.session){
+        storeInSessionStorage(key, encrypted_token);
+    }
+    else{
+        storeInLocalStorage(key, encrypted_token);
+    }
 }
 
-export function getFromLocalStorage(key: string): object|string|undefined|any {
-    let encrypted_token = localStorage.getItem(key);
+function storeInLocalStorage(key: string, value: string){
+    localStorage.setItem(key, value);
+}
+
+function storeInSessionStorage(key: string, value: string){
+    sessionStorage.setItem(key, value);
+}
+
+function getFromLocalStorage(key: string): string|null {
+    return localStorage.getItem(key);
+}
+
+function getFromSessionStorage(key: string): string|null {
+    return sessionStorage.getItem(key);
+}
+
+export function getFromStorage(key: string, storage: StorageDescriptor): object|string|undefined|any {
+    let encrypted_token = (storage === StorageDescriptor.local) ? getFromLocalStorage(key) : getFromSessionStorage(key);
     let split = encrypted_token?.split('.');
     if (!split) return empty;
     let iv = Buffer.from(split[0], 'hex');
