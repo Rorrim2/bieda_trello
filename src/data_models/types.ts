@@ -28,6 +28,24 @@ export interface RegisterCredentials extends Credentials{
     confirmPassword: string;
 }
 
+export interface BoardPreview {
+    id: string;
+    title: string;
+    background: string;
+}
+
+export interface SingleCardModel {
+    text: string;
+}
+
+export interface SingleListModel {
+    name: string;
+    listOfCards: Array<SingleCardModel>;
+}
+
+export const dummySingleListModel = <SingleListModel>{};
+export const dummySingleCardModel = <SingleCardModel>{};
+export const dummyBoardPreview = <BoardPreview>{};
 export const dummyUser:User = <User>{};
 export const dummyCredentials = <Credentials>{};
 export const dummyTokens = <Tokens>{};
