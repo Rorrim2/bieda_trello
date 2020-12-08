@@ -6,11 +6,13 @@ export const LoginMutation = gql`
             user {
                 id
                 name
+                email
                 lastName
             }
             success
             token
             refreshToken
+            
         }
     }`;
 
@@ -25,8 +27,7 @@ export const RefreshMutation = gql`
     mutation RefreshToken($refreshToken: String!) {
         refreshToken(refreshToken: $refreshToken) {
             token
-            refreshToken    
-            payload
+            refreshToken
             refreshExpiresIn
         }
     }`;
@@ -37,6 +38,7 @@ export const RegisterMutation = gql`
             user {
                 id
                 name
+                email
                 lastName
             }
             success
@@ -52,8 +54,6 @@ export const CreateNewBoardMutation = gql`
             board{
                 maker{
                     id
-                    lastName
-                    name
                 }
                 background
                 description
@@ -62,24 +62,8 @@ export const CreateNewBoardMutation = gql`
                 isVisible
                 users {
                     id
-                    lastName
-                    name
                 }
                 title
-                lists {
-                    id
-                    title
-                    positionOnBoard
-                    isHidden
-                    cards{
-                        id
-                        cover
-                        description
-                        dueDate
-                        title
-                        positionInList
-                    }
-                }
             }
         }
     }`;
@@ -105,9 +89,9 @@ export const ReopenBoardMutation = gql`
         }
     }`;
 
-export const PermanentlyDeleteMutation = gql`
-    mutation PermanentlyDelete($board_id: String!){
-        permanentlydelete(boardId: $board_id){
+export const DeleteBoardMutation = gql`
+    mutation DeleteBoard($board_id: String!){
+        deleteboard(boardId: $board_id){
             board{
                 id
             }
@@ -247,6 +231,7 @@ export const SetNewPasswordMutation = gql`
             user{
                 id
                 name
+                email
                 lastName
             }
         }
@@ -263,5 +248,51 @@ export const VerifyTokenMutation = gql`
     mutation VerifyToken($token: String!){
         verifyToken(token: $token){
             payload
+        }
+    }`;
+
+export const RevokeJTIMutation = gql`
+    mutation RevokeJTI($jti: String!, $userId: String!){
+        revokejti(jti: $jti, userId: $userId){
+            success
+        }
+    }`;
+
+export const CopyListMutation = gql`
+        mutation CopyList($listId: String!){
+            copylist(listId: $listId){
+                list{
+                    id
+                }
+            }
+        }`;
+
+export const DeleteCardMutation = gql`
+    mutation DeleteCard($cardId: String!){
+        deletecard(cardId: $cardId){
+            success
+            card{
+                id
+            }
+        }
+    }`;
+
+export const MoveListMutation = gql`
+    mutation MoveList($listId: String!, $newBoardId: String!, $newPositionOnBoard: Int!){
+        movelist(listId: $listId, newBoardId: $newBoardId, newPositionOnBoard: $newPositionOnBoard){
+            list{
+                id
+            }
+        }
+    }`;
+
+export const UpdateListMutation = gql`
+    mutation UpdateList($listId: String!, $positionOnBoard: Int, $title: String){
+        updatelist(listId: $listId, positionOnBoard: $positionOnBoard, title: $title){
+            list{
+                id
+                positionOnBoard
+                title
+            }
         }
     }`;

@@ -17,31 +17,31 @@
   </div>
 </template>
 
-<script>
-import SingleList from "@/components/SingleList";
-import SingleCard from "@/components/SingleCard";
+<script lang="ts">
 
-export default {
-name: "BoardView",
+import SingleList from "@/components/SingleList.vue";
+import SingleCard from "@/components/SingleCard.vue";
+import {Component, Vue} from "vue-property-decorator";
+import {dummySingleListModel, SingleListModel} from "@/data_models/types";
+
+@Component({
   components: {
     SingleList,
     SingleCard,
-  },
-  data: () => ({
-    listOfLists: [],
-    list: {
-      name: '',
-      listOfCards: [],
-    }
-  }),
-  methods: {
-    onCreate() {
+  }
+})
+export default class BoardView extends Vue{
+  private listOfLists: Array<SingleListModel> = [];
+  private list: SingleListModel = dummySingleListModel;
+
+
+  onCreate() {
       this.listOfLists.push({name: this.list.name, listOfCards: this.list.listOfCards})
       this.list.listOfCards = []
       this.list.name = ''
       console.log("BoardView")
-    }
   }
+
 }
 </script>
 

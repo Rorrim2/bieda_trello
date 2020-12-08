@@ -45,38 +45,32 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ['card'],
-  data: () => ({
-    creatingCard: true,
-    descriptionText: 'Enter some text',
-    editing: false,
-    inputText: '',
-  }),
-  // data() {
-  //   return{
-  //     creatingCard: true,
-  //     descriptionText: 'Enter some text',
-  //     editing: false,
-  //     inputText: '',
-  //   }
-  // },
-  methods: {
-    onCardCreate() {
+<script lang="ts">
+
+import {Component, Prop, Vue} from "vue-property-decorator";
+import {SingleCardModel} from "@/data_models/types";
+
+@Component
+export default class SingleCard extends Vue{
+  @Prop() card!: SingleCardModel;
+
+  private creatingCard: boolean = true;
+  private descriptionText: string = "Enter some text";
+  private editing: boolean = true;
+  private inputText: string = '';
+  onCardCreate() {
       this.creatingCard = false
-    },
-    onEditButton() {
+  }
+  onEditButton() {
       this.inputText = this.descriptionText
       this.editing = true
-    },
-    onSaveButton() {
+  }
+  onSaveButton() {
       this.descriptionText = this.inputText
       this.editing = false
-    },
-    onCancelButton() {
+  }
+  onCancelButton() {
       this.editing = false
-    },
   }
 }
 </script>
