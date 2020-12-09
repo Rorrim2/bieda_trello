@@ -1,6 +1,6 @@
 import {empty} from "@/data_models/types";
 
-const crypto = require('crypto');
+import * as crypto from "crypto";
 
 const secret: string = 'hGMCmjxFNZC4yi1PGdM8Fl6tXpMk0m0b';
 
