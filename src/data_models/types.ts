@@ -50,6 +50,13 @@ export enum StorageDescriptor {
     session
 }
 
+export interface Payload{
+    email: string;
+    jti: string;
+    origIat: number;
+    exp: number;
+}
+
 export type MutationCallback<T> = (data: T) => void;
 export type QueryCallback<T> = (data: T) => void;
 export type ErrorCallback = (error: ApolloError) => void;

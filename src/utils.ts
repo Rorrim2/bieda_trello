@@ -3,19 +3,20 @@ import {
     LogoutMutation,
     RefreshMutation,
     RegisterMutation,
-    RevokeJTIMutation
+    RevokeJTIMutation, VerifyTokenMutation
 } from "@/data_models/mutations";
 import {
     AuthResult,
     Credentials,
     empty,
     ErrorCallback,
-    MutationCallback,
+    MutationCallback, Payload,
     RegisterCredentials,
     StorageDescriptor, Tokens
 } from "@/data_models/types";
 import {vm} from "@/main";
 import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
+import {apolloClient} from "@/vue-apollo";
 
 export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onError: ErrorCallback){
     if(!tok || tok === "" || tok === empty) return;
@@ -46,9 +47,10 @@ export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onE
         },
 
     }).then(value => {
-        onResult(value.data.refreshtoken);
+        onResult(value.data.refreshToken);
     }).catch(error => {
-        console.debug(error.graphQLErrors[0])
+        console.debug(error.message);
+        console.debug(error.graphQLErrors??[0]);
         onError(error);
     });
 }
@@ -84,7 +86,7 @@ export function loginUser(credentials: Credentials, onResult: MutationCallback<A
 }
 
 export function logoutUser(tok: string, onResult: MutationCallback<{
-    [key: string]: boolean;
+    success: boolean;
 }>, onError: ErrorCallback){
     vm.$apollo.mutate({
         mutation: LogoutMutation,
@@ -94,12 +96,26 @@ export function logoutUser(tok: string, onResult: MutationCallback<{
     }).then(value => {
         onResult(value.data.logoutuser);
     }).catch(error => {
-        console.debug(error.graphQLErrors[0]);
+        console.debug(error.message);
+        console.debug(error.graphQLErrors??[0]);
         onError(error);
     });
 }
 
-export function parseJWT(token: string): any{
+export function verifyToken(tkn: string, onResult: MutationCallback<Payload>, onError: ErrorCallback){
+    apolloClient.mutate({
+        mutation: VerifyTokenMutation,
+        variables:{
+            token: tkn,
+        }
+    }).then(value => {
+        onResult(value.data.verifyToken);
+    }).catch(error => {
+        onError(error);
+    })
+}
+
+export function parseJWT(token: string): Payload{
     let base64Url = token.split('.')[1];
     console.log(base64Url);
 

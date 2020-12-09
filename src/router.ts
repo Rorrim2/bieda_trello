@@ -4,24 +4,25 @@ import Home from './views/Home.vue';
 import Boards from './views/Boards.vue';
 import BoardView from './views/BoardView.vue';
 import {getToken, getTokenFromCache} from "@/utils";
-import {StorageDescriptor, User} from "@/data_models/types";
+import {empty, StorageDescriptor, User} from "@/data_models/types";
 import {getFromStorage} from "@/store";
 
 Vue.use(Router);
 
 function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGuardNext){
     let item = getFromStorage('active_user', StorageDescriptor.local);
-    let user = <User>item ?? <User>{};
+    let user = <User>item ?? undefined;
     let tkn = getToken();
     let r_tkn = getTokenFromCache();
 
-    if((r_tkn || tkn ) && user ){
+    if((r_tkn !== empty || tkn !== empty ) && user !== undefined ){
         console.debug(from.path)
         if(from.path !== `/u/${user.id}/boards` && from.path.startsWith('/u/')) {
             next(`u/${user.id}/boards`);
         }
     }
     else {
+        console.debug(to.path);
         next();
     }
 }
