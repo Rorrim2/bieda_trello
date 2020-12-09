@@ -1,5 +1,5 @@
 <template>
-  <div class="about py-auto bg-primary" >
+  <div class="about py-auto bg-primary">
     <b-container class="flex-row h-100">
       <b-col lg="4" class="order-1 order-lg-1 p-0 d-inline-flex">
         <b-img fluid-grow src="../assets/welcome_back2.png"/>
@@ -25,11 +25,10 @@
 <script lang="ts">
 
 import {Component, Vue} from 'vue-property-decorator';
-import {setToken} from "@/main";
-import {Credentials, AuthResult} from "@/data_models/types";
-import {LoginMutation} from "@/data_models/mutations";
+import {AuthResult, Credentials, StorageDescriptor} from "@/data_models/types";
 import dataBus from "@/databus";
-import {cacheRefreshToken, parseJWT, storeInLocalStorage} from "@/utils";
+import {cacheRefreshToken, loginUser, parseJWT, setToken} from "@/utils";
+import {storeInStorage} from "@/store";
 
 @Component
 export default class Login extends Vue {
@@ -43,45 +42,35 @@ export default class Login extends Vue {
     return !this.loginError || this.loginError === "";
   };
 
-  mutate(cred: Credentials) {
+  private loginRequest(cred: Credentials) {
     const credentials = cred;
     const component = this;
     component.credentials = <Credentials>{};
-
-    this.$apollo.mutate({
-      mutation: LoginMutation,
-      variables: {
-        email: credentials.email,
-        password: credentials.password
-      },
-    }).then((data) => {
-      let authResult = <AuthResult>data.data.loginuser;
+    loginUser(credentials, data => {
+      let authResult = data;
       if (authResult.success) {
         setToken(authResult.token)
         let payload = parseJWT(authResult.token)
-        storeInLocalStorage("jti", payload.jti);
-        storeInLocalStorage("exp", payload.exp)
-        cacheRefreshToken(authResult.refreshToken)
-        storeInLocalStorage("active_user", authResult.user)
-
+        storeInStorage("jti", payload.jti, StorageDescriptor.local);
+        storeInStorage("exp", payload.exp, StorageDescriptor.local);
+        cacheRefreshToken(authResult.refreshToken);
+        storeInStorage("active_user", authResult.user, StorageDescriptor.local);
         component.loginResult = authResult;
         dataBus.$emit('updateUser');
-
         component.$router.push(`u/${component.loginResult.user.id}/boards`)
       }
-    }).catch((error) => {
-      console.debug(error)
+    }, error => {
+      console.debug(error);
       component.credentials = credentials
-      component.loginError = error.message;
-    })
-  };
+      component.loginError = error.graphQLErrors[0].message;
+    });
+  }
 
   public onSubmit(evt: Event) {
     evt.preventDefault();
     let loginData = this.credentials;
-    this.mutate(loginData);
+    this.loginRequest(loginData);
   };
 };
-
 
 </script>

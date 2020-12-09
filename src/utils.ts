@@ -1,17 +1,28 @@
-import {LogoutMutation,
-        RefreshMutation,
-        RevokeJTIMutation} from "@/data_models/mutations";
-import {Tokens} from "@/data_models/types";
-import dataBus from "@/databus";
+import {
+    LoginMutation,
+    LogoutMutation,
+    RefreshMutation,
+    RegisterMutation,
+    RevokeJTIMutation, VerifyTokenMutation
+} from "@/data_models/mutations";
+import {
+    AuthResult,
+    Credentials,
+    empty,
+    ErrorCallback,
+    MutationCallback, Payload,
+    RegisterCredentials,
+    StorageDescriptor, Tokens
+} from "@/data_models/types";
 import {vm} from "@/main";
+import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
+import {apolloClient} from "@/vue-apollo";
 
-const empty = Object()
-
-export function refreshToken(tok:string, fn: any){
+export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onError: ErrorCallback){
     if(!tok || tok === "" || tok === empty) return;
 
-    let jti = getFromLocalStorage("jti") as string;
-    let user_id = getFromLocalStorage("active_user").id as string;
+    let jti = getFromStorage("jti", StorageDescriptor.local) as string;
+    let user_id = getFromStorage("active_user", StorageDescriptor.local).id as string;
 
     vm.$apollo.mutate({
         mutation:RevokeJTIMutation,
@@ -23,7 +34,7 @@ export function refreshToken(tok:string, fn: any){
     }).then(value => {
         console.log(value.data.revokejti.success);
         if (value.data.success == true){
-            localStorage.removeItem("jti");
+            removeFromStorage("jti", StorageDescriptor.local);
         }
     }).catch(error=>{
         console.debug(error.graphQLErrors[0])
@@ -33,58 +44,78 @@ export function refreshToken(tok:string, fn: any){
         mutation: RefreshMutation,
         variables: {
             refreshToken: tok
-        }
+        },
+
     }).then(value => {
-        let tokens = <Tokens>value.data.refreshToken;
-        fn(tokens);
+        onResult(value.data.refreshToken);
     }).catch(error => {
-        console.debug(error.graphQLErrors[0])
+        console.debug(error.message);
+        console.debug(error.graphQLErrors??[0]);
+        onError(error);
     });
 }
 
-const crypto = require('crypto');
-
-const secret: string = 'hGMCmjxFNZC4yi1PGdM8Fl6tXpMk0m0b';
-
-export function getSecret(): string{
-    return secret;
+export function registerUser(credentials: RegisterCredentials, onResult: MutationCallback<AuthResult>, onError:ErrorCallback){
+    vm.$apollo.mutate({
+        mutation: RegisterMutation,
+        variables: {
+            email: credentials.email,
+            password: credentials.password,
+            name: credentials.name,
+            lastName: credentials.lastName
+        }
+    }).then((value) => {
+        onResult(value.data.registeruser);
+    }).catch((error) => {
+        onError(error);
+    });
 }
 
-export function storeInLocalStorage(key: string, value: object|any){
-    let iv = crypto.randomBytes(32).toString('hex');
-    let cipher = crypto.createCipheriv("aes-256-gcm", Buffer.from(secret, 'utf-8'), Buffer.from(iv, 'hex'));
-    let encrypted = cipher.update(typeof<object>(value) ? JSON.stringify(value) : value);
-    let finalBuff = Buffer.concat([encrypted, cipher.final()]);
-    let encrypted_token = iv + '.' + finalBuff.toString('hex');
-    localStorage.setItem(key, encrypted_token)
+export function loginUser(credentials: Credentials, onResult: MutationCallback<AuthResult>, onError: ErrorCallback){
+    vm.$apollo.mutate({
+        mutation: LoginMutation,
+        variables: {
+            email: credentials.email,
+            password: credentials.password
+        }
+    }).then((data) => {
+        onResult(data.data.loginuser)
+    }).catch((error) => {
+       onError(error);
+    });
 }
 
-export function getFromLocalStorage(key: string): object|string|undefined|any {
-    let encrypted_token = localStorage.getItem(key);
-    let split = encrypted_token?.split('.');
-    if (!split) return empty;
-    let iv = Buffer.from(split[0], 'hex');
-    let encrypted = Buffer.from(split[1], 'hex');
-    let decipher = crypto.createDecipheriv('aes-256-gcm', Buffer.from(secret, "utf-8"), iv);
-    let decrypted = decipher.update(encrypted).toString("utf-8");
-    return JSON.parse(decrypted)??decrypted;
-}
-
-export function logoutUser(tok: string, fn: any){
+export function logoutUser(tok: string, onResult: MutationCallback<{
+    success: boolean;
+}>, onError: ErrorCallback){
     vm.$apollo.mutate({
         mutation: LogoutMutation,
         variables: {
             refreshToken: tok
         }
     }).then(value => {
-        let logoutResult = value.data.logoutuser;
-        fn(logoutResult);
+        onResult(value.data.logoutuser);
     }).catch(error => {
-        console.debug(error.graphQLErrors[0]);
+        console.debug(error.message);
+        console.debug(error.graphQLErrors??[0]);
+        onError(error);
     });
 }
 
-export function parseJWT(token: string): any{
+export function verifyToken(tkn: string, onResult: MutationCallback<Payload>, onError: ErrorCallback){
+    apolloClient.mutate({
+        mutation: VerifyTokenMutation,
+        variables:{
+            token: tkn,
+        }
+    }).then(value => {
+        onResult(value.data.verifyToken);
+    }).catch(error => {
+        onError(error);
+    })
+}
+
+export function parseJWT(token: string): Payload{
     let base64Url = token.split('.')[1];
     console.log(base64Url);
 
@@ -97,9 +128,18 @@ export function parseJWT(token: string): any{
 
 export function cacheRefreshToken(r_tkn: string){
     console.debug(`refresh token ${r_tkn}`);
-    storeInLocalStorage('r_tkn', r_tkn);
+    storeInStorage('r_tkn', r_tkn, StorageDescriptor.local);
 }
 
 export function getTokenFromCache(): string {
-    return getFromLocalStorage("r_tkn") as string;
+    return getFromStorage("r_tkn", StorageDescriptor.local) as string;
 }
+
+export function setToken(tkn: string) {
+    storeInStorage("u_tkn", tkn, StorageDescriptor.local);
+}
+
+export function getToken(): string {
+    return getFromStorage("u_tkn", StorageDescriptor.local);
+}
+

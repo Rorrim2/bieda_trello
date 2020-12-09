@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="w-100 h-100 p-0 m-0">
     <div class="bg-darker-primary">
-      <b-navbar class="bg-darker-primary" toggleable="lg"  v-bind:class="isLoggedIn ? 'd-inline-flex' : ''"
+      <b-navbar class="bg-darker-primary" toggleable="lg" v-bind:class="isLoggedIn ? 'd-inline-flex' : ''"
                 variant="primary">
         <b-navbar-brand href="/" class="flex-row p-0">
           <b-img width="80px" class="mr-2" src="./assets/racoon.png"/>
@@ -21,7 +21,8 @@
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
-      <UserNavBubble class="d-inline-flex float-right align-self-center mt-sm-2 pt-md-4 pt-lg-3 pt-4 pr-4" v-if="isLoggedIn" v-bind:user="user"
+      <UserNavBubble class="d-inline-flex float-right align-self-center mt-sm-2 pt-md-4 pt-lg-3 pt-4 pr-4"
+                     v-if="isLoggedIn" v-bind:user="user"
                      @logout="logout($event)"/>
     </div>
     <router-view class="h-100 pt-4"/>
@@ -31,12 +32,20 @@
 <script lang="ts">
 
 import {Component, Vue} from "vue-property-decorator";
-import {cacheRefreshToken, getFromLocalStorage, getTokenFromCache, logoutUser, refreshToken} from "@/utils";
-import {getToken, setToken} from "@/main";
-import {dummyUser, Tokens, User} from "@/data_models/types";
-import UserBubble from "@/components/UserBubble.vue";
+import {
+  cacheRefreshToken,
+  getToken,
+  getTokenFromCache,
+  logoutUser,
+  parseJWT,
+  refreshToken,
+  setToken,
+  verifyToken
+} from "@/utils";
+import {dummyUser, StorageDescriptor, User} from "@/data_models/types";
 import dataBus from "@/databus";
 import UserNavBubble from "@/components/UserNavBubble.vue";
+import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
 
 
 @Component({
@@ -52,13 +61,13 @@ export default class App extends Vue {
       this.load_user();
     }
     let tkn = getToken();
-    let r_tkn = this ? getFromLocalStorage('r_tkn') : "";
+    let r_tkn = this ? getFromStorage('r_tkn', StorageDescriptor.local) : "";
     console.debug(((r_tkn || tkn) && this.user !== dummyUser))
     return ((r_tkn || tkn) && this.user !== dummyUser) as boolean;
   }
 
   load_user() {
-    let item = getFromLocalStorage("active_user")
+    let item = getFromStorage("active_user", StorageDescriptor.local)
     if (!item || JSON.stringify(item) === '{}') {
       console.debug("item is empty");
       return;
@@ -69,34 +78,46 @@ export default class App extends Vue {
   logout(evt: Event) {
     const refreshTkn = getTokenFromCache();
     const component = this
-    logoutUser(refreshTkn, (value: any) => {
-      console.debug(`data from log out: ${value}`);
-      localStorage.removeItem("active_user");
-      setToken("");
-      component.user = dummyUser;
-      localStorage.removeItem("r_tkn");
+    logoutUser(refreshTkn, (value) => {
+      console.debug(`data from log out: ${value.success}`);
+      component.clear();
       component.$router.push("/login");
+    }, error => {
+      console.log(error.graphQLErrors[0]);
     });
   }
 
-  checkToken() {
-    let tok = getToken()
-    console.debug('======= check whether token is empty/null =======')
-    if (!tok || tok === "") {
-      const refreshTkn = getTokenFromCache();
+  clear() {
+    removeFromStorage("active_user", StorageDescriptor.local);
+    removeFromStorage("u_tkn", StorageDescriptor.local);
+    removeFromStorage("jti", StorageDescriptor.local);
+    this.user = dummyUser;
+    removeFromStorage("r_tkn", StorageDescriptor.local);
+  }
 
-      if (!refreshTkn || refreshTkn === '') {
-        return;
-      }
-      console.debug(`refresh token from timer: ${refreshTkn}`);
-      refreshToken(refreshTkn, (value: Tokens) => {
-        console.debug(value);
-        if (value.refreshToken) {
-          cacheRefreshToken(value.refreshToken);
-          setToken(value.token);
-        }
-      })
+  refresh() {
+    const refreshTkn = getTokenFromCache();
+
+    if (!refreshTkn || refreshTkn === '') {
+      return;
     }
+    console.debug(`refresh token from timer: ${refreshTkn}`);
+    refreshToken(refreshTkn, (value) => {
+      console.debug(value);
+      if (value.refreshToken) {
+        cacheRefreshToken(value.refreshToken);
+        setToken(value.token);
+        let payload = parseJWT(value.token);
+        storeInStorage("jti", payload.jti, StorageDescriptor.local);
+        console.log(`jwt expires in ${payload.exp - Date.now() / 1000} seconds`)
+        this.timer = window.setTimeout(this.refresh, payload.exp*1000 - Date.now())
+      }
+    }, (error) => {
+      console.log(error.message);
+      this.clear();
+
+    })
+
   }
 
   created() {
@@ -107,7 +128,14 @@ export default class App extends Vue {
   }
 
   mounted() {
-    this.timer = window.setInterval(this.checkToken, 1000);
+    verifyToken(getToken(), data => {
+      console.log(`token expires in ${data.exp - Date.now() / 1000} seconds`);
+      this.timer = window.setTimeout(this.refresh, data.exp*1000 - Date.now());
+    }, error => {
+      console.log(error.message);
+      console.log(error.graphQLErrors??[0]);
+      this.refresh();
+    })
   }
 }
 

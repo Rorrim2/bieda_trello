@@ -3,25 +3,26 @@ import Router, {NavigationGuardNext, Route} from 'vue-router';
 import Home from './views/Home.vue';
 import Boards from './views/Boards.vue';
 import BoardView from './views/BoardView.vue';
-import {getToken, vm} from "@/main";
-import {getFromLocalStorage} from "@/utils";
-import {User} from "@/data_models/types";
+import {getToken, getTokenFromCache} from "@/utils";
+import {empty, StorageDescriptor, User} from "@/data_models/types";
+import {getFromStorage} from "@/store";
 
 Vue.use(Router);
 
 function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGuardNext){
-    let item = getFromLocalStorage('active_user');
-    let user = <User>item ?? <User>{};
+    let item = getFromStorage('active_user', StorageDescriptor.local);
+    let user = <User>item ?? undefined;
     let tkn = getToken();
-    let r_tkn = vm? vm.$cookies.get('r_tkn') : "";
+    let r_tkn = getTokenFromCache();
 
-    if((r_tkn || tkn ) && user ){
+    if((r_tkn !== empty || tkn !== empty ) && user !== undefined ){
         console.debug(from.path)
         if(from.path !== `/u/${user.id}/boards` && from.path.startsWith('/u/')) {
             next(`u/${user.id}/boards`);
         }
     }
     else {
+        console.debug(to.path);
         next();
     }
 }
@@ -58,7 +59,7 @@ export default new Router({
       beforeEnter: (to, from, next) => {
           console.debug("Path check");
           let id = to.path.split('/')[2];
-          let item = getFromLocalStorage('active_user');
+          let item = getFromStorage('active_user', StorageDescriptor.local);
           console.debug(item);
           let user = <User> item ?? <User> {};
 

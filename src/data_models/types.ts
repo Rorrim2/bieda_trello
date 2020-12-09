@@ -1,3 +1,5 @@
+import {ApolloError} from "apollo-client";
+
 export interface User {
     id: string;
     name: string;
@@ -42,6 +44,25 @@ export interface SingleListModel {
     name: string;
     listOfCards: Array<SingleCardModel>;
 }
+
+export enum StorageDescriptor {
+    local,
+    session
+}
+
+export interface Payload{
+    email: string;
+    jti: string;
+    origIat: number;
+    exp: number;
+}
+
+export type MutationCallback<T> = (data: T) => void;
+export type QueryCallback<T> = (data: T) => void;
+export type ErrorCallback = (error: ApolloError) => void;
+
+export const empty = Object()
+
 
 export const dummySingleListModel = <SingleListModel>{};
 export const dummySingleCardModel = <SingleCardModel>{};
