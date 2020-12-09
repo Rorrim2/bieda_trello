@@ -5,7 +5,6 @@ import apolloProvider from '@/vue-apollo';
 import './theme.scss';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import VueCookies from "vue-cookies";
-import store from "@/store";
 
 Vue.use(VueCookies)
 Vue.use(BootstrapVue);
@@ -16,16 +15,8 @@ export const vm = new Vue({
   data: {
     token: ""
   },
-  store,
   apolloProvider: apolloProvider,
   render: (h) => h(App),
 }).$mount('#app');
 
-export function setToken(tkn: string) {
-  vm.token = tkn;
-}
-
-export function getToken(): string {
-  return vm ? vm.token : "";
-}
 

@@ -31,12 +31,11 @@
 <script lang="ts">
 
 import {Component, Vue} from "vue-property-decorator";
-import {cacheRefreshToken, getFromLocalStorage, getTokenFromCache, logoutUser, refreshToken} from "@/utils";
-import {getToken, setToken} from "@/main";
-import {dummyUser, Tokens, User} from "@/data_models/types";
-import UserBubble from "@/components/UserBubble.vue";
+import {cacheRefreshToken, getToken, getTokenFromCache, logoutUser, refreshToken, setToken} from "@/utils";
+import {dummyUser, StorageDescriptor, Tokens, User} from "@/data_models/types";
 import dataBus from "@/databus";
 import UserNavBubble from "@/components/UserNavBubble.vue";
+import {getFromStorage, removeFromStorage} from "@/store";
 
 
 @Component({
@@ -52,13 +51,13 @@ export default class App extends Vue {
       this.load_user();
     }
     let tkn = getToken();
-    let r_tkn = this ? getFromLocalStorage('r_tkn') : "";
+    let r_tkn = this ? getFromStorage('r_tkn', StorageDescriptor.local) : "";
     console.debug(((r_tkn || tkn) && this.user !== dummyUser))
     return ((r_tkn || tkn) && this.user !== dummyUser) as boolean;
   }
 
   load_user() {
-    let item = getFromLocalStorage("active_user")
+    let item = getFromStorage("active_user", StorageDescriptor.local)
     if (!item || JSON.stringify(item) === '{}') {
       console.debug("item is empty");
       return;
@@ -74,8 +73,10 @@ export default class App extends Vue {
       localStorage.removeItem("active_user");
       setToken("");
       component.user = dummyUser;
-      localStorage.removeItem("r_tkn");
+      removeFromStorage("r_tkn", StorageDescriptor.local);
       component.$router.push("/login");
+    }, error => {
+      console.log(error.graphQLErrors[0]);
     });
   }
 
@@ -89,12 +90,15 @@ export default class App extends Vue {
         return;
       }
       console.debug(`refresh token from timer: ${refreshTkn}`);
-      refreshToken(refreshTkn, (value: Tokens) => {
+      refreshToken(refreshTkn, (value) => {
         console.debug(value);
         if (value.refreshToken) {
           cacheRefreshToken(value.refreshToken);
           setToken(value.token);
         }
+      }, (error)=> {
+        console.log(error.message);
+
       })
     }
   }

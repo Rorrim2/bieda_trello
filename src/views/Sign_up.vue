@@ -1,7 +1,7 @@
 <template>
   <div class="about py-auto bg-primary">
     <b-container class="align-content-center flex-fill" fluid="lg md">
-      <b-row align-content="center" >
+      <b-row align-content="center">
 
         <b-col cols="7" order-lg="1" order="1" class="align-self-center d-inline-flex">
           <b-form id="c_form-h" @submit.prevent="onSubmit" class="align-content-center w-100">
@@ -41,11 +41,10 @@
 </template>
 
 <script lang="ts">
-import {AuthResult, RegisterCredentials} from "@/data_models/types";
+import {AuthResult, RegisterCredentials, StorageDescriptor} from "@/data_models/types";
 import {Component, Vue} from "vue-property-decorator";
-import {RegisterMutation} from "@/data_models/mutations";
-import {setToken} from "@/main";
-import {cacheRefreshToken, storeInLocalStorage} from "@/utils";
+import {cacheRefreshToken, registerUser, setToken} from "@/utils";
+import {storeInStorage} from "@/store";
 
 @Component
 export default class Sign_up extends Vue {
@@ -58,6 +57,7 @@ export default class Sign_up extends Vue {
     console.debug(`is form valid? ${this.emailValidation && this.validation}`);
     return this.emailValidation && this.validation;
   }
+
   get emailValidation(): boolean {
     console.debug(`emailValidation is ${!this.registerError || this.registerError === ""}`)
     return !this.registerError || this.registerError === "";
@@ -68,43 +68,35 @@ export default class Sign_up extends Vue {
     return this.user.password === this.user.confirmPassword;
   };
 
-  mutate() {
+  private signUpRequest() {
     const reg_user = this.user;
     const component = this;
 
     component.user = <RegisterCredentials>{};
-
-    this.$apollo.mutate({
-      mutation: RegisterMutation,
-      variables: {
-        email: reg_user.email,
-        password: reg_user.password,
-        name: reg_user.name,
-        lastName: reg_user.lastName
-      }
-    }).then((data) => {
-      let authResult = <AuthResult>data.data.registeruser;
+    registerUser(reg_user, data => {
+      let authResult = data;
       if (authResult.success) {
         setToken(authResult.token);
         cacheRefreshToken(authResult.refreshToken);
-        storeInLocalStorage("active_user", authResult.user)
+        storeInStorage("active_user", authResult.user, StorageDescriptor.local)
 
         component.loginResult = authResult;
         component.$router.push(`u/${component.loginResult.user.id}/boards`)
       }
-    }).catch((error) => {
+    }, error => {
       console.debug(error)
       component.user = reg_user;
-      component.registerError = error.message;
+      component.registerError = error.graphQLErrors[0].message;
     })
+
   }
 
   public onSubmit(evt: Event) {
     console.debug(evt);
     evt.preventDefault();
-    if(this.form_validation) {
+    if (this.form_validation) {
       console.debug(this.user);
-      this.mutate();
+      this.signUpRequest();
       return;
     }
     console.debug("form is invalid, and this message shouldn't be visible");

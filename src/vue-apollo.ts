@@ -4,7 +4,7 @@ import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import VueApollo from 'vue-apollo';
 import {setContext} from 'apollo-link-context';
-import {getToken} from './main';
+import {getToken} from "@/utils";
 
 
 const httpLink = new HttpLink({
@@ -32,6 +32,7 @@ const apolloClient = new ApolloClient({
     cache: new InMemoryCache({addTypename: false}),
     connectToDevTools: true,
 })
+
 
 const apolloProvider = new VueApollo({
     defaultClient: apolloClient,
