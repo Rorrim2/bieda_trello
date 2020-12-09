@@ -77,7 +77,7 @@ export default new Router({
       }
     },
     {
-      path: '/b/(.{16})/view',
+      path: '/view',
       name: 'boardView',
       component: BoardView,
     },

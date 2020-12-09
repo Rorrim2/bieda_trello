@@ -9,6 +9,7 @@
         </div>
         <b-card overlay img-src="../assets/add_item.png"
                 footer="Add new board"
+                style="max-width: 15vw; margin: 3vw;"
                 footer-class="bg-dark"
                 class="bg-transparent flex-fill text-light"
                 v-b-modal.createnewboardmodal/>
