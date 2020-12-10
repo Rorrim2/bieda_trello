@@ -1,5 +1,7 @@
 import {
-    CreateNewBoardMutation, EditProfile,
+    CreateListMutation,
+    CreateNewBoardMutation,
+    EditProfile,
     LoginMutation,
     LogoutMutation,
     RefreshMutation,
@@ -8,12 +10,11 @@ import {
 } from "@/data_models/mutations";
 import {
     AuthResult, BoardModel, BoardPreview,
-    Credentials,
-    empty,
-    ErrorCallback,
+    Credentials, empty, ErrorCallback,
     MutationCallback, Payload, QueryCallback,
-    RegisterCredentials, SingleListModel,
-    StorageDescriptor, Tokens, User
+    RegisterCredentials, SingleListEntry,
+    SingleListModel, StorageDescriptor,
+    SingleListModel, Tokens, User
 } from "@/data_models/types";
 import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
 import {apolloClient} from "@/vue-apollo";
@@ -118,11 +119,11 @@ export function verifyToken(tkn: string, onResult: MutationCallback<Payload>, on
 
 export function decodeUrl(hashed:string):string {
     hashed = hashed.replace(/-/g, '+').replace(/_/g, '/');
-    return decodeURIComponent(Buffer.from(hashed, 'base64').toString('utf-8'));
+    return (Buffer.from(hashed, 'base64').toString('utf-8'));
 }
 
 export function encodeUrl(url:string) :string{
-    return encodeURIComponent(Buffer.from(url, 'utf-8')
+    return (Buffer.from(url, 'utf-8')
         .toString('base64')).split("%")[0]
         .replace('/','/_/g').replace('+','/-/g')
 }
@@ -216,6 +217,21 @@ export function createBoard(data:{background:string, title:string},
     })
 }
 
+export function createList(data: SingleListEntry, onResult: MutationCallback<{list:SingleListModel, success:boolean}>,
+                           onError:ErrorCallback){
+    apolloClient.mutate({
+        mutation: CreateListMutation,
+        variables: {
+            board_id: data.boardId,
+            position_on_board: data.positionOnBoard,
+            title: data.title
+        }
+    }).then(value => {
+        onResult(value.data.createnewlist);
+    }).catch(reason => {
+        onError(reason);
+    });
+}
 export function editProfile(data:User,
                             onResult: MutationCallback<{user:User}>,
                             onError: ErrorCallback) {

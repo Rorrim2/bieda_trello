@@ -147,9 +147,6 @@ export const CreateListMutation = gql`
                     title
                     positionInList
                 }
-                board{
-                    id
-                }
             }
             success
         }

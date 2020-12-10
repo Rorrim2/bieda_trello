@@ -26,7 +26,7 @@
                      @logout="logout($event)"
                      @ProfileChanged="changeProfile($event)"/>
     </div>
-    <router-view class="h-100 pt-5 mt-5"/>
+    <router-view class="h-100 position-fixed w-100"/>
   </div>
 </template>
 
