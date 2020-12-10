@@ -26,32 +26,22 @@
   import {Component, Vue} from "vue-property-decorator";
   import {getFromStorage, storeInStorage} from "@/store";
   import {StorageDescriptor, User} from "@/data_models/types";
-  import {vm} from "@/main";
   import dataBus from "@/databus";
-  import {EditProfile} from "@/data_models/mutations";
+  import {editProfile} from "@/utils";
 
   @Component
   export default class Settings extends Vue {
     private user: User = getFromStorage("active_user", StorageDescriptor.local);
 
-    onSubmit() {
-      vm.$apollo.mutate({
-        mutation: EditProfile,
-        variables: {
-          userId: this.user.id,
-          email: this.user.email,
-          name: this.user.name,
-          lastName: this.user.lastName
-        }
-      }).then((value) => {
-        console.log(value);
-        storeInStorage("active_user", this.user, StorageDescriptor.local);
-        dataBus.$emit('updateUser');
-      }).catch((error) => {
-        console.log(error);
-      });
+    onSubmit = () => {
+        editProfile(this.user, value => {
+            console.log(value);
+            storeInStorage("active_user", this.user, StorageDescriptor.local);
+            dataBus.$emit('updateUser');
+          }, reason => {console.log(reason)}
+        );
+      }
     }
-  }
 </script>
 
 <style scoped>

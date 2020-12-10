@@ -1,5 +1,5 @@
 import {
-    CreateNewBoardMutation,
+    CreateNewBoardMutation, EditProfile,
     LoginMutation,
     LogoutMutation,
     RefreshMutation,
@@ -13,7 +13,7 @@ import {
     ErrorCallback,
     MutationCallback, Payload, QueryCallback,
     RegisterCredentials, SingleListModel,
-    StorageDescriptor, Tokens
+    StorageDescriptor, Tokens, User
 } from "@/data_models/types";
 import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
 import {apolloClient} from "@/vue-apollo";
@@ -211,6 +211,24 @@ export function createBoard(data:{background:string, title:string},
 
     }).then(value => {
         onResult(value.data.createnewboard);
+    }).catch(reason => {
+        onError(reason);
+    })
+}
+
+export function editProfile(data:User,
+                            onResult: MutationCallback<{user:User}>,
+                            onError: ErrorCallback) {
+    apolloClient.mutate({
+        mutation:EditProfile,
+        variables:{
+            userId:data.id,
+            email:data.email,
+            name:data.name,
+            lastName:data.lastName,
+        }
+    }).then(value => {
+        onResult(value.data);
     }).catch(reason => {
         onError(reason);
     })
