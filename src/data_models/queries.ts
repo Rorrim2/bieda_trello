@@ -1,22 +1,56 @@
 import gql from 'graphql-tag'
 
-export const UsersQuery = gql`
-    query {
-        users{
+export const ActivityQuery = gql`
+    query Activity($id: String){
+        activity(id: $id){
             id
-            name
-            lastName
+            content
+            createdOn
+            type
         }
-    }`;
+    }
+`;
 
-export const UserQuery = gql`
-    query User($id: String, $email: String) {
-        user(id: $id, email: $email){
+export const ActivitysQuery = gql`
+    query {
+        activity{
             id
-            name
-            lastName
+            content
+            createdOn
+            type
         }
-    }`;
+    }
+`;
+
+export const ActivityByUserQuery = gql`
+    query ActivityByUser($userId: String) {
+        activitysByUser(userId: $userId) {
+            id
+            content
+            createdOn
+            type
+            user {
+                name
+                lastName
+            }
+        }
+    }
+`;
+
+export const ActivityByCardQuery = gql`
+    query ActivityByCard($cardId: String) {
+        activitysByCard(cardId: $cardId) {
+            id
+            content
+            createdOn
+            type
+            user {
+                name
+                lastName
+            }
+        }
+    }
+`;
 
 export const BoardsQuery = gql`
     query {
@@ -91,6 +125,26 @@ export const CardQuery = gql`
         }
     }`;
 
+export const LabelQuery = gql`
+    query Label($id: String) {
+        label(id: $id) {
+            id
+            name
+            color
+        }
+    }
+`;
+
+export const LabelsQuery = gql`
+    query Labels($boardId: String) {
+        labels(boardId: $boardId) {
+            id
+            name
+            color
+        }
+    }
+`;
+
 export const ListsQuery = gql`
     query{
         lists{
@@ -126,5 +180,23 @@ export const ListQuery = gql`
                 positionInList
                 title
             }
+        }
+    }`;
+
+export const UsersQuery = gql`
+    query {
+        users{
+            id
+            name
+            lastName
+        }
+    }`;
+
+export const UserQuery = gql`
+    query User($id: String, $email: String) {
+        user(id: $id, email: $email){
+            id
+            name
+            lastName
         }
     }`;
