@@ -3,7 +3,7 @@ import Router, {NavigationGuardNext, Route} from 'vue-router';
 import Home from './views/Home.vue';
 import Boards from './views/Boards.vue';
 import BoardView from './views/BoardView.vue';
-import Settings from './views/Settings.vue';
+import Settings from './views/Profile.vue';
 import {getToken, getTokenFromCache} from "@/utils";
 import {empty, StorageDescriptor, User} from "@/data_models/types";
 import {getFromStorage} from "@/store";
