@@ -42,10 +42,13 @@ export default class SingleList extends Vue {
 
   private listModel: SingleListModel = dummySingleListModel;
   private card: SingleCardModel = dummySingleCardModel;
-
+  mounted(){
+    this.listChanged();
+  }
   listChanged(){
     fetchList(this.list.id, data => {
       this.listModel = data;
+      console.debug("jabadabadu");
     }, error => {
       console.log(error.message);
     })

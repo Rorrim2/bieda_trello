@@ -59,6 +59,12 @@ export interface SingleCardModel {
     text: string;
 }
 
+export interface SingleListEntry {
+    boardId:string;
+    positionOnBoard:number;
+    title: string;
+}
+
 export interface SingleListModel {
     id: string;
     isHidden:boolean;
@@ -85,7 +91,7 @@ export type ErrorCallback = (error: ApolloError) => void;
 
 export const empty = Object()
 
-
+export const dummySingleListEntry = <SingleListEntry>{};
 export const dummySingleListModel = <SingleListModel>{};
 export const dummySingleCardModel = <SingleCardModel>{};
 export const dummyBoardPreview = <BoardPreview>{};
