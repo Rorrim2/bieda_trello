@@ -4,7 +4,9 @@
     <p class="h2 font-weight-bold align-top text-light media-aside-right">Boards</p>
     <b-container fluid="lg md sm" class="flex-row">
       <b-row class="my-5 overflow-hidden " >
-        <div style="width: 23rem!important;" class="m-0 col-6 col-md-4 col-lg-3 col-sm-6 overflow-hidden text-truncate" v-for="board_s in boardsList">
+        <div style="width: 23rem!important;"
+             class="m-0 col-6 col-md-4 col-lg-3 col-sm-6 overflow-hidden text-truncate"
+             v-for="board_s in boardsList">
           <single-board :board="board_s" />
         </div>
         <div style="width: 23rem!important;" class="col-6 col-sm-6 col-md-4 col-lg-3">
@@ -41,6 +43,7 @@
 import SingleBoard from "@/components/SingleBoard.vue";
 import {Vue, Component} from "vue-property-decorator";
 import {BoardPreview, dummyBoardPreview, dummyUser, User} from "@/data_models/types";
+import {createBoard, decodeUrl, encodeUrl, fetchBoards} from "@/utils";
 
 @Component({
   components: {SingleBoard}
@@ -56,14 +59,27 @@ export default class Boards extends Vue {
       console.log("invalid input");
       return;
     }
-    console.log("persist board")
-    this.boardsList.push({id:this.board.id, title: this.board.title, background: this.board.background})
+    console.log("persist board");
+    createBoard({background:encodeUrl(this.board.background), title:this.board.title},
+        data => {
+      console.log(data);
+
+      this.boardsList.push(data.board);
+    }, error => {
+      console.log(error.message);
+    })
+    //this.boardsList.push({id:this.board.id, title: this.board.title, background: this.board.background})
     this.board.background = ''
     this.board.title = ''
   }
 
-  created() {
-
+  mounted() {
+    fetchBoards(data => {
+      console.debug(`data length: ${data.length}`);
+      this.boardsList = data;
+    }, error => {
+      console.log(error.message);
+    })
   }
 
   get valid_title(): boolean{

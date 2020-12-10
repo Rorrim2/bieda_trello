@@ -1,7 +1,7 @@
 <template>
     <b-card
         @error="onError"
-        :img-src="board.background"
+        :img-src="board.background === '' ? require('../assets/temp.png') : decoded"
         img-alt="Image"
         img-width="2%"
         align="right"
@@ -29,13 +29,18 @@
 
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {BoardPreview} from "@/data_models/types";
+import {decodeUrl} from "@/utils";
 
 @Component
 export default class SingleBoard extends Vue{
   @Prop() board!:BoardPreview;
 
+  get decoded(): string {
+    return decodeUrl(this.board.background);
+  }
   mounted(){
-    (<any>this.$refs.card).querySelector('img').onerror = this.onError;
+    if(this.$refs.card)
+      (<any>this.$refs.card).querySelector('img').onerror = this.onError;
   }
   onError(event: Event){
     console.log("onError");
