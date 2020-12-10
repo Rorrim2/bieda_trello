@@ -310,3 +310,63 @@ export const EditProfile = gql`
             }
         }
     }`;
+
+export const CreateActivityMutation = gql`
+    mutation CraeteActivity($userId: String!, $cardId: String!, $createdOn: String, $content: String!, $typeVal: Int) {
+        createactivity(userId: $userId, cardId: $cardId, createdOn: $createdOn, content: $content, typeVal: $typeVal) {
+            activity {
+                id
+                content
+                type
+                createdOn
+            }
+        }
+    }
+`;
+
+export const CreateLabelMutation = gql`
+    mutation CreateLabel($boardId: String!, $color: String!, $name: String!) {
+        createlabel(boardId: $boardId, color: $color, name: $name) {
+            label {
+                id
+                name
+                color
+            }
+        }
+    } 
+`;
+
+export const DeleteLabelMutation = gql`
+    mutation DeleteLabel($labelId: String!) {
+        deletelabel(labelId: $labelId) {
+            success
+        }
+    }
+`;
+
+export const EditActivityMutation = gql`
+    mutation EditActivity($activityId: String!, $userId: String!, $cardId: String!, $content: String!) {
+        editactivity(activityId: $activityId, userId: $userId, cardId: $cardId, content: $content) {
+            activity {
+                user {
+                    name
+                    lastName
+                }
+                type
+                createdOn
+                content
+            }
+        }
+    }
+`;
+
+export const EditLabelMutation = gql`
+    mutation EditLabel($labelId: String!, $color: String, $name: String) {
+        editlabel(labelId: $labelId, color: $color, name: $name) {
+            label {
+                name
+                color
+            }
+        }
+    }
+`;
