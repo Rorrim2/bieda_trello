@@ -1,10 +1,19 @@
 import {ApolloError} from "apollo-client";
 
-export interface User {
+export interface ActivityModel {
+    card: SingleCardModel;
+    content: string;
+    createdOn: string;
     id: string;
-    name: string;
-    email: string;
-    lastName: string;
+    type: ActivityModelType;
+    user: User;
+}
+
+enum ActivityModelType {
+    ACTIVITY_LOG_VAL,
+    COMMENT_VAL,
+    CHECKLIST_VAL,
+    ATTACHMENT_VAL,
 }
 
 export interface AuthResult {
@@ -12,22 +21,6 @@ export interface AuthResult {
     success: boolean;
     token: string;
     refreshToken: string;
-}
-
-export interface Credentials {
-    email: string;
-    password: string;
-}
-
-export interface Tokens {
-    token: string;
-    refreshToken: string;
-}
-
-export interface RegisterCredentials extends Credentials{
-    name: string;
-    lastName: string;
-    confirmPassword: string;
 }
 
 export interface BoardPreview {
@@ -51,12 +44,62 @@ export interface BoardModel {
     lists: Array<SingleListPreview>;
 }
 
+export interface Credentials {
+    email: string;
+    password: string;
+}
+
+export interface LabelModel {
+    board: BoardModel;
+    color: string;
+    id: string;
+    name: string;
+}
+
+export interface Payload{
+    email: string;
+    jti: string;
+    origIat: number;
+    exp: number;
+}
+
+export interface RegisterCredentials extends Credentials{
+    name: string;
+    lastName: string;
+    confirmPassword: string;
+}
+
+export interface SingleListPreview{
+    id: string;
+}
+
+export interface BoardModel {
+    id: string;
+    title: string;
+    background: string;
+    isClosed: boolean;
+    isVisible: boolean;
+    description: string;
+    maker: User;
+    users: Array<User>;
+    admins: Array<User>;
+    lists: Array<SingleListPreview>;
+}
+
 export interface SingleListPreview{
     id: string;
 }
 
 export interface SingleCardModel {
-    text: string;
+    activities: Array<ActivityModel>;
+    archived: boolean;
+    cover: string;
+    description: string;
+    dueDate: string;
+    id: string;
+    labels: Array<LabelModel>;
+    positionInList: number;
+    title: string;
 }
 
 export interface SingleListModel {
@@ -72,23 +115,30 @@ export enum StorageDescriptor {
     session
 }
 
-export interface Payload{
+export interface Tokens {
+    token: string;
+    refreshToken: string;
+}
+
+export interface User {
+    id: string;
+    name: string;
     email: string;
-    jti: string;
-    origIat: number;
-    exp: number;
+    lastName: string;
 }
 
 export type MutationCallback<T> = (data: T) => void;
 export type QueryCallback<T> = (data: T) => void;
 export type ErrorCallback = (error: ApolloError) => void;
 
-export const empty = Object()
+export const empty = Object();
 
 
 export const dummySingleListModel = <SingleListModel>{};
 export const dummySingleCardModel = <SingleCardModel>{};
 export const dummyBoardPreview = <BoardPreview>{};
+export const dummyActivityModel = <ActivityModel>{};
+export const dummyLabelModel = <LabelModel>{};
 export const dummyUser:User = <User>{};
 export const dummyCredentials = <Credentials>{};
 export const dummyBoardModel = <BoardModel>{};
