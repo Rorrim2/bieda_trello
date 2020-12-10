@@ -23,7 +23,8 @@
       </b-navbar>
       <UserNavBubble class="d-inline-flex float-right align-self-center mt-sm-2 pt-md-4 pt-lg-3 pt-4 pr-4"
                      v-if="isLoggedIn" v-bind:user="user"
-                     @logout="logout($event)"/>
+                     @logout="logout($event)"
+                     @ProfileChanged="changeProfile($event)"/>
     </div>
     <router-view class="h-100 position-fixed w-100"/>
   </div>
@@ -84,6 +85,12 @@ export default class App extends Vue {
     }, error => {
       console.log(error.graphQLErrors[0]);
     });
+  }
+
+  changeProfile(evt: Event) {
+    const refreshTkn = getTokenFromCache();
+    const component = this
+    component.$router.push("/settings");
   }
 
   clear() {

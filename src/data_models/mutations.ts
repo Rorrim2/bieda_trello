@@ -295,3 +295,15 @@ export const UpdateListMutation = gql`
             }
         }
     }`;
+
+export const EditProfile = gql`
+    mutation EditProfile($userId: String!, $email: String, $name: String, $lastName: String){
+        editprofile(userId: $userId, email: $email, name: $name, lastName: $lastName) {
+            user{
+                id
+                name
+                lastName
+                email
+            }
+        }
+    }`;

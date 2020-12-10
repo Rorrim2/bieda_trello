@@ -38,7 +38,7 @@
       </b-dropdown-header>
       <b-dropdown-divider class="w-100"></b-dropdown-divider>
       <b-dropdown-item class="w-100 p-0">
-        <b-button variant="outline-dark" class="text-center border-0 w-100" style="outline: none">
+        <b-button @click="changeProfile($event)" variant="outline-dark" class="text-center border-0 w-100" style="outline: none">
           Settings
         </b-button>
       </b-dropdown-item>
@@ -66,6 +66,10 @@ export default class UserNavBubble extends UserBubble {
 
   logout(evt: Event) {
     this.$emit('logout');
+  }
+
+  changeProfile(evt: Event) {
+    this.$emit('ProfileChanged')
   }
 }
 </script>
