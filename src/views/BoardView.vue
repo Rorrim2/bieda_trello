@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-primary h-100" v-bind:style="{ backgroundImage: 'url(' + board.background + ')' }">
+  <div class="bg-primary h-100" style=" background-size: cover;" v-bind:style="{ backgroundImage: 'url(' + decoded + ')' }">
     <b-card-group deck>
       <div v-for="list_s in board.lists">
         <single-list :list="list_s"></single-list>
@@ -34,7 +34,7 @@ import {
   SingleListModel,
   StorageDescriptor
 } from "@/data_models/types";
-import {fetchBoard} from "@/utils";
+import {decodeUrl, fetchBoard} from "@/utils";
 import {getFromStorage} from "@/store";
 
 @Component({
@@ -47,6 +47,11 @@ export default class BoardView extends Vue {
   private list: SingleListModel = dummySingleListModel;
   private board: BoardModel = dummyBoardModel;
 
+  get decoded() : string{
+    if(this.board.background !== undefined)
+      return decodeUrl(this.board.background);
+    return "";
+  }
   onCreate() {
     console.debug("DDDDD");
     //this.listOfLists.push(<SingleListModel>{name: this.list.name, listOfCards: []})
