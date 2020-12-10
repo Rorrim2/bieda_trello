@@ -14,6 +14,7 @@
                           placeholder="Password"/>
           </b-input-group>
           <b-button type="submit" class="text-white btn-secondary m-1">Log in</b-button>
+          <b-link class="text-light m-1">Reset password</b-link>
           <b-form-invalid-feedback :state="loginValidation" v-text="loginError"/>
         </b-form>
       </b-col>

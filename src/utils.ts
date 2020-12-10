@@ -1,4 +1,5 @@
 import {
+    CreateNewBoardMutation,
     LoginMutation,
     LogoutMutation,
     RefreshMutation,
@@ -6,17 +7,17 @@ import {
     RevokeJTIMutation, VerifyTokenMutation
 } from "@/data_models/mutations";
 import {
-    AuthResult,
+    AuthResult, BoardPreview,
     Credentials,
     empty,
     ErrorCallback,
-    MutationCallback, Payload,
+    MutationCallback, Payload, QueryCallback,
     RegisterCredentials,
     StorageDescriptor, Tokens
 } from "@/data_models/types";
-import {vm} from "@/main";
 import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
 import {apolloClient} from "@/vue-apollo";
+import {BoardsQuery} from "@/data_models/queries";
 
 export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onError: ErrorCallback){
     if(!tok || tok === "" || tok === empty) return;
@@ -24,7 +25,7 @@ export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onE
     let jti = getFromStorage("jti", StorageDescriptor.local) as string;
     let user_id = getFromStorage("active_user", StorageDescriptor.local).id as string;
 
-    vm.$apollo.mutate({
+    apolloClient.mutate({
         mutation:RevokeJTIMutation,
         variables:{
             jti:jti,
@@ -40,7 +41,7 @@ export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onE
         console.debug(error.graphQLErrors[0])
     })
 
-    vm.$apollo.mutate({
+    apolloClient.mutate({
         mutation: RefreshMutation,
         variables: {
             refreshToken: tok
@@ -56,7 +57,7 @@ export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onE
 }
 
 export function registerUser(credentials: RegisterCredentials, onResult: MutationCallback<AuthResult>, onError:ErrorCallback){
-    vm.$apollo.mutate({
+    apolloClient.mutate({
         mutation: RegisterMutation,
         variables: {
             email: credentials.email,
@@ -72,7 +73,7 @@ export function registerUser(credentials: RegisterCredentials, onResult: Mutatio
 }
 
 export function loginUser(credentials: Credentials, onResult: MutationCallback<AuthResult>, onError: ErrorCallback){
-    vm.$apollo.mutate({
+    apolloClient.mutate({
         mutation: LoginMutation,
         variables: {
             email: credentials.email,
@@ -88,7 +89,7 @@ export function loginUser(credentials: Credentials, onResult: MutationCallback<A
 export function logoutUser(tok: string, onResult: MutationCallback<{
     success: boolean;
 }>, onError: ErrorCallback){
-    vm.$apollo.mutate({
+    apolloClient.mutate({
         mutation: LogoutMutation,
         variables: {
             refreshToken: tok
@@ -113,6 +114,17 @@ export function verifyToken(tkn: string, onResult: MutationCallback<Payload>, on
     }).catch(error => {
         onError(error);
     })
+}
+
+export function decodeUrl(hashed:string):string {
+    hashed = hashed.replace(/-/g, '+').replace(/_/g, '/');
+    return decodeURIComponent(Buffer.from(hashed, 'base64').toString('utf-8'));
+}
+
+export function encodeUrl(url:string) :string{
+    return encodeURIComponent(Buffer.from(url, 'utf-8')
+        .toString('base64')).split("%")[0]
+        .replace('/','/_/g').replace('+','/-/g')
 }
 
 export function parseJWT(token: string): Payload{
@@ -143,3 +155,31 @@ export function getToken(): string {
     return getFromStorage("u_tkn", StorageDescriptor.local);
 }
 
+export function fetchBoards(onResult:QueryCallback<Array<BoardPreview>>,
+    onError: ErrorCallback) {
+    apolloClient.query({
+        query:BoardsQuery
+    }).then(value => {
+        onResult(value.data.boards);
+    }).catch(reason => {
+        onError(reason);
+    });
+}
+
+export function createBoard(data:{background:string, title:string},
+                            onResult: MutationCallback<{board:BoardPreview, success:boolean}>,
+                            onError: ErrorCallback){
+    console.debug(`bg: ${data.background}`);
+    apolloClient.mutate({
+        mutation:CreateNewBoardMutation,
+        variables:{
+            background:data.background,
+            title:data.title
+        }
+
+    }).then(value => {
+        onResult(value.data.createnewboard);
+    }).catch(reason => {
+        onError(reason);
+    })
+}

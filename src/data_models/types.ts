@@ -34,6 +34,8 @@ export interface BoardPreview {
     id: string;
     title: string;
     background: string;
+    isClosed: boolean;
+    isVisible: boolean;
 }
 
 export interface SingleCardModel {
