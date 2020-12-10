@@ -16,7 +16,7 @@
         <div class="bv-example-row m-0 p-0">
           <b-row class="d-inline p-0 m-0">
             <b-card-text v-bind:title="board.title" class="col-8 text-left float-left pl-2 text-nowrap text-truncate">{{board.title}}</b-card-text>
-            <b-button v-bind:to="'/b/'+ board.id +'/view'" variant="primary" class="text-center mt-2 mb-2 p-0 btn-sm col-4 ">
+            <b-button @click="openBoard($event)" variant="primary" class="text-center mt-2 mb-2 p-0 btn-sm col-4 ">
               Open
             </b-button>
           </b-row>
@@ -28,8 +28,9 @@
 <script lang="ts">
 
 import {Component, Prop, Vue} from "vue-property-decorator";
-import {BoardPreview} from "@/data_models/types";
+import {BoardPreview, StorageDescriptor} from "@/data_models/types";
 import {decodeUrl} from "@/utils";
+import {storeInStorage} from "@/store";
 
 @Component
 export default class SingleBoard extends Vue{
@@ -45,6 +46,12 @@ export default class SingleBoard extends Vue{
   onError(event: Event){
     console.log("onError");
     (<any>event.target).src = require('../assets/temp.png');
+  }
+
+  openBoard(event:Event){
+    console.log("---===called===---")
+    storeInStorage("opened-board", this.board.id, StorageDescriptor.session);
+    this.$router.push( '/b/'+ this.board.id +'/view');
   }
 };
 </script>

@@ -107,9 +107,6 @@ export const ListsQuery = gql`
                 positionInList
                 title
             }
-            board{
-                id
-            }
         }
     }`;
 
@@ -128,9 +125,6 @@ export const ListQuery = gql`
                 id
                 positionInList
                 title
-            }
-            board{
-                id
             }
         }
     }`;

@@ -7,17 +7,17 @@ import {
     RevokeJTIMutation, VerifyTokenMutation
 } from "@/data_models/mutations";
 import {
-    AuthResult, BoardPreview,
+    AuthResult, BoardModel, BoardPreview,
     Credentials,
     empty,
     ErrorCallback,
     MutationCallback, Payload, QueryCallback,
-    RegisterCredentials,
+    RegisterCredentials, SingleListModel,
     StorageDescriptor, Tokens
 } from "@/data_models/types";
 import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
 import {apolloClient} from "@/vue-apollo";
-import {BoardsQuery} from "@/data_models/queries";
+import {BoardQuery, BoardsQuery, ListQuery} from "@/data_models/queries";
 
 export function refreshToken(tok:string, onResult: MutationCallback<Tokens>, onError: ErrorCallback){
     if(!tok || tok === "" || tok === empty) return;
@@ -164,6 +164,38 @@ export function fetchBoards(onResult:QueryCallback<Array<BoardPreview>>,
     }).catch(reason => {
         onError(reason);
     });
+}
+
+export function fetchBoard(board_id: string, onResult:QueryCallback<BoardModel>,
+                           onError: ErrorCallback){
+    console.debug(`ID of BOARD: ${board_id}`);
+
+    apolloClient.query({
+        query: BoardQuery,
+        variables: {
+            id:board_id
+        }
+    }).then(value => {
+        onResult(value.data.board);
+    }).catch(reason => {
+        onError(reason);
+    })
+}
+
+export function fetchList(list_id:string, onResult:QueryCallback<SingleListModel>,
+                          onError: ErrorCallback){
+    console.debug(`ID of list: ${list_id}`);
+
+    apolloClient.query({
+        query: ListQuery,
+        variables:{
+            id:list_id,
+        }
+    }).then(value => {
+        onResult(value.data.list);
+    }).catch(reason => {
+        onError(reason);
+    })
 }
 
 export function createBoard(data:{background:string, title:string},
