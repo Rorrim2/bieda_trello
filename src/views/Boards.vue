@@ -1,22 +1,26 @@
 <template>
-  <div class="about py-auto bg-primary">
+  <div class="py-auto bg-primary">
     <!-- Card -->
-
-    <b-container class="align-content-center flex-fill" fluid="lg md">
-      <b-card-group deck>
-        <div v-for="board_s in boardsList">
-          <single-board :board="board_s"/>
+    <p class="h2 font-weight-bold align-top text-light media-aside-right">Boards</p>
+    <b-container fluid="lg md sm" class="flex-row">
+      <b-row class="my-5 overflow-hidden " >
+        <div style="width: 23rem!important;"
+             class="m-0 col-6 col-md-4 col-lg-3 col-sm-6 overflow-hidden text-truncate"
+             v-for="board_s in boardsList">
+          <single-board :board="board_s" />
         </div>
-        <b-card overlay img-src="../assets/add_item.png"
-                footer="Add new board"
-                footer-class="bg-dark"
-                class="bg-transparent flex-fill text-light"
-                v-b-modal.createnewboardmodal/>
-      </b-card-group>
+        <div style="width: 23rem!important;" class="col-6 col-sm-6 col-md-4 col-lg-3">
+          <b-card overlay img-src="../assets/add_item.png"
+                  footer="Add new board"
+                  footer-class="bg-dark text-truncate text-nowrap"
+                  class="w-100 m-0 bg-transparent text-light"
+                  v-b-modal.createnewboardmodal/>
+        </div>
+      </b-row>
     </b-container>
     <b-modal id="createnewboardmodal" class="bg-light"
              title="Create Board" @ok="modalOk($event)">
-      <b-form @submit.stop.prevent="onCreate" >
+      <b-form @submit.prevent="onCreate" >
         <b-card-header>
           Board data
         </b-card-header>
@@ -39,6 +43,7 @@
 import SingleBoard from "@/components/SingleBoard.vue";
 import {Vue, Component} from "vue-property-decorator";
 import {BoardPreview, dummyBoardPreview, dummyUser, User} from "@/data_models/types";
+import {createBoard, decodeUrl, encodeUrl, fetchBoards} from "@/utils";
 
 @Component({
   components: {SingleBoard}
@@ -54,14 +59,27 @@ export default class Boards extends Vue {
       console.log("invalid input");
       return;
     }
-    console.log("persist board")
-    this.boardsList.push({id:this.board.id, title: this.board.title, background: this.board.background})
+    console.log("persist board");
+    createBoard({background:encodeUrl(this.board.background), title:this.board.title},
+        data => {
+      console.log(data);
+
+      this.boardsList.push(data.board);
+    }, error => {
+      console.log(error.message);
+    })
+    //this.boardsList.push({id:this.board.id, title: this.board.title, background: this.board.background})
     this.board.background = ''
     this.board.title = ''
   }
 
-  created() {
-
+  mounted() {
+    fetchBoards(data => {
+      console.debug(`data length: ${data.length}`);
+      this.boardsList = data;
+    }, error => {
+      console.log(error.message);
+    })
   }
 
   get valid_title(): boolean{
@@ -77,10 +95,18 @@ export default class Boards extends Vue {
   }
 
   modalOk(evt:Event){
-    evt.preventDefault();
     this.onCreate();
   }
 
 }
 </script>
+<style>
+img.card-img {
+  object-fit: cover; /* Do not scale the image */
+  object-position: center; /* Center the image within the element */
+  height: 150px;
+  flex: fit-content;
+  width: 100%;
+}
+</style>
 

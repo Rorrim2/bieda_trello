@@ -48,16 +48,18 @@ export const RegisterMutation = gql`
     }`;
 
 export const CreateNewBoardMutation = gql`
-    mutation CreateNewBoard($title: String!) {
-        createnewboard(title: $title){
+    mutation CreateNewBoard( $background: String, $title: String!) {
+        createnewboard(backgroundUrl: $background, title: $title){
             success
             board{
                 maker{
                     id
                 }
                 background
-                description
                 id
+                admins{
+                    id
+                }
                 isClosed
                 isVisible
                 users {

@@ -23,15 +23,9 @@ export const BoardsQuery = gql`
         boards{
             id
             title
-            description
             background
             isClosed
             isVisible
-            maker{
-                id
-                name
-                lastName
-            }
         }
     }`;
 
@@ -48,6 +42,19 @@ export const BoardQuery = gql`
                 id
                 name
                 lastName
+            }
+            admins{
+                id
+                lastName
+                name
+            }
+            users {
+                id
+                lastName
+                name
+            }
+            lists{
+                id
             }
         }
     }`;
@@ -100,9 +107,6 @@ export const ListsQuery = gql`
                 positionInList
                 title
             }
-            board{
-                id
-            }
         }
     }`;
 
@@ -121,9 +125,6 @@ export const ListQuery = gql`
                 id
                 positionInList
                 title
-            }
-            board{
-                id
             }
         }
     }`;

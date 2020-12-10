@@ -34,6 +34,25 @@ export interface BoardPreview {
     id: string;
     title: string;
     background: string;
+    isClosed: boolean;
+    isVisible: boolean;
+}
+
+export interface BoardModel {
+    id: string;
+    title: string;
+    background: string;
+    isClosed: boolean;
+    isVisible: boolean;
+    description: string;
+    maker: User;
+    users: Array<User>;
+    admins: Array<User>;
+    lists: Array<SingleListPreview>;
+}
+
+export interface SingleListPreview{
+    id: string;
 }
 
 export interface SingleCardModel {
@@ -41,8 +60,11 @@ export interface SingleCardModel {
 }
 
 export interface SingleListModel {
-    name: string;
-    listOfCards: Array<SingleCardModel>;
+    id: string;
+    isHidden:boolean;
+    positionOnBoard:number;
+    title: string;
+    cards: Array<SingleCardModel>;
 }
 
 export enum StorageDescriptor {
@@ -69,6 +91,7 @@ export const dummySingleCardModel = <SingleCardModel>{};
 export const dummyBoardPreview = <BoardPreview>{};
 export const dummyUser:User = <User>{};
 export const dummyCredentials = <Credentials>{};
+export const dummyBoardModel = <BoardModel>{};
 export const dummyTokens = <Tokens>{};
 export const dummyRegisterCredentials = <RegisterCredentials>{};
 export const dummyAuthResult = <AuthResult>{};

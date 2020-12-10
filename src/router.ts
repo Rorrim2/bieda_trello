@@ -9,15 +9,20 @@ import {getFromStorage} from "@/store";
 
 Vue.use(Router);
 
-function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGuardNext){
+function isLoggedIn():boolean{
     let item = getFromStorage('active_user', StorageDescriptor.local);
     let user = <User>item ?? undefined;
     let tkn = getToken();
     let r_tkn = getTokenFromCache();
 
-    if((r_tkn !== empty || tkn !== empty ) && user !== undefined ){
+    return (r_tkn !== empty || tkn !== empty ) && user !== undefined;
+}
+
+function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGuardNext){
+    if(isLoggedIn()){
         console.debug(from.path)
-        if(from.path !== `/u/${user.id}/boards` && from.path.startsWith('/u/')) {
+        let user = <User>getFromStorage('active_user', StorageDescriptor.local);
+        if(from.path !== `/u/${user.id}/boards`) {
             next(`u/${user.id}/boards`);
         }
     }
@@ -33,6 +38,7 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+      beforeEnter:checkIfLoginSignUpIsAllowed
     },
     {
       path: '/login',
