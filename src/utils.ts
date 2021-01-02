@@ -13,7 +13,7 @@ import {
     Credentials, empty, ErrorCallback,
     MutationCallback, Payload, QueryCallback,
     RegisterCredentials, SingleListEntry,
-    SingleListModel, StorageDescriptor,
+    StorageDescriptor,
     SingleListModel, Tokens, User
 } from "@/data_models/types";
 import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
