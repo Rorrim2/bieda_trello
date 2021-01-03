@@ -3,21 +3,20 @@
     <b-dropdown @hide="check_if_can_hide($event)" right no-caret no-flip toggle-class="align-top rounded-circle px-0 py-0"
                 ref="d_down" @show="show_overlay($event)">
       <template #button-content>
-        <b-avatar :title="title"  class="d-block bg-secondary text-decoration-none" :id="`user_menu`">
+        <b-avatar :title="title"  class="d-block bg-secondary text-decoration-none" style="height: 40px; width: 40px" :id="`user_menu`">
           <span>{{ shortenUser }}</span>
         </b-avatar>
       </template>
       <b-dropdown-header variant="success" class="m-0 p-0">
         <div class="d-flex flex-row m-0 p-0">
-          <b class="p-0 pl-5 mx-auto my-auto align-middle">
+          <b class="p-0 pl-5 mx-auto my-0 d-inline-flex align-self-center">
             <b>
-              <p>Account</p>
+              Account
             </b>
           </b>
-          <b-button @click="hide_overlay($event)"
-                    class="close ml-4 mt-n2 float-right"
-                    style="height: 30px;width: 30px;">
-            <span aria-hidden="true" class="text-center mx-auto" style="height: 20px;width: 20px;">&times</span>
+          <b-button @click="hide_overlay($event)" variant="danger"
+                    class="float-right p-0 d-inline-flex flex-column justify-content-between text-center" style="height: 30px; width:30px;">
+            <span aria-hidden="true" class="align-self-center " style="font-size: 1.1rem;" >&times</span>
           </b-button>
         </div>
       </b-dropdown-header>

@@ -1,14 +1,14 @@
 <template>
-  <div id="app" class="w-100 pt-5 mt-5">
-    <div class="bg-darker-primary w-100 fixed-top">
-      <b-navbar class="bg-darker-primary" toggleable="lg" v-bind:class="isLoggedIn ? 'd-inline-flex' : ''"
+  <div id="app" class="h-100 flex-column d-flex"  >
+    <div class="bg-darker-primary flex-row d-flex justify-content-between">
+      <b-navbar class="w-100 bg-darker-primary flex-row d-flex justify-content-between my-0 py-0" toggleable="lg" v-bind:class="isLoggedIn ? 'd-inline-flex' : ''"
                 variant="primary">
-        <b-navbar-brand href="/" class="flex-row p-0">
-          <b-img width="80px" class="mr-2" src="./assets/racoon.png"/>
-          <b-nav-text class="h1 text-white" v-text="`BiedaTrello`"/>
+        <b-navbar-brand href="/" class="flex-row d-inline-flex my-auto my-xl-1 my-lg-1">
+          <b-img width="50px" class="d-inline-flex align-top mr-2 mt-0 mb-0 p-0" src="./assets/racoon.png"/>
+          <b-nav-text class="h2 align-self-center d-flex d-inline text-white p-0 m-0" v-text="`BiedaTrello`"/>
         </b-navbar-brand>
         <b-navbar-toggle v-if="!isLoggedIn" target="nav-collapse"></b-navbar-toggle>
-        <b-collapse v-if="!isLoggedIn" id="nav-collapse" is-nav>
+        <b-collapse v-if="!isLoggedIn" id="nav-collapse" class="h-100 my-auto" is-nav>
           <b-navbar-nav class="ml-auto">
             <b-button-group>
               <b-button  to="/login" class="btn btn-lg btn-primary ml-md-2 text-light"
@@ -21,12 +21,14 @@
           </b-navbar-nav>
         </b-collapse>
       </b-navbar>
-      <UserNavBubble class="d-inline-flex float-right align-self-center mt-sm-2 pt-md-4 pt-lg-3 pt-4 pr-4"
-                     v-if="isLoggedIn" v-bind:user="user"
-                     @logout="logout($event)"
-                     @ProfileChanged="changeProfile($event)"/>
+      <div class="my-auto mr-3">
+        <UserNavBubble class=""
+                       v-if="isLoggedIn" v-bind:user="user"
+                       @logout="logout($event)"
+                       @ProfileChanged="changeProfile($event)"/>
+      </div>
     </div>
-    <router-view class="h-100 position-fixed w-100"/>
+    <router-view class="position-relative overflow-auto" />
   </div>
 </template>
 

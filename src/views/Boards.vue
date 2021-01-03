@@ -1,11 +1,11 @@
 <template>
-  <div class="py-auto bg-primary">
+  <div class="bg-primary">
     <!-- Card -->
-    <p class="h2 font-weight-bold align-top text-light media-aside-right">Boards</p>
-    <b-container fluid="lg md sm" class="flex-row">
-      <b-row class="my-5 overflow-hidden " >
+    <p class="h2 font-weight-bold align-top mt-4  text-light media-aside-right">{{user.name}}'s Boards</p>
+    <b-container fluid="lg md sm" class="flex-row py-1">
+      <b-row >
         <div style="width: 23rem!important;"
-             class="m-0 col-6 col-md-4 col-lg-3 col-sm-6 overflow-hidden text-truncate"
+             class="m-0 col-6 col-md-4 col-lg-3 col-sm-6  text-truncate"
              v-for="board_s in boardsList">
           <single-board :board="board_s" />
         </div>
@@ -41,9 +41,10 @@
 
 <script lang="ts">
 import SingleBoard from "@/components/SingleBoard.vue";
-import {Vue, Component} from "vue-property-decorator";
-import {BoardPreview, dummyBoardPreview, dummyUser, User} from "@/data_models/types";
-import {createBoard, decodeUrl, encodeUrl, fetchBoards} from "@/utils";
+import {Component, Vue} from "vue-property-decorator";
+import {BoardPreview, dummyBoardPreview, dummyUser, StorageDescriptor, User} from "@/data_models/types";
+import {createBoard, encodeUrl, fetchBoards} from "@/utils";
+import {getFromStorage} from "@/store";
 
 @Component({
   components: {SingleBoard}
@@ -80,6 +81,8 @@ export default class Boards extends Vue {
     }, error => {
       console.log(error.message);
     })
+
+    this.user = getFromStorage("active_user", StorageDescriptor.local);
   }
 
   get valid_title(): boolean{
