@@ -162,12 +162,6 @@ export const CreateCardMutation = gql`
                 dueDate
                 title
                 positionInList
-                list {
-                    id
-                    board{
-                        id
-                    }
-                }
             }
             success
         }
