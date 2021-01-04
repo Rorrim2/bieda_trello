@@ -1,23 +1,30 @@
 <template>
-  <div class="about py-auto bg-primary">
-    <b-container class="flex-row h-100">
-      <b-col lg="4" class="order-1 order-lg-1 p-0 d-inline-flex">
-        <b-img fluid-grow src="../assets/welcome_back2.png"/>
-      </b-col>
-      <b-col lg="8" class="order-lg-2 order-2 p-0 align-self-center d-inline-flex">
-        <b-form inline @submit="onSubmit">
-          <b-input-group class="m-1">
-            <b-form-input type="email" required v-model="credentials.email" id="inputmailinline" placeholder="E-mail"/>
-          </b-input-group>
-          <b-input-group class="m-1">
-            <b-form-input type="password" required v-model="credentials.password" id="inputpasswordinline"
-                          placeholder="Password"/>
-          </b-input-group>
-          <b-button type="submit" class="text-white btn-secondary m-1">Log in</b-button>
-          <b-link class="text-light m-1">Reset password</b-link>
-          <b-form-invalid-feedback :state="loginValidation" v-text="loginError"/>
-        </b-form>
-      </b-col>
+  <div class="about py-auto bg-primary my-auto overflow-y">
+    <b-container class="flex-row">
+      <b-row align-v="end"  class="flex-row my-3">
+        <b-col lg="6" md="7" sm="7" class="order-1 order-lg-1 ">
+          <b-img fluid-grow src="../assets/welcome_back2.png"/>
+        </b-col>
+        <b-col lg="6" md="5" sm="5" class="order-lg-2 order-2">
+          <b-form inline @submit="onSubmit">
+            <b-form-row class="m-0">
+              <b-input-group class="mx-auto">
+                <b-form-input type="email" class="mb-1 mr-1" required v-model="credentials.email" id="inputmailinline"
+                              placeholder="E-mail"/>
+              </b-input-group>
+              <b-input-group class="mx-auto">
+                <b-form-input type="password" class="mb-1 mr-1" required v-model="credentials.password" id="inputpasswordinline"
+                              placeholder="Password"/>
+              </b-input-group>
+            </b-form-row>
+            <b-form-row class="justify-content-between mx-lg-0 mx-0 mx-md-auto d-flex flex-row">
+              <b-button type="submit" class="text-white btn-secondary">Log in</b-button>
+              <b-link class="text-light my-auto m-1">Reset password</b-link>
+            </b-form-row>
+            <b-form-invalid-feedback :state="loginValidation" v-text="loginError"/>
+          </b-form>
+        </b-col>
+      </b-row>
 
     </b-container>
 

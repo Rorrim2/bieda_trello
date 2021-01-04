@@ -28,7 +28,7 @@
                        @ProfileChanged="changeProfile($event)"/>
       </div>
     </div>
-    <router-view class="position-relative overflow-auto" />
+    <router-view class="position-relative" />
   </div>
 </template>
 
