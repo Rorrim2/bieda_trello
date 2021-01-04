@@ -10,9 +10,7 @@
       <b-dropdown-header variant="success" class="m-0 p-0">
         <div class="d-flex flex-row m-0 p-0">
           <b class="p-0 pl-5 mx-auto my-0 d-inline-flex align-self-center">
-            <b>
-              Account
-            </b>
+            <b>Account</b>
           </b>
           <b-button @click="hide_overlay($event)" variant="danger"
                     class="float-right p-0 d-inline-flex flex-column justify-content-between text-center" style="height: 30px; width:30px;">

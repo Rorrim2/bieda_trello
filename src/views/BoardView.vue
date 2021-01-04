@@ -1,23 +1,61 @@
 <template>
-  <div class="bg-primary h-100 pt-0" style=" background-size: cover;" @error="onError"
+  <div class="bg-primary my-0 py-0" style="background-position-x: center; background-size: cover;" @error="onError"
        v-bind:style="{ backgroundImage: 'url(' + decoded + ')' }">
     <b-row>
-      <b-navbar class="w-100 mx-2 px-4" style="background-color: rgba(200,200,200, 0.7);">
-        <b-navbar-brand class="text-dark">
-          <b-nav-text class="h2 text-dark font-weight-bold" v-text="board.title"/>
+      <b-navbar class="w-100 mx-2 px-4 py-0 my-0" style="background-color: rgba(200,200,200, 0.7);">
+        <b-navbar-brand class="text-dark py-0 my-0">
+          <b-nav-text style="font-size: larger" class="h2 text-dark m-0 p-0 font-weight-bold" v-text="board.title"/>
         </b-navbar-brand>
         <b-navbar-nav>
 
         </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
-          <b-nav-item-dropdown text="Edit" no-caret right>
-            <b-dropdown-item class="m-1 p-1"  v-b-modal.modal-change-board-name>Edit table name</b-dropdown-item>
-            <b-dropdown-item class="m-1 p-1" v-b-modal.modal-change-board-back>Edit table background</b-dropdown-item>
-            <b-dropdown-item class="m-1 p-1" v-b-modal.modal-change-board-visibility>Edit table visibility</b-dropdown-item>
-          </b-nav-item-dropdown>
-          <b-nav-item href="#">Close</b-nav-item>
-        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto py-0 my-0">
+          <b-nav-item-dropdown no-flip toggle-class="align-top rounded-circle mx-auto px-0 py-0"
+                               ref="d_down"  @show="show_overlay($event)" text="Board's Menu" no-caret right>
 
+            <b-dropdown-header variant="success" class="m-0 p-0">
+              <div class="d-flex flex-row m-0 p-0 justify-content-between">
+                <b class="pr-4 pl-5 ml-5 mr-5 my-0 d-inline-flex align-self-center">
+                  <b>Menu</b>
+                </b>
+                <b-button @click="hide_overlay($event)" variant="danger"
+                          class="float-right p-0 d-inline-flex flex-column justify-content-between text-center" style="height: 30px; width:30px;">
+                  <span aria-hidden="true" class="align-self-center " style="font-size: 1.1rem;" >&times</span>
+                </b-button>
+              </div>
+            </b-dropdown-header>
+            <b-dropdown-divider class="w-100 "></b-dropdown-divider>
+            <b-dropdown-item class="w-100 p-0">
+              <b-button variant="outline-dark" class="text-center border-0 w-100">
+                About
+              </b-button>
+              <b-dropdown-divider class="w-100 "></b-dropdown-divider>
+
+            </b-dropdown-item>
+            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-name>
+              <b-button variant="outline-dark" class="text-center border-0 w-100">
+                Edit board name
+              </b-button>
+            </b-dropdown-item>
+            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-back>
+              <b-button variant="outline-dark" class="text-center border-0 w-100">
+                Edit table background
+              </b-button>
+            </b-dropdown-item>
+            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-visibility>
+              <b-button variant="outline-dark" class="text-center border-0 w-100">
+                Edit table visibility
+              </b-button>
+            </b-dropdown-item>
+            <b-dropdown-divider class="w-100 "></b-dropdown-divider>
+
+            <b-dropdown-item class="w-100 p-0" href="#">
+              <b-button variant="outline-danger" class="text-center border-0 w-100">
+                Close
+              </b-button>
+            </b-dropdown-item>
+          </b-nav-item-dropdown>
+        </b-navbar-nav>
 
       </b-navbar>
     </b-row>
@@ -66,7 +104,16 @@
     </div>
   </div>
 </template>
+<style>
+a.dropdown-item {
+  padding: 0;
+}
 
+.btn:focus{
+  box-shadow: none!important;
+  outline: none!important;
+}
+</style>
 <script lang="ts">
 
 import SingleList from "@/components/SingleList.vue";
@@ -82,6 +129,7 @@ import {
 import {createList, decodeUrl, fetchBoard} from "@/utils";
 import {getFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
+import {BDropdown} from "bootstrap-vue";
 
 @Component({
   components: {
@@ -96,7 +144,7 @@ export default class BoardView extends Vue {
   private name: string = "";
   private back: string = "";
   private isVisible: string = "";
-
+  private show: boolean = false;
   get decoded(): string {
     console.debug("AHAHAHAHAH");
     if (this.board.background !== undefined)
@@ -121,6 +169,17 @@ export default class BoardView extends Vue {
     //this.listOfLists.push(<SingleListModel>{name: this.list.name, listOfCards: []})
     this.list.title = ''
     console.log("BoardView")
+  }
+
+  show_overlay(evt: Event) {
+    this.show = true;
+  }
+
+
+  hide_overlay(evt: Event) {
+    this.show = false;
+    const dropdown = this.$refs.d_down as BDropdown;
+    dropdown.hide();
   }
 
   handleName() {
