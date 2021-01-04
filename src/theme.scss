@@ -72,6 +72,14 @@ $spacer: 2rem;
     font-size: 1.0rem;
   }
 }
+.overflow-y {
+  overflow-y:auto;
+  -ms-overflow-y: auto;
+  -webkit-ovy:a;
+  overflow-x:hidden;
+  -ms-overflow-x: hidden;
+  -webkit-ovx:h;
 
+}
 @import '~bootstrap';
 @import '~bootstrap-vue';
