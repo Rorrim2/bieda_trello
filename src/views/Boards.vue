@@ -1,8 +1,13 @@
 <template>
-  <div class="bg-primary">
+  <div class="bg-primary my-auto overflow-y">
     <!-- Card -->
-    <p class="h2 font-weight-bold align-top mt-4  text-light media-aside-right">{{user.name}}'s Boards</p>
+
     <b-container fluid="lg md sm" class="flex-row py-1">
+      <b-row>
+        <p class="h2 font-weight-bold align-top mt-4  text-light media-aside-right">{{user.name}}'s Boards</p>
+
+      </b-row>
+      <hr class="w-100">
       <b-row >
         <div style="width: 23rem!important;"
              class="m-0 col-6 col-md-4 col-lg-3 col-sm-6  text-truncate"
