@@ -3,9 +3,9 @@
     <div class="bg-darker-primary flex-row d-flex justify-content-between">
       <b-navbar class="w-100 bg-darker-primary flex-row d-flex justify-content-between my-0 py-0" toggleable="lg" v-bind:class="isLoggedIn ? 'd-inline-flex' : ''"
                 variant="primary">
-        <b-navbar-brand href="/" class="flex-row d-inline-flex my-auto my-xl-1 my-lg-1">
-          <b-img width="50px" class="d-inline-flex align-top mr-2 mt-0 mb-0 p-0" src="./assets/racoon.png"/>
-          <b-nav-text class="h2 align-self-center d-flex d-inline text-white p-0 m-0" v-text="`BiedaTrello`"/>
+        <b-navbar-brand  href="/" class="flex-row d-inline-flex my-auto my-xl-1 my-lg-1">
+          <b-img width="40px" class="d-inline-flex align-top mr-2 mt-0 mb-0 p-0" src="./assets/racoon.png"/>
+          <b-nav-text style="font-size: larger"  class="h2 align-self-center d-flex d-inline text-white p-0 m-0" v-text="`BiedaTrello`"/>
         </b-navbar-brand>
         <b-navbar-toggle v-if="!isLoggedIn" target="nav-collapse"></b-navbar-toggle>
         <b-collapse v-if="!isLoggedIn" id="nav-collapse" class="h-100 my-auto" is-nav>
