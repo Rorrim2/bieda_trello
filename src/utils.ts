@@ -1,4 +1,5 @@
 import {
+    CreateCardMutation,
     CreateListMutation,
     CreateNewBoardMutation,
     EditProfile,
@@ -7,15 +8,14 @@ import {
     RefreshMutation,
     RegisterMutation,
     RevokeJTIMutation, VerifyTokenMutation
-} from "@/data_models/mutations";
+} from '@/data_models/mutations';
 import {
     AuthResult, BoardModel, BoardPreview,
     Credentials, empty, ErrorCallback,
     MutationCallback, Payload, QueryCallback,
-    RegisterCredentials, SingleListEntry,
-    StorageDescriptor,
-    SingleListModel, Tokens, User
-} from "@/data_models/types";
+    RegisterCredentials, SingleCardModel, SingleListEntry,
+    SingleListModel, StorageDescriptor, Tokens, User
+} from '@/data_models/types';
 import {getFromStorage, removeFromStorage, storeInStorage} from "@/store";
 import {apolloClient} from "@/vue-apollo";
 import {BoardQuery, BoardsQuery, ListQuery} from "@/data_models/queries";
@@ -230,6 +230,20 @@ export function createList(data: SingleListEntry, onResult: MutationCallback<{li
         onResult(value.data.createnewlist);
     }).catch(reason => {
         onError(reason);
+    });
+}
+
+export function createCard(data: {list_id:string, title:string},
+                           onResult: MutationCallback<{card:SingleCardModel, success:boolean}>,
+                           onError:ErrorCallback) {
+    apolloClient.mutate({
+        mutation: CreateCardMutation,
+        variables: {
+            list_id: data.list_id,
+            title: data.title,
+        }
+    }).then(value => {onResult(value.data.createcard);
+    }).catch(reason => {onError(reason);
     });
 }
 export function editProfile(data:User,

@@ -86,20 +86,16 @@ export interface BoardModel {
     lists: Array<SingleListPreview>;
 }
 
-export interface SingleListPreview{
-    id: string;
-}
-
 export interface SingleCardModel {
-    activities: Array<ActivityModel>;
-    archived: boolean;
+    id: string;
     cover: string;
     description: string;
     dueDate: string;
-    id: string;
-    labels: Array<LabelModel>;
-    positionInList: number;
     title: string;
+    positionInList: number;
+    activities: Array<ActivityModel>;
+    archived: boolean;
+    labels: Array<LabelModel>;
 }
 
 export interface SingleListEntry {

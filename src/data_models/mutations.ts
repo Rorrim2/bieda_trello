@@ -131,6 +131,29 @@ export const AddAdminMutation = gql`
         }
     }`;
 
+export const UpdateBoard = gql`
+    mutation UpdateBoard($board_id: String!, $title: String, $description: String, $background: String){
+        updateboard(boardId: $board_id, title: $title, description: $description, background: $background) {
+            board{
+                maker{
+                    id
+                }
+                background
+                id
+                admins{
+                    id
+                }
+                isClosed
+                isVisible
+                users {
+                    id
+                }
+                title
+            }
+        }
+    }
+`
+
 export const CreateListMutation = gql`
     mutation CreateNewList($board_id: String!, $position_on_board: Int!, $title: String!){
         createnewlist(boardId: $board_id, positionOnBoard: $position_on_board, title: $title){
@@ -162,12 +185,6 @@ export const CreateCardMutation = gql`
                 dueDate
                 title
                 positionInList
-                list {
-                    id
-                    board{
-                        id
-                    }
-                }
             }
             success
         }
