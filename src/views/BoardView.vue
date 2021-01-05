@@ -4,7 +4,12 @@
     <b-row>
       <b-navbar class="w-100 mx-2 px-4 py-0 my-0" style="background-color: rgba(200,200,200, 0.7);">
         <b-navbar-brand class="text-dark py-0 my-0">
-          <b-nav-text style="font-size: larger" class="h2 text-dark m-0 p-0 font-weight-bold" v-text="board.title"/>
+          <b-button v-show="!isEditingTitle" style="max-width: 150px; font-size: larger" class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
+                      @click="editTitle($event)" v-text="board.title"/>
+          <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)" >
+            <b-form-input type="text" class="mr-1" v-model="board.title" ref="boardTitle"
+                  style="max-width: 150px;" />
+          </b-form>
         </b-navbar-brand>
         <b-navbar-nav>
         </b-navbar-nav>
@@ -89,7 +94,6 @@
         <b-row align-v="start" align-h="start"
                class="position-relative h-100 mx-auto my-1 flex-nowrap d-flex"
                style="flex-grow: 1;">
-
           <div class="absolute-stretched no-wrap-and-select mb-2 pb-2 overflow-x">
             <div class="single-list h-100" v-for="list_s in board.lists">
               <single-list :list="list_s"></single-list>
@@ -155,7 +159,9 @@ export default class BoardView extends Vue {
   private board: BoardModel = dummyBoardModel;
   private name: string = "";
   private back: string = "";
+  private boardName: string = "";
   private isVisible: string = "";
+  private isEditingTitle: boolean = false;
   private show: boolean = false;
   get decoded(): string {
     console.debug("AHAHAHAHAH");
@@ -167,6 +173,26 @@ export default class BoardView extends Vue {
   onError(event: Event){
     console.log("onError");
     (<any>event.target).style =`backgroundImage: 'url(${require('../assets/temp.png')})'`;
+  }
+
+  editTitle(event: Event) {
+    console.log("here")
+    this.isEditingTitle = true;
+    this.boardName = String(this.board.title);
+    this.$nextTick(() => {
+      const elem = this.$refs.boardTitle;
+      elem.focus();
+      console.log(elem);
+    });
+  }
+
+  onTitleSubmit(event: Event) {
+    event.preventDefault();
+    console.log(this.board.title);
+    if (this.board.title == undefined || this.board.title === "") {
+      this.board.title = this.boardName;
+    }
+    this.isEditingTitle = false;
   }
 
   onCreate() {
@@ -186,7 +212,6 @@ export default class BoardView extends Vue {
   show_overlay(evt: Event) {
     this.show = true;
   }
-
 
   hide_overlay(evt: Event) {
     this.show = false;
@@ -216,7 +241,8 @@ export default class BoardView extends Vue {
   modalOkVisible() {
     this.board.isVisible = this.isVisible == "public";
   }
-mounted() {
+
+  mounted() {
     fetchBoard(getFromStorage("opened-board", StorageDescriptor.session), data => {
       this.board = data;
     }, error => {
