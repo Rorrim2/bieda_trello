@@ -1,18 +1,17 @@
 <template>
-  <div style="width: 15vw; margin: 3vw;">
     <b-card
         :title="listModel.title"
-        style="max-width: 20rem; background-color: rgba(245,245,245, 0.3);"
-        class="mb-2"
+        style="background-color: rgba(245,245,245, 0.3);"
         text-variant="light">
+      <div class="card-body">
       <div v-for="card_s in listModel.cards">
         <single-card :card="card_s"></single-card>
       </div>
 
       <b-button @click="onCreateCard($event)" variant="secondary"
                 style="margin: 1vw;" type="button" v-text="`Add Card`" />
+      </div>
     </b-card>
-  </div>
 </template>
 
 <script lang="ts">

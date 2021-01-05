@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-primary my-0 py-0" style="background-position-x: center; background-size: cover;" @error="onError"
+  <div class="bg-primary position-relative h-100 flex-column d-flex board-background my-0 py-0" @error="onError"
        v-bind:style="{ backgroundImage: 'url(' + decoded + ')' }">
     <b-row>
       <b-navbar class="w-100 mx-2 px-4 py-0 my-0" style="background-color: rgba(200,200,200, 0.7);">
@@ -7,12 +7,10 @@
           <b-nav-text style="font-size: larger" class="h2 text-dark m-0 p-0 font-weight-bold" v-text="board.title"/>
         </b-navbar-brand>
         <b-navbar-nav>
-
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto py-0 my-0">
           <b-nav-item-dropdown no-flip toggle-class="align-top rounded-circle mx-auto px-0 py-0"
                                ref="d_down"  @show="show_overlay($event)" text="Board's Menu" no-caret right>
-
             <b-dropdown-header variant="success" class="m-0 p-0">
               <div class="d-flex flex-row m-0 p-0 justify-content-between">
                 <b class="pr-4 pl-5 ml-5 mr-5 my-0 d-inline-flex align-self-center">
@@ -25,12 +23,10 @@
               </div>
             </b-dropdown-header>
             <b-dropdown-divider class="w-100 "></b-dropdown-divider>
-            <b-dropdown-item class="w-100 p-0">
-              <b-button variant="outline-dark" class="text-center border-0 w-100">
+            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-name>
+              <b-button variant="outline-secondary" class="text-center border-0 w-100">
                 About
               </b-button>
-              <b-dropdown-divider class="w-100 "></b-dropdown-divider>
-
             </b-dropdown-item>
             <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-name>
               <b-button variant="outline-dark" class="text-center border-0 w-100">
@@ -48,7 +44,12 @@
               </b-button>
             </b-dropdown-item>
             <b-dropdown-divider class="w-100 "></b-dropdown-divider>
-
+            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-visibility>
+              <b-button variant="outline-secondary" class="text-center border-0 w-100">
+                View board's activity
+              </b-button>
+            </b-dropdown-item>
+            <b-dropdown-divider class="w-100 "></b-dropdown-divider>
             <b-dropdown-item class="w-100 p-0" href="#">
               <b-button variant="outline-danger" class="text-center border-0 w-100">
                 Close
@@ -83,25 +84,36 @@
       </b-form-group>
     </b-modal>
 
-    <b-card-group deck>
-      <div v-for="list_s in board.lists">
-        <single-list :list="list_s"></single-list>
-      </div>
-    </b-card-group>
-    <div class="card text-light" style="width: 15vw; margin: 3vw; background-color: rgba(245,245,245, 0.3);"
-         @submit.prevent="onCreate">
-      <div class="card-body">
-        <form>
-          <p class="h3 text-center">Create list</p>
-          <label for="defaultFormCardNameEx" class="font-weight-light">List name</label>
-          <input type="text" v-model="list.title" id="defaultFormCardNameEx" class="form-control">
-          <br>
-          <div class="text-center" style="margin: 1vw;">
-            <button class="btn bg-secondary text-light" type="submit">Create list</button>
+    <b-container fluid class="position-relative p-0 mx-0 my-auto" style="flex-grow: 1; ">
+      <div class="absolute-stretched">
+        <b-row align-v="start" align-h="start"
+               class="position-relative h-100 mx-auto my-1 flex-nowrap d-flex"
+               style="flex-grow: 1;">
+
+          <div class="absolute-stretched no-wrap-and-select mb-2 pb-2 overflow-x">
+            <div class="single-list h-100" v-for="list_s in board.lists">
+              <single-list :list="list_s"></single-list>
+            </div>
+            <div class="single-list h-100">
+              <b-card class="text-light" style="background-color: rgba(245,245,245, 0.3);"
+                      @submit.prevent="onCreate">
+                <div class="card-body">
+                  <form>
+                    <p class="h3 text-center">Create list</p>
+                    <label for="defaultFormCardNameEx" class="font-weight-light">List name</label>
+                    <input type="text" v-model="list.title" id="defaultFormCardNameEx" class="form-control">
+                    <br>
+                    <div class="text-center" style="margin: 1vw;">
+                      <button class="btn bg-secondary text-light" type="submit">Create list</button>
+                    </div>
+                  </form>
+                </div>
+              </b-card>
+            </div>
           </div>
-        </form>
+        </b-row>
       </div>
-    </div>
+    </b-container>
   </div>
 </template>
 <style>
