@@ -12,6 +12,18 @@
           </b-form>
         </b-navbar-brand>
         <b-navbar-nav>
+          <b-nav-item v-b-modal.modal-change-board-visibility>
+            <b-button variant="transparent" class="p-0" @click="setupVisibilityModal($event)" >
+              <b-icon v-if="board.isVisible" variant="secondary" icon="globe"  title="Public"/>
+              <b-icon v-if="!board.isVisible" variant="warning" icon="lock"  title="Private"/>
+            </b-button>
+          </b-nav-item>
+          <b-nav-item v-b-modal.view-members-of-board>
+            <b-button variant="transparent" class="p-0" title="Show members">
+              <b-icon variant="primary" icon="person" />
+              Members
+            </b-button>
+          </b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto py-0 my-0">
           <b-nav-item-dropdown no-flip toggle-class="align-top rounded-circle mx-auto px-0 py-0"
@@ -33,6 +45,7 @@
                 About
               </b-button>
             </b-dropdown-item>
+            <b-dropdown-divider class="w-100 "></b-dropdown-divider>
             <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-name>
               <b-button variant="outline-dark" class="text-center border-0 w-100">
                 Edit board name
@@ -44,7 +57,7 @@
               </b-button>
             </b-dropdown-item>
             <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-visibility>
-              <b-button variant="outline-dark" class="text-center border-0 w-100">
+              <b-button variant="outline-dark" @click="setupVisibilityModal($event)" class="text-center border-0 w-100">
                 Edit table visibility
               </b-button>
             </b-dropdown-item>
@@ -66,6 +79,44 @@
       </b-navbar>
     </b-row>
 
+    <b-modal id="view-members-of-board" v-bind:title="`Members of ` + board.title.substring(0, 20) + `...`">
+      <div>
+        <b-container fluid>
+          <b-row><h4>Maker:</h4></b-row>
+          <b-row align-v="start">
+            <UserBubble :user="board.maker" :badge_variant="`warning`" :badge="`star-fill`"/>
+          </b-row>
+        </b-container>
+        <hr>
+        <b-container fluid>
+          <b-row><h4>Admins:</h4></b-row>
+          <b-row align-v="start">
+            <div v-for="boardAdmin in board.admins">
+              <UserBubble :user="boardAdmin" :badge_variant="`danger`" :badge="`shield-fill`"/>
+            </div>
+          </b-row>
+        </b-container>
+        <hr>
+        <b-container fluid>
+          <b-row><h4>Users:</h4></b-row>
+          <b-row align-v="start">
+            <div v-for="boardUser in board.users">
+              <UserBubble :user="boardUser"/>
+            </div>
+          </b-row>
+        </b-container>
+        <hr>
+      </div>
+      <template #modal-footer="{ ok }">
+        <div class="w-100">
+          <b-button  type="ok"
+              variant="primary"
+                    @click="ok()"
+              class="float-right" v-text="`OK`"/>
+        </div>
+      </template>
+    </b-modal>
+
     <b-modal id="modal-change-board-name" @ok="modalOkName" title="Enter new table name">
       <b-form>
         <b-form-group @submit.prevent="handleName">
@@ -83,10 +134,10 @@
     </b-modal>
 
     <b-modal id="modal-change-board-visibility" @ok="modalOkVisible" title="Choose visibility option">
-      <b-form-group label="Choose visibility option">
-        <b-form-radio v-model="isVisible" name="some-radios" value="private">Private</b-form-radio>
-        <b-form-radio v-model="isVisible" name="some-radios" value="public">Public</b-form-radio>
-      </b-form-group>
+      <b-form-radio-group v-model="isVisible" label="Choose visibility option">
+        <b-form-radio name="some-radios" value="Private">Private</b-form-radio>
+        <b-form-radio name="some-radios" value="Public">Public</b-form-radio>
+      </b-form-radio-group>
     </b-modal>
 
     <b-container fluid class="position-relative p-0 mx-0 my-auto" style="flex-grow: 1; ">
@@ -163,6 +214,7 @@ export default class BoardView extends Vue {
   private isVisible: string = "";
   private isEditingTitle: boolean = false;
   private show: boolean = false;
+
   get decoded(): string {
     console.debug("AHAHAHAHAH");
     if (this.board.background !== undefined)
@@ -173,6 +225,11 @@ export default class BoardView extends Vue {
   onError(event: Event){
     console.log("onError");
     (<any>event.target).style =`backgroundImage: 'url(${require('../assets/temp.png')})'`;
+  }
+
+  setupVisibilityModal(event: Event){
+    event.preventDefault();
+    this.isVisible = this.board.isVisible ? 'Public' : 'Private';
   }
 
   editTitle(event: Event) {
@@ -239,7 +296,7 @@ export default class BoardView extends Vue {
   }
 
   modalOkVisible() {
-    this.board.isVisible = this.isVisible == "public";
+    this.board.isVisible = this.isVisible == "Public";
   }
 
   mounted() {
