@@ -11,7 +11,7 @@ import {BoardQuery, BoardsQuery} from "@/data_models/queries";
 import {
     ChangeBoardVisibilityMutation,
     CloseBoardMutation,
-    CreateNewBoardMutation,
+    CreateNewBoardMutation, ReopenBoardMutation,
     UpdateBoardMutation
 } from "@/data_models/mutations/boards";
 
@@ -98,6 +98,19 @@ export function changeBoardVisibility(boardId: string, visibility: boolean,onRes
         }
     }).then(value => {
         onResult(value.data.changeboardvisibility.board);
+    }).catch(reason => {
+        onError(reason);
+    })
+}
+
+export function reopenBoard(boardId: string, onResult: QueryCallback<CloseBoardNode>, onError: ErrorCallback){
+    apolloClient.mutate({
+        mutation: ReopenBoardMutation,
+        variables: {
+            board_id:boardId
+        }
+    }).then(value => {
+        onResult(value.data.reopenBoard.board);
     }).catch(reason => {
         onError(reason);
     })

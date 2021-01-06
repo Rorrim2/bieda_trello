@@ -4,7 +4,8 @@
     <b-overlay variant="dark" :show="fetchLoading" no-wrap/>
     <div v-if="fetchLoading" class="h-100 w-100">
     </div>
-    <b-row v-if="!fetchLoading">
+
+    <b-row v-if="!fetchLoading&&!board.isClosed">
       <b-navbar class="w-100 mx-2 px-4 py-0 my-0" style="background-color: rgba(200,200,200, 0.7);">
         <b-navbar-brand class="text-dark py-0 my-0">
           <b-button v-show="!isEditingTitle" style="max-width: 150px; font-size: larger"
@@ -154,8 +155,38 @@
              ok-variant="danger" id="modal-board-close" @ok="closeBoard">
       You can reopen it again, whenever you want to, unless you delete it permanently.
     </b-modal>
+    <b-container v-if="!fetchLoading&&board.isClosed">
+      <div class="absolute-stretched">
+        <b-container fluid class="position-relative h-100 align-self-center mx-0 my-auto d-flex overflow-y">
+          <b-row align-v="center" align-h="center"
+                 class="position-relative mx-auto my-1 flex-nowrap d-flex"
+                 style="flex-grow: 1;">
+            <b-jumbotron bg-variant="lighter" border-variant="dark" text-variant="dark">
+              <template #header>
+                <h2>{{ board.title }} is currently closed.</h2>
+                <hr>
+              </template>
+              <template #lead>
+                <p>This board is currently closed and you cannot show its contents. If you want to restore board from
+                  archived items, press 'Reopen' button. If you want to permanently delete board, press 'Kill board'</p>
+              </template>
+              <hr>
+              <b-container fluid>
+                <b-row align-h="end">
+                  <b-button variant="success" class="mr-1" @click="reopenBoard($event)">Reopen</b-button>
+                  <b-button variant="danger">Kill board</b-button>
+                </b-row>
+              </b-container>
+            </b-jumbotron>
 
-    <b-container fluid class="position-relative p-0 mx-0 my-auto" style="flex-grow: 1; ">
+            <p></p>
+
+          </b-row>
+        </b-container>
+      </div>
+    </b-container>
+    <b-container v-if="!fetchLoading&&!board.isClosed" fluid class="position-relative p-0 mx-0 my-auto"
+                 style="flex-grow: 1; ">
       <div class="absolute-stretched">
         <b-row align-v="start" align-h="start"
                class="position-relative h-100 mx-auto my-1 flex-nowrap d-flex"
@@ -208,7 +239,15 @@ import {
   SingleListModel,
   StorageDescriptor
 } from "@/data_models/types";
-import {createList, decodeUrl, fetchBoard, closeBoard, updateBoard, changeBoardVisibility} from "@/utils/functions";
+import {
+  createList,
+  decodeUrl,
+  fetchBoard,
+  closeBoard,
+  updateBoard,
+  reopenBoard,
+  changeBoardVisibility
+} from "@/utils/functions";
 import {getFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
 import {BDropdown, BFormInput} from "bootstrap-vue";
@@ -241,9 +280,18 @@ export default class BoardView extends Vue {
     (<any>event.target).style = `backgroundImage: 'url(${require('../assets/temp.png')})'`;
   }
 
-  setupNameModal(event: Event){
+  setupNameModal(event: Event) {
     event.preventDefault();
     this.boardName = String(this.board.title);
+  }
+
+  reopenBoard(event: Event) {
+    event.preventDefault();
+    reopenBoard(this.board.id, data => {
+      this.board.isClosed = data.isClosed;
+    }, error => {
+      console.log(error);
+    });
   }
 
   setupVisibilityModal(event: Event) {
@@ -270,7 +318,7 @@ export default class BoardView extends Vue {
       this.board.title = this.boardName;
     }
 
-    if(this.board.title === this.boardName) {
+    if (this.board.title === this.boardName) {
       this.boardName = "";
       return;
     }
@@ -306,7 +354,7 @@ export default class BoardView extends Vue {
     if (this.board.title == undefined || this.board.title === "") {
       this.board.title = this.boardName;
     }
-    if(this.board.title === this.boardName) {
+    if (this.board.title === this.boardName) {
       this.boardName = "";
       return;
     }
@@ -324,7 +372,7 @@ export default class BoardView extends Vue {
     this.handleName();
   }
 
-  updateBoard(){
+  updateBoard() {
     updateBoard(this.board, data => {
       this.board = data;
     }, error => {
@@ -332,7 +380,7 @@ export default class BoardView extends Vue {
     });
   }
 
-  closeBoard(evt: Event){
+  closeBoard(evt: Event) {
     closeBoard(this.board.id, data => {
       this.board.isClosed = data.isClosed;
     }, error => {
@@ -356,7 +404,7 @@ export default class BoardView extends Vue {
 
   mounted() {
     fetchBoard(getFromStorage("opened-board", StorageDescriptor.session), data => {
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.board = data;
       })
       setTimeout(() => {

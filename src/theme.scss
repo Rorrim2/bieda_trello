@@ -24,6 +24,7 @@ $theme-colors: (
   darker-primary: darken(#1b6ca8, 7%),
   secondary: #0a97b0,
   light: #e5fffe,
+  lighter: lighten(#e5fffe, 15%),
   dark: #40514e,
   info: #ffd3e1,
   success: #28a988,
