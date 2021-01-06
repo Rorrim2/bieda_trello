@@ -1,9 +1,10 @@
 <template>
   <div>
-    <b-dropdown @hide="check_if_can_hide($event)" no-caret no-flip toggle-class="rounded-circle px-0 py-0"
+    <b-dropdown @focusout="hide_overlay($event)"  no-caret no-flip toggle-class="rounded-circle px-0 py-0"
                 ref="d_down" @show="show_overlay($event)">
       <template #button-content>
-        <b-avatar badge badge-variant="transparent" size="2.5rem" :title="title" class="bg-secondary text-decoration-none" :id="`user_menu`">
+        <b-avatar badge badge-variant="transparent" size="2.5rem" :title="title"
+                  class="bg-secondary text-decoration-none" :id="`user_menu`">
           <span>{{ shortenUser }}</span>
           <template #badge v-if="badge">
             <b-icon :variant="badge_variant ? badge_variant : `primary`" :icon="badge"/>
@@ -26,7 +27,8 @@
           </b-container>
 
           <b-button @click="hide_overlay($event)" variant="danger"
-                    class="float-right p-0 d-inline-flex flex-column justify-content-between text-center" style="height: 30px; width:30px;">
+                    class="float-right p-0 d-inline-flex flex-column justify-content-between text-center"
+                    style="height: 30px; width:30px;">
             <span aria-hidden="true" class="align-self-center " style="font-size: 1.1rem;" >&times</span>
           </b-button>
         </div>

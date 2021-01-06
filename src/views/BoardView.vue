@@ -1,41 +1,46 @@
 <template>
   <div class="bg-primary position-relative h-100 flex-column d-flex board-background my-0 py-0" @error="onError"
        v-bind:style="{ backgroundImage: 'url(' + decoded + ')' }">
-    <b-row>
+    <b-overlay variant="dark" :show="fetchLoading" no-wrap/>
+    <div v-if="fetchLoading" class="h-100 w-100">
+    </div>
+    <b-row v-if="!fetchLoading">
       <b-navbar class="w-100 mx-2 px-4 py-0 my-0" style="background-color: rgba(200,200,200, 0.7);">
         <b-navbar-brand class="text-dark py-0 my-0">
-          <b-button v-show="!isEditingTitle" style="max-width: 150px; font-size: larger" class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
-                      @click="editTitle($event)" v-text="board.title"/>
-          <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)" >
+          <b-button v-show="!isEditingTitle" style="max-width: 150px; font-size: larger"
+                    class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
+                    @click="editTitle($event)" v-text="board.title"/>
+          <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)">
             <b-form-input type="text" class="mr-1" v-model="board.title" ref="boardTitle"
-                  style="max-width: 150px;" />
+                          style="max-width: 150px;"/>
           </b-form>
         </b-navbar-brand>
         <b-navbar-nav>
           <b-nav-item v-b-modal.modal-change-board-visibility>
-            <b-button variant="transparent" class="p-0" @click="setupVisibilityModal($event)" >
-              <b-icon v-if="board.isVisible" variant="secondary" icon="globe"  title="Public"/>
-              <b-icon v-if="!board.isVisible" variant="warning" icon="lock"  title="Private"/>
+            <b-button variant="transparent" class="p-0" @click="setupVisibilityModal($event)">
+              <b-icon v-if="board.isVisible" variant="secondary" icon="globe" title="Public"/>
+              <b-icon v-if="!board.isVisible" variant="warning" icon="lock" title="Private"/>
             </b-button>
           </b-nav-item>
           <b-nav-item v-b-modal.view-members-of-board>
             <b-button variant="transparent" class="p-0" title="Show members">
-              <b-icon variant="primary" icon="person" />
+              <b-icon variant="primary" icon="person"/>
               Members
             </b-button>
           </b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto py-0 my-0">
           <b-nav-item-dropdown no-flip toggle-class="align-top rounded-circle mx-auto px-0 py-0"
-                               ref="d_down"  @show="show_overlay($event)" text="Board's Menu" no-caret right>
+                               ref="d_down" @show="show_overlay($event)" text="Board's Menu" no-caret right>
             <b-dropdown-header variant="success" class="m-0 p-0">
               <div class="d-flex flex-row m-0 p-0 justify-content-between">
                 <b class="pr-4 pl-5 ml-5 mr-5 my-0 d-inline-flex align-self-center">
                   <b>Menu</b>
                 </b>
                 <b-button @click="hide_overlay($event)" variant="danger"
-                          class="float-right p-0 d-inline-flex flex-column justify-content-between text-center" style="height: 30px; width:30px;">
-                  <span aria-hidden="true" class="align-self-center " style="font-size: 1.1rem;" >&times</span>
+                          class="float-right p-0 d-inline-flex flex-column justify-content-between text-center"
+                          style="height: 30px; width:30px;">
+                  <span aria-hidden="true" class="align-self-center " style="font-size: 1.1rem;">&times</span>
                 </b-button>
               </div>
             </b-dropdown-header>
@@ -57,7 +62,8 @@
               </b-button>
             </b-dropdown-item>
             <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-visibility>
-              <b-button variant="outline-dark" @click="setupVisibilityModal($event)" class="text-center border-0 w-100">
+              <b-button variant="outline-dark" @click="setupVisibilityModal($event)"
+                        class="text-center border-0 w-100">
                 Edit table visibility
               </b-button>
             </b-dropdown-item>
@@ -91,7 +97,7 @@
         <b-container fluid>
           <b-row><h4>Admins:</h4></b-row>
           <b-row align-v="start">
-            <div v-for="boardAdmin in board.admins">
+            <div class="mr-1" v-for="boardAdmin in board.admins">
               <UserBubble :user="boardAdmin" :badge_variant="`danger`" :badge="`shield-fill`"/>
             </div>
           </b-row>
@@ -100,7 +106,7 @@
         <b-container fluid>
           <b-row><h4>Users:</h4></b-row>
           <b-row align-v="start">
-            <div v-for="boardUser in board.users">
+            <div class="mr-1" v-for="boardUser in board.users">
               <UserBubble :user="boardUser"/>
             </div>
           </b-row>
@@ -109,10 +115,10 @@
       </div>
       <template #modal-footer="{ ok }">
         <div class="w-100">
-          <b-button  type="ok"
-              variant="primary"
+          <b-button type="ok"
+                    variant="primary"
                     @click="ok()"
-              class="float-right" v-text="`OK`"/>
+                    class="float-right" v-text="`OK`"/>
         </div>
       </template>
     </b-modal>
@@ -127,7 +133,7 @@
 
     <b-modal id="modal-change-board-back" @ok="modalOkBack" title="Enter new back url">
       <b-form>
-        <b-form-group >
+        <b-form-group>
           <b-form-input id="name-input" v-model="back" type="url" required></b-form-input>
         </b-form-group>
       </b-form>
@@ -176,9 +182,9 @@ a.dropdown-item {
   padding: 0;
 }
 
-.btn:focus{
-  box-shadow: none!important;
-  outline: none!important;
+.btn:focus {
+  box-shadow: none !important;
+  outline: none !important;
 }
 </style>
 <script lang="ts">
@@ -214,20 +220,21 @@ export default class BoardView extends Vue {
   private isVisible: string = "";
   private isEditingTitle: boolean = false;
   private show: boolean = false;
+  private fetchLoading: boolean = true;
 
   get decoded(): string {
     console.debug("AHAHAHAHAH");
-    if (this.board.background !== undefined)
+    if (this.board !== dummyBoardModel && this.board.background !== undefined)
       return decodeUrl(this.board.background);
     return require('../assets/temp.png');
   }
 
-  onError(event: Event){
+  onError(event: Event) {
     console.log("onError");
-    (<any>event.target).style =`backgroundImage: 'url(${require('../assets/temp.png')})'`;
+    (<any>event.target).style = `backgroundImage: 'url(${require('../assets/temp.png')})'`;
   }
 
-  setupVisibilityModal(event: Event){
+  setupVisibilityModal(event: Event) {
     event.preventDefault();
     this.isVisible = this.board.isVisible ? 'Public' : 'Private';
   }
@@ -237,7 +244,7 @@ export default class BoardView extends Vue {
     this.isEditingTitle = true;
     this.boardName = String(this.board.title);
     this.$nextTick(() => {
-      const elem: BFormInput = <BFormInput> this.$refs.boardTitle;
+      const elem: BFormInput = <BFormInput>this.$refs.boardTitle;
       elem.focus();
       console.log(elem);
     });
@@ -256,9 +263,9 @@ export default class BoardView extends Vue {
     console.debug("DDDDD");
     this.list.boardId = this.board.id;
     this.list.positionOnBoard = this.board.lists.length;
-    createList(this.list, data =>{
-        this.board.lists.push(data.list);
-      }, error=>{
+    createList(this.list, data => {
+      this.board.lists.push(data.list);
+    }, error => {
       console.log(error.message);
     });
     //this.listOfLists.push(<SingleListModel>{name: this.list.name, listOfCards: []})
@@ -286,11 +293,11 @@ export default class BoardView extends Vue {
     this.$forceUpdate();
   }
 
-  modalOkName(evt:Event){
+  modalOkName(evt: Event) {
     this.handleName();
   }
 
-  modalOkBack(evt:Event){
+  modalOkBack(evt: Event) {
     this.handleBack()
     console.debug("haha");
   }
@@ -301,7 +308,12 @@ export default class BoardView extends Vue {
 
   mounted() {
     fetchBoard(getFromStorage("opened-board", StorageDescriptor.session), data => {
-      this.board = data;
+      this.$nextTick(()=>{
+        this.board = data;
+      })
+      setTimeout(() => {
+        this.fetchLoading = false;
+      }, 1000)
     }, error => {
       console.debug(error.message);
     });
