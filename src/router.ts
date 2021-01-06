@@ -24,7 +24,10 @@ function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGua
         console.debug(from.path)
         let user = <User>getFromStorage('active_user', StorageDescriptor.local);
         if(from.path !== `/u/${user.id}/boards`) {
-            next(`u/${user.id}/boards`);
+            next(`/u/${user.id}/boards`);
+        }
+        else{
+            next(false);
         }
     }
     else {

@@ -174,12 +174,14 @@
               <b-container fluid>
                 <b-row align-h="end">
                   <b-button variant="success" class="mr-1" @click="reopenBoard($event)">Reopen</b-button>
-                  <b-button variant="danger">Kill board</b-button>
+                  <b-button v-b-modal.close-board variant="danger">Kill board</b-button>
                 </b-row>
               </b-container>
             </b-jumbotron>
-
-            <p></p>
+            <b-modal id="close-board" title="Are you sure to delete this board?" cancel-title="Nope" ok-title="Yes. Kill!" cancel-variant="success"
+                     ok-variant="danger"  @ok="deleteBoard">
+              The whole history of board's activity and all board's data would be removed. Please take in consideration, that this action cannot be undone.
+            </b-modal>
 
           </b-row>
         </b-container>
@@ -234,21 +236,22 @@ import SingleCard from "@/components/SingleCard.vue";
 import {Component, Vue} from "vue-property-decorator";
 import {
   BoardModel,
-  dummyBoardModel, dummySingleListEntry,
-  dummySingleListModel, SingleListEntry,
-  SingleListModel,
+  dummyBoardModel,
+  dummySingleListEntry,
+  SingleListEntry,
   StorageDescriptor
 } from "@/data_models/types";
 import {
+  changeBoardVisibility,
+  closeBoard,
   createList,
   decodeUrl,
+  deleteBoard,
   fetchBoard,
-  closeBoard,
-  updateBoard,
   reopenBoard,
-  changeBoardVisibility
+  updateBoard
 } from "@/utils/functions";
-import {getFromStorage} from "@/store";
+import {getFromStorage, removeFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
 import {BDropdown, BFormInput} from "bootstrap-vue";
 
@@ -291,6 +294,19 @@ export default class BoardView extends Vue {
       this.board.isClosed = data.isClosed;
     }, error => {
       console.log(error);
+    });
+  }
+
+  deleteBoard(event: Event){
+    event.preventDefault();
+    deleteBoard(this.board.id, data => {
+      console.log(`is board of id: ${data.board.id} deleted? ${data.success}`);
+      if(data.success){
+        removeFromStorage('opened-board', StorageDescriptor.session);
+        this.$router.push('/');
+      }
+    }, error => {
+        console.log(error);
     });
   }
 

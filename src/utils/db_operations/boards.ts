@@ -1,7 +1,7 @@
 import {
     BoardModel,
     BoardPreview,
-    CloseBoardNode,
+    CloseBoardNode, DeletedBoardNode,
     ErrorCallback,
     MutationCallback,
     QueryCallback
@@ -11,7 +11,7 @@ import {BoardQuery, BoardsQuery} from "@/data_models/queries";
 import {
     ChangeBoardVisibilityMutation,
     CloseBoardMutation,
-    CreateNewBoardMutation, ReopenBoardMutation,
+    CreateNewBoardMutation, DeleteBoardMutation, ReopenBoardMutation,
     UpdateBoardMutation
 } from "@/data_models/mutations/boards";
 
@@ -60,7 +60,7 @@ export function fetchBoards(onResult:QueryCallback<Array<BoardPreview>>,
     });
 }
 
-export function closeBoard(boardId: string, onResult:QueryCallback<CloseBoardNode>, onError: ErrorCallback){
+export function closeBoard(boardId: string, onResult:MutationCallback<CloseBoardNode>, onError: ErrorCallback){
     apolloClient.mutate({
         mutation:CloseBoardMutation,
         variables:{
@@ -73,7 +73,7 @@ export function closeBoard(boardId: string, onResult:QueryCallback<CloseBoardNod
     });
 }
 
-export function updateBoard(board: BoardModel, onResult:QueryCallback<BoardModel>, onError:ErrorCallback){
+export function updateBoard(board: BoardModel, onResult:MutationCallback<BoardModel>, onError:ErrorCallback){
     apolloClient.mutate({
         mutation:UpdateBoardMutation,
         variables: {
@@ -89,7 +89,7 @@ export function updateBoard(board: BoardModel, onResult:QueryCallback<BoardModel
     })
 }
 
-export function changeBoardVisibility(boardId: string, visibility: boolean,onResult:QueryCallback<BoardModel>, onError:ErrorCallback) {
+export function changeBoardVisibility(boardId: string, visibility: boolean,onResult:MutationCallback<BoardModel>, onError:ErrorCallback) {
     apolloClient.mutate({
         mutation: ChangeBoardVisibilityMutation,
         variables: {
@@ -103,7 +103,7 @@ export function changeBoardVisibility(boardId: string, visibility: boolean,onRes
     })
 }
 
-export function reopenBoard(boardId: string, onResult: QueryCallback<CloseBoardNode>, onError: ErrorCallback){
+export function reopenBoard(boardId: string, onResult: MutationCallback<CloseBoardNode>, onError: ErrorCallback){
     apolloClient.mutate({
         mutation: ReopenBoardMutation,
         variables: {
@@ -111,6 +111,19 @@ export function reopenBoard(boardId: string, onResult: QueryCallback<CloseBoardN
         }
     }).then(value => {
         onResult(value.data.reopenBoard.board);
+    }).catch(reason => {
+        onError(reason);
+    })
+}
+
+export function deleteBoard(boardId: string, onResult: MutationCallback<DeletedBoardNode>, onError: ErrorCallback){
+    apolloClient.mutate({
+        mutation: DeleteBoardMutation,
+        variables: {
+            board_id: boardId
+        }
+    }).then(value => {
+        onResult(value.data.deleteboard);
     }).catch(reason => {
         onError(reason);
     })
