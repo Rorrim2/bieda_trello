@@ -63,6 +63,11 @@ export interface Payload{
     exp: number;
 }
 
+export interface CloseBoardNode {
+    id: string;
+    isClosed: boolean;
+}
+
 export interface RegisterCredentials extends Credentials{
     name: string;
     lastName: string;

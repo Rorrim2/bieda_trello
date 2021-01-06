@@ -1,7 +1,14 @@
-import {BoardModel, BoardPreview, ErrorCallback, MutationCallback, QueryCallback} from "@/data_models/types";
+import {
+    BoardModel,
+    BoardPreview,
+    CloseBoardNode,
+    ErrorCallback,
+    MutationCallback,
+    QueryCallback
+} from "@/data_models/types";
 import {apolloClient} from "@/vue-apollo";
 import {BoardQuery, BoardsQuery} from "@/data_models/queries";
-import {CreateNewBoardMutation} from "@/data_models/mutations/boards";
+import {CloseBoardMutation, CreateNewBoardMutation, UpdateBoardMutation} from "@/data_models/mutations/boards";
 
 export function fetchBoard(board_id: string, onResult:QueryCallback<BoardModel>,
                            onError: ErrorCallback){
@@ -46,4 +53,33 @@ export function fetchBoards(onResult:QueryCallback<Array<BoardPreview>>,
     }).catch(reason => {
         onError(reason);
     });
+}
+
+export function closeBoard(boardId: string, onResult:QueryCallback<CloseBoardNode>, onError: ErrorCallback){
+    apolloClient.mutate({
+        mutation:CloseBoardMutation,
+        variables:{
+            board_id:boardId
+        }
+    }).then(value => {
+        onResult(value.data.closeBoard.board);
+    }).catch(reason => {
+        onError(reason);
+    });
+}
+
+export function updateBoard(board: BoardModel, onResult:QueryCallback<BoardModel>, onError:ErrorCallback){
+    apolloClient.mutate({
+        mutation:UpdateBoardMutation,
+        variables: {
+            boardId: board.id,
+            background: board.background,
+            description: board.description,
+            title: board.title
+        }
+    }).then(value => {
+        onResult(value.data.updateboard.board);
+    }).catch(reason => {
+        onError(reason);
+    })
 }

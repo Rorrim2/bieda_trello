@@ -88,7 +88,21 @@ export const UpdateBoardMutation = gql`
     mutation UpdateBoard($background: String, $boardId: String!, $description: String, $title: String){
         updateboard(background: $background, boardId: $boardId, description: $description, title: $title){
             board{
+                maker{
+                    id
+                }
+                background
                 id
+                admins{
+                    id
+                }
+                isClosed
+                isVisible
+                description
+                users {
+                    id
+                }
+                title
             }
         }
     }`;
