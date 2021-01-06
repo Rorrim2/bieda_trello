@@ -8,8 +8,8 @@ export interface ActivityModel extends Node{
     user: User;
 }
 
-enum ActivityModelType {
-    ACTIVITY_LOG_VAL,
+export enum ActivityModelType {
+    ACTIVITY_LOG_VAL = 1,
     COMMENT_VAL,
     CHECKLIST_VAL,
     ATTACHMENT_VAL,

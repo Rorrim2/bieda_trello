@@ -37,13 +37,18 @@
         <single-card :card="card_s"></single-card>
       </div>
 
-      <b-button @click="onCreateCard($event)" variant="secondary"
+      <b-button v-if="!this.creatingCard" @click=onAddCardClick variant="secondary"
                 style="margin: 1vw;" type="button" v-text="`Add Card`"/>
+      <form v-else @submit.prevent="onCreateCard">
+        <label :for=editCardModalName  class="grey-text font-weight-light">Card text</label>
+        <input type="text" v-model="newCardTitle" :id=editCardModalName class="form-control">
+        <div class="text-center" style="margin: 1vw;">
+          <input type="submit" value="Save" class="btn bg-primary text-light">
+        </div>
+      </form>
+
     </div>
   </b-card>
-
-
-
 </template>
 
 <script lang="ts">
@@ -56,7 +61,8 @@ import {
   SingleListModel,
   SingleListPreview
 } from "@/data_models/types";
-import {createCard, fetchList} from '@/utils';
+import {createCard} from '@/utils/db_operations/cards';
+import {fetchList} from '@/utils/db_operations/lists';
 
 @Component({
   components: {
@@ -77,6 +83,10 @@ export default class SingleList extends Vue {
   private listModel: SingleListModel = dummySingleListModel;
   private card: SingleCardModel = dummySingleCardModel;
 
+  private creatingCard: boolean = false;
+  private newCardTitle: string = "";
+  private editCardModalName: string = "editCardModalName" + this.list.id;
+
   mounted() {
     this.listChanged();
   }
@@ -90,16 +100,19 @@ export default class SingleList extends Vue {
     })
   }
 
+  onAddCardClick(event: Event) {
+    this.creatingCard = !this.creatingCard;
+  }
+
   onCreateCard(event: Event) {
-    //TODO I completely messed it up. I don't even know where. Good luck!
-    this.card.title = this.cardName
-    createCard({list_id: this.list.id, title: this.card.title}, data => {
-      this.listChanged()
+    createCard({list_id: this.list.id, title: this.newCardTitle}, data => {
+      this.listModel.cards.push(data.card)
     }, error => {
       console.log(error.message);
     });
     console.log("single list");
-    this.cardName = ''
+    this.newCardTitle = ''
+    this.creatingCard = false;
   }
 
   get valid_title(): boolean {
