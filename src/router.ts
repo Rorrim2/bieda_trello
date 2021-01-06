@@ -6,7 +6,7 @@ import BoardView from './views/BoardView.vue';
 import Settings from './views/Profile.vue';
 import {fetchBoard, getToken, getTokenFromCache} from "@/utils/functions";
 import {empty, StorageDescriptor, User} from "@/data_models/types";
-import {getFromStorage} from "@/store";
+import {getFromStorage, storeInStorage} from "@/store";
 
 Vue.use(Router);
 
@@ -107,6 +107,10 @@ export default new Router({
           let id = to.path.split('/')[2];
 
           fetchBoard(id, data => {
+              let item = getFromStorage('opened-board', StorageDescriptor.session);
+              if(item === undefined || item === null || item === empty){
+                  storeInStorage('opened-board', id, StorageDescriptor.session)
+              }
               next();
           }, error => {
               next(from.path);
