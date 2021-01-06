@@ -52,7 +52,7 @@
             </b-dropdown-item>
             <b-dropdown-divider class="w-100 "></b-dropdown-divider>
             <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-name>
-              <b-button variant="outline-dark" class="text-center border-0 w-100">
+              <b-button variant="outline-dark" @click="setupNameModal($event)" class="text-center border-0 w-100">
                 Edit board name
               </b-button>
             </b-dropdown-item>
@@ -126,7 +126,7 @@
     <b-modal id="modal-change-board-name" @ok="modalOkName" title="Enter new table name">
       <b-form>
         <b-form-group @submit.prevent="handleName">
-          <b-form-input id="name-input" v-model="name" required></b-form-input>
+          <b-form-input id="name-input" v-model="board.title" required></b-form-input>
         </b-form-group>
       </b-form>
     </b-modal>
@@ -152,7 +152,7 @@
 
     <b-modal title="Are you sure to close this board?" cancel-title="No" ok-title="Yes" cancel-variant="success"
              ok-variant="danger" id="modal-board-close" @ok="closeBoard">
-
+      You can reopen it again, whenever you want to, unless you delete it permanently.
     </b-modal>
 
     <b-container fluid class="position-relative p-0 mx-0 my-auto" style="flex-grow: 1; ">
@@ -208,7 +208,7 @@ import {
   SingleListModel,
   StorageDescriptor
 } from "@/data_models/types";
-import {createList, decodeUrl, fetchBoard} from "@/utils/functions";
+import {createList, decodeUrl, fetchBoard, closeBoard, updateBoard} from "@/utils/functions";
 import {getFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
 import {BDropdown, BFormInput} from "bootstrap-vue";
@@ -223,7 +223,6 @@ import {BDropdown, BFormInput} from "bootstrap-vue";
 export default class BoardView extends Vue {
   private list: SingleListEntry = dummySingleListEntry;
   private board: BoardModel = dummyBoardModel;
-  private name: string = "";
   private back: string = "";
   private boardName: string = "";
   private isVisible: string = "";
@@ -232,7 +231,6 @@ export default class BoardView extends Vue {
   private fetchLoading: boolean = true;
 
   get decoded(): string {
-    console.debug("AHAHAHAHAH");
     if (this.board !== dummyBoardModel && this.board.background !== undefined)
       return decodeUrl(this.board.background);
     return require('../assets/temp.png');
@@ -243,13 +241,17 @@ export default class BoardView extends Vue {
     (<any>event.target).style = `backgroundImage: 'url(${require('../assets/temp.png')})'`;
   }
 
+  setupNameModal(event: Event){
+    event.preventDefault();
+    this.boardName = String(this.board.title);
+  }
+
   setupVisibilityModal(event: Event) {
     event.preventDefault();
     this.isVisible = this.board.isVisible ? 'Public' : 'Private';
   }
 
   editTitle(event: Event) {
-    console.log("here")
     this.isEditingTitle = true;
     this.boardName = String(this.board.title);
     this.$nextTick(() => {
@@ -261,11 +263,19 @@ export default class BoardView extends Vue {
 
   onTitleSubmit(event: Event) {
     event.preventDefault();
+    this.isEditingTitle = false;
     console.log(this.board.title);
+
     if (this.board.title == undefined || this.board.title === "") {
       this.board.title = this.boardName;
     }
-    this.isEditingTitle = false;
+
+    if(this.board.title === this.boardName) {
+      this.boardName = "";
+      return;
+    }
+    this.boardName = "";
+    this.updateBoard();
   }
 
   onCreate() {
@@ -293,21 +303,41 @@ export default class BoardView extends Vue {
   }
 
   handleName() {
-    this.board.title = this.name;
+    if (this.board.title == undefined || this.board.title === "") {
+      this.board.title = this.boardName;
+    }
+    if(this.board.title === this.boardName) {
+      this.boardName = "";
+      return;
+    }
+    this.boardName = "";
+    this.updateBoard();
   }
 
   handleBack() {
     this.board.background = this.back;
-    console.debug(this.board.background)
-    this.$forceUpdate();
+    console.debug(this.board.background);
+
   }
 
   modalOkName(evt: Event) {
     this.handleName();
   }
 
-  closeBoard(evt: Event){
+  updateBoard(){
+    updateBoard(this.board, data => {
+      this.board = data;
+    }, error => {
+      console.log(error)
+    });
+  }
 
+  closeBoard(evt: Event){
+    closeBoard(this.board.id, data => {
+      this.board.isClosed = data.isClosed;
+    }, error => {
+      console.log(error);
+    });
   }
 
   modalOkBack(evt: Event) {
