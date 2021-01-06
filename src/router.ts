@@ -4,9 +4,9 @@ import Home from './views/Home.vue';
 import Boards from './views/Boards.vue';
 import BoardView from './views/BoardView.vue';
 import Settings from './views/Profile.vue';
-import {getToken, getTokenFromCache} from "@/utils";
+import {fetchBoard, getToken, getTokenFromCache} from "@/utils/functions";
 import {empty, StorageDescriptor, User} from "@/data_models/types";
-import {getFromStorage} from "@/store";
+import {getFromStorage, storeInStorage} from "@/store";
 
 Vue.use(Router);
 
@@ -24,7 +24,10 @@ function checkIfLoginSignUpIsAllowed(to: Route, from: Route, next: NavigationGua
         console.debug(from.path)
         let user = <User>getFromStorage('active_user', StorageDescriptor.local);
         if(from.path !== `/u/${user.id}/boards`) {
-            next(`u/${user.id}/boards`);
+            next(`/u/${user.id}/boards`);
+        }
+        else{
+            next(false);
         }
     }
     else {
@@ -88,11 +91,31 @@ export default new Router({
       path: '/settings',
       name: 'settings',
       component: Settings,
+      beforeEnter: (to, from, next) => {
+          if(isLoggedIn()){
+              next();
+          }else{
+              next('/');
+          }
+      }
     },
     {
       path: '/b/(.{16})/view',
       name: 'boardView',
       component: BoardView,
+      beforeEnter: (to, from, next) =>  {
+          let id = to.path.split('/')[2];
+
+          fetchBoard(id, data => {
+              let item = getFromStorage('opened-board', StorageDescriptor.session);
+              if(item === undefined || item === null || item === empty){
+                  storeInStorage('opened-board', id, StorageDescriptor.session)
+              }
+              next();
+          }, error => {
+              next(from.path);
+          })
+      }
     },
   ],
     mode: 'history',

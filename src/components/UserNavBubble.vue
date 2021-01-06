@@ -1,30 +1,31 @@
 <template>
   <div>
-    <b-dropdown @hide="check_if_can_hide($event)" right no-caret no-flip toggle-class="align-top rounded-circle px-0 py-0"
+    <b-dropdown right no-caret no-flip toggle-class="align-top rounded-circle px-0 py-0"
                 ref="d_down" @show="show_overlay($event)">
       <template #button-content>
-        <b-avatar :title="title"  class="d-block bg-secondary text-decoration-none" :id="`user_menu`">
+        <b-avatar :title="title" size="2.5em" style="font-size: smaller"
+                  class="d-block bg-secondary text-decoration-none" :id="`user_menu`">
           <span>{{ shortenUser }}</span>
         </b-avatar>
       </template>
       <b-dropdown-header variant="success" class="m-0 p-0">
         <div class="d-flex flex-row m-0 p-0">
-          <b class="p-0 pl-5 mx-auto my-auto align-middle">
-            <b>
-              <p>Account</p>
-            </b>
+          <b class="p-0 pl-5 mx-auto my-0 d-inline-flex align-self-center">
+            <b>Account</b>
           </b>
-          <b-button @click="hide_overlay($event)"
-                    class="close ml-4 mt-n2 float-right"
-                    style="height: 30px;width: 30px;">
-            <span aria-hidden="true" class="text-center mx-auto" style="height: 20px;width: 20px;">&times</span>
+          <b-button @click="hide_overlay($event)" variant="danger"
+                    class="float-right p-0 d-inline-flex flex-column justify-content-between
+                     text-center" style="height: 30px; width:30px;">
+            <span aria-hidden="true" class="align-self-center " style="font-size: 1.1rem;" >
+              &times
+            </span>
           </b-button>
         </div>
       </b-dropdown-header>
       <b-dropdown-divider class="w-100 "></b-dropdown-divider>
       <b-dropdown-header class="m-0 p-0">
         <b-container class="d-flex flex-row flex-nowrap p-0 m-0">
-          <b-avatar size="4em" style="min-width: 0;" :title="title" class="bg-secondary mr-3 float-left" :id="`user_menu`">
+          <b-avatar size="3em" style="min-width: 0;" :title="title" class="bg-secondary mr-3 float-left" :id="`user_menu`">
             <span>{{ shortenUser }}</span>
           </b-avatar>
           <div class="d-flex flex-column mr-5 pr-5 float-left">

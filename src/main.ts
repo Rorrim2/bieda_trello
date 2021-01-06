@@ -8,6 +8,7 @@ import VueCookies from "vue-cookies";
 
 Vue.use(VueCookies)
 Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 Vue.config.productionTip = false;
 
 export const vm = new Vue({

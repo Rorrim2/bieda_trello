@@ -1,7 +1,7 @@
 <template>
-  <div class="about py-auto bg-primary">
+  <div class="about overflow-y py-3 my-auto bg-primary">
     <b-container class="align-content-center flex-fill" fluid="lg md">
-      <b-row align-content="center">
+      <b-row align-v="center">
 
         <b-col cols="7" order-lg="1" order="1" class="align-self-center d-inline-flex">
           <b-form id="c_form-h" @submit.prevent="onSubmit" class="align-content-center w-100">
@@ -43,7 +43,7 @@
 <script lang="ts">
 import {AuthResult, RegisterCredentials, StorageDescriptor} from "@/data_models/types";
 import {Component, Vue} from "vue-property-decorator";
-import {cacheRefreshToken, registerUser, setToken} from "@/utils";
+import {cacheRefreshToken, registerUser, setToken} from "@/utils/functions";
 import {storeInStorage} from "@/store";
 
 @Component

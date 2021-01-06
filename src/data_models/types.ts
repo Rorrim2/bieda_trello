@@ -1,10 +1,9 @@
 import {ApolloError} from "apollo-client";
 
-export interface ActivityModel {
+export interface ActivityModel extends Node{
     card: SingleCardModel;
     content: string;
     createdOn: string;
-    id: string;
     type: ActivityModelType;
     user: User;
 }
@@ -23,16 +22,14 @@ export interface AuthResult {
     refreshToken: string;
 }
 
-export interface BoardPreview {
-    id: string;
+export interface BoardPreview extends Node{
     title: string;
     background: string;
     isClosed: boolean;
     isVisible: boolean;
 }
 
-export interface BoardModel {
-    id: string;
+export interface BoardModel extends Node{
     title: string;
     background: string;
     isClosed: boolean;
@@ -49,10 +46,9 @@ export interface Credentials {
     password: string;
 }
 
-export interface LabelModel {
+export interface LabelModel extends Node{
     board: BoardModel;
     color: string;
-    id: string;
     name: string;
 }
 
@@ -63,18 +59,19 @@ export interface Payload{
     exp: number;
 }
 
+export interface CloseBoardNode extends Node{
+    isClosed: boolean;
+}
+
 export interface RegisterCredentials extends Credentials{
     name: string;
     lastName: string;
     confirmPassword: string;
 }
 
-export interface SingleListPreview{
-    id: string;
-}
+export interface SingleListPreview extends Node{}
 
-export interface BoardModel {
-    id: string;
+export interface BoardModel extends Node{
     title: string;
     background: string;
     isClosed: boolean;
@@ -86,20 +83,15 @@ export interface BoardModel {
     lists: Array<SingleListPreview>;
 }
 
-export interface SingleListPreview{
-    id: string;
-}
-
-export interface SingleCardModel {
-    activities: Array<ActivityModel>;
-    archived: boolean;
+export interface SingleCardModel extends Node{
     cover: string;
     description: string;
     dueDate: string;
-    id: string;
-    labels: Array<LabelModel>;
-    positionInList: number;
     title: string;
+    positionInList: number;
+    activities: Array<ActivityModel>;
+    archived: boolean;
+    labels: Array<LabelModel>;
 }
 
 export interface SingleListEntry {
@@ -108,8 +100,7 @@ export interface SingleListEntry {
     title: string;
 }
 
-export interface SingleListModel {
-    id: string;
+export interface SingleListModel extends Node{
     isHidden:boolean;
     positionOnBoard:number;
     title: string;
@@ -126,11 +117,18 @@ export interface Tokens {
     refreshToken: string;
 }
 
-export interface User {
-    id: string;
+export interface User extends Node{
     name: string;
     email: string;
     lastName: string;
+}
+export interface DeletedBoardNode {
+    board: Node;
+    success: boolean;
+}
+
+export interface Node {
+    id: string;
 }
 
 export type MutationCallback<T> = (data: T) => void;

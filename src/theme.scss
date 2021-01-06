@@ -24,6 +24,7 @@ $theme-colors: (
   darker-primary: darken(#1b6ca8, 7%),
   secondary: #0a97b0,
   light: #e5fffe,
+  lighter: lighten(#e5fffe, 15%),
   dark: #40514e,
   info: #ffd3e1,
   success: #28a988,
@@ -57,13 +58,13 @@ $spacer: 2rem;
 
 @include media-breakpoint-up(sm) {
   html {
-    font-size: 0.8rem;
+    font-size: 1.0rem;
   }
 }
 
 @include media-breakpoint-up(md) {
   html {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 }
 
@@ -71,6 +72,54 @@ $spacer: 2rem;
   html {
     font-size: 1.0rem;
   }
+}
+.overflow-y {
+  overflow-y:auto;
+  -ms-overflow-y: auto;
+  -webkit-ovy:a;
+  overflow-x:hidden;
+  -ms-overflow-x: hidden;
+  -webkit-ovx:h;
+}
+
+.overflow-x {
+  overflow-x:auto;
+  -ms-overflow-x: auto;
+  -webkit-ovx:a;
+  overflow-y:hidden;
+  -ms-overflow-y: hidden;
+  -webkit-ovy:h;
+}
+
+.single-list {
+  min-width: 272px;
+  max-width: 272px;
+  width: 272px;
+  margin: 0 4px;
+  height: 100%;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.board-background {
+  background-position-x: center;
+  background-position-y: center;
+  background-size: cover;
+}
+
+.absolute-stretched {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.no-wrap-and-select {
+  user-select: none;
+  white-space: nowrap;
 }
 
 @import '~bootstrap';
