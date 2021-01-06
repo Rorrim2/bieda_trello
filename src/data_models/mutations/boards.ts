@@ -90,19 +90,60 @@ export const UpdateBoardMutation = gql`
             board{
                 maker{
                     id
+                    lastName
+                    name
+                    email
                 }
                 background
                 id
                 admins{
                     id
+                    lastName
+                    name
+                    email
                 }
                 isClosed
                 isVisible
                 description
                 users {
                     id
+                    lastName
+                    name
+                    email
                 }
                 title
             }
         }
     }`;
+
+export const ChangeBoardVisibilityMutation = gql`
+        mutation ChangeBoardVisibility($boardId: String!, $visibility: Boolean!){
+            changeboardvisibility(boardId: $boardId, visibility: $visibility){
+                board{
+                    maker {
+                        id
+                        lastName
+                        name
+                        email
+                    }
+                    background
+                    id
+                    admins{
+                        id
+                        lastName
+                        name
+                        email
+                    }
+                    isClosed
+                    isVisible
+                    description
+                    users {
+                        id
+                        lastName
+                        name
+                        email
+                    }
+                    title
+                }
+            }
+        }`;

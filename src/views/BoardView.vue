@@ -208,7 +208,7 @@ import {
   SingleListModel,
   StorageDescriptor
 } from "@/data_models/types";
-import {createList, decodeUrl, fetchBoard, closeBoard, updateBoard} from "@/utils/functions";
+import {createList, decodeUrl, fetchBoard, closeBoard, updateBoard, changeBoardVisibility} from "@/utils/functions";
 import {getFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
 import {BDropdown, BFormInput} from "bootstrap-vue";
@@ -347,6 +347,11 @@ export default class BoardView extends Vue {
 
   modalOkVisible() {
     this.board.isVisible = this.isVisible == "Public";
+    changeBoardVisibility(this.board.id, this.board.isVisible, data => {
+      this.board = data;
+    }, error => {
+      console.log(error)
+    });
   }
 
   mounted() {

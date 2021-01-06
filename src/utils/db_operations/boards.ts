@@ -8,7 +8,12 @@ import {
 } from "@/data_models/types";
 import {apolloClient} from "@/vue-apollo";
 import {BoardQuery, BoardsQuery} from "@/data_models/queries";
-import {CloseBoardMutation, CreateNewBoardMutation, UpdateBoardMutation} from "@/data_models/mutations/boards";
+import {
+    ChangeBoardVisibilityMutation,
+    CloseBoardMutation,
+    CreateNewBoardMutation,
+    UpdateBoardMutation
+} from "@/data_models/mutations/boards";
 
 export function fetchBoard(board_id: string, onResult:QueryCallback<BoardModel>,
                            onError: ErrorCallback){
@@ -79,6 +84,20 @@ export function updateBoard(board: BoardModel, onResult:QueryCallback<BoardModel
         }
     }).then(value => {
         onResult(value.data.updateboard.board);
+    }).catch(reason => {
+        onError(reason);
+    })
+}
+
+export function changeBoardVisibility(boardId: string, visibility: boolean,onResult:QueryCallback<BoardModel>, onError:ErrorCallback) {
+    apolloClient.mutate({
+        mutation: ChangeBoardVisibilityMutation,
+        variables: {
+            boardId: boardId,
+            visibility: visibility
+        }
+    }).then(value => {
+        onResult(value.data.changeboardvisibility.board);
     }).catch(reason => {
         onError(reason);
     })
