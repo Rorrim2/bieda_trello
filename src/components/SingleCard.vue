@@ -1,17 +1,16 @@
 <template>
   <div>
     <form v-if="this.creatingCard" @submit.prevent="onCardCreate">
-      <label for="defaultFormCardNameEx"  class="grey-text font-weight-light">Card text</label>
-      <input type="text" v-model="card.title" id="defaultFormCardNameEx" class="form-control">
+      <label :for="editCardModalName"  class="grey-text font-weight-light">Card text</label>
+      <input type="text" v-model="card.title" :id="editCardModalName" class="form-control">
       <br>
       <div class="text-center" style="margin: 1vw;">
         <button class="btn bg-primary text-light" type="submit">Save</button>
       </div>
     </form>
     <div v-else>
-<!--      TODO modal-to-card must be replaced with valid card id - and check if this works-->
-      <b-button variant="light" style="margin: 2px;" v-b-modal.modal-to-card>{{card.title}}</b-button>
-      <b-modal id="modal-to-card" ok-only>
+      <b-button variant="light" style="margin: 2px;" v-b-modal = "editCardModalName">{{card.title}}</b-button>
+      <b-modal :id=editCardModalName ok-only>
 <!--        :title=card.text-->
         <template #modal-header="{ close }">
           <div>
@@ -54,6 +53,7 @@ import {SingleCardModel} from "@/data_models/types";
 export default class SingleCard extends Vue{
   @Prop() card!: SingleCardModel;
 
+  private editCardModalName = 'edit-modal-card' + this.card.id;
   private creatingCard: boolean = true;
   private descriptionText: string = "Enter some text";
   private editing: boolean = true;
