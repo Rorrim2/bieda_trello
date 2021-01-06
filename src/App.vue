@@ -11,11 +11,11 @@
         <b-collapse v-if="!isLoggedIn" id="nav-collapse" class="h-100 my-auto" is-nav>
           <b-navbar-nav class="ml-auto">
             <b-button-group>
-              <b-button  to="/login" class="btn btn-lg btn-primary ml-md-2 text-light"
+              <b-button variant="secondary" to="/login" class="my-1 ml-md-2 text-light"
                         style="text-decoration: none; 	box-shadow: 0px 0px 4px  #0a97b0;">Log in
               </b-button>
-              <b-button to="/signup" class="btn btn-lg btn-light ml-md-2 text-primary"
-                        style="text-decoration: none; 	box-shadow: 1px 1px 4px  #0a97b0;">Sign up
+              <b-button to="/signup" variant="light" class="my-1 ml-md-2 text-primary"
+                        style="text-decoration: none; 	box-shadow: 0px 0px 4px  #0a97b0;">Sign up
               </b-button>
             </b-button-group>
           </b-navbar-nav>

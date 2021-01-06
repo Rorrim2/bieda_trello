@@ -145,7 +145,7 @@ import {
 import {createList, decodeUrl, fetchBoard} from "@/utils";
 import {getFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
-import {BDropdown} from "bootstrap-vue";
+import {BDropdown, BFormInput} from "bootstrap-vue";
 
 @Component({
   components: {
@@ -180,7 +180,7 @@ export default class BoardView extends Vue {
     this.isEditingTitle = true;
     this.boardName = String(this.board.title);
     this.$nextTick(() => {
-      const elem = this.$refs.boardTitle;
+      const elem: BFormInput = <BFormInput> this.$refs.boardTitle;
       elem.focus();
       console.log(elem);
     });
