@@ -56,7 +56,8 @@ import {
   SingleListModel,
   SingleListPreview
 } from "@/data_models/types";
-import {createCard, fetchList} from '@/utils';
+import {createCard} from '@/utils/db_operations/cards';
+import {fetchList} from '@/utils/db_operations/lists';
 
 @Component({
   components: {

@@ -13,7 +13,7 @@ export const ActivityQuery = gql`
 
 export const ActivitysQuery = gql`
     query {
-        activity{
+        activitys{
             id
             content
             createdOn
@@ -50,6 +50,21 @@ export const ActivityByCardQuery = gql`
             }
         }
     }
+`;
+
+export const ActivityByBoardQuery = gql`
+  query ActivitysByBoard($boardId: String) {
+      activitysByBoard(boardId: $boardId) {
+          id
+          content
+          createdOn
+          type
+          user {
+              name
+              lastName
+          }
+      }
+  }
 `;
 
 export const BoardsQuery = gql`

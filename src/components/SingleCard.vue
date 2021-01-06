@@ -2,7 +2,7 @@
   <div>
     <form v-if="this.creatingCard" @submit.prevent="onCardCreate">
       <label for="defaultFormCardNameEx"  class="grey-text font-weight-light">Card text</label>
-      <input type="text" v-model="card.text" id="defaultFormCardNameEx" class="form-control">
+      <input type="text" v-model="card.title" id="defaultFormCardNameEx" class="form-control">
       <br>
       <div class="text-center" style="margin: 1vw;">
         <button class="btn bg-primary text-light" type="submit">Save</button>
@@ -10,12 +10,12 @@
     </form>
     <div v-else>
 <!--      TODO modal-to-card must be replaced with valid card id - and check if this works-->
-      <b-button variant="light" style="margin: 2px;" v-b-modal.modal-to-card>{{card.text}}</b-button>
+      <b-button variant="light" style="margin: 2px;" v-b-modal.modal-to-card>{{card.title}}</b-button>
       <b-modal id="modal-to-card" ok-only>
 <!--        :title=card.text-->
         <template #modal-header="{ close }">
           <div>
-            <h4 class="modal-title">{{ card.text }}</h4>
+            <h4 class="modal-title">{{ card.title }}</h4>
             <b-button variant="danger" type="button" @click="close()">
               Close
             </b-button>
