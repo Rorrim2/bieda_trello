@@ -29,7 +29,7 @@
 
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {BoardPreview, StorageDescriptor} from "@/data_models/types";
-import {decodeUrl} from "@/utils";
+import {decodeUrl} from "@/utils/functions";
 import {storeInStorage} from "@/store";
 
 @Component

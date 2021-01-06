@@ -44,7 +44,7 @@ import {
   refreshToken,
   setToken,
   verifyToken
-} from "@/utils";
+} from "@/utils/functions";
 import {dummyUser, StorageDescriptor, User} from "@/data_models/types";
 import dataBus from "@/databus";
 import UserNavBubble from "@/components/UserNavBubble.vue";

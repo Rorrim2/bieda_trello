@@ -36,7 +36,7 @@
   import {getFromStorage, storeInStorage} from "@/store";
   import {StorageDescriptor, User} from "@/data_models/types";
   import dataBus from "@/databus";
-  import {editProfile} from "@/utils";
+  import {editProfile} from "@/utils/functions";
 
   @Component
   export default class Settings extends Vue {

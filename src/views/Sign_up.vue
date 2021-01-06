@@ -43,7 +43,7 @@
 <script lang="ts">
 import {AuthResult, RegisterCredentials, StorageDescriptor} from "@/data_models/types";
 import {Component, Vue} from "vue-property-decorator";
-import {cacheRefreshToken, registerUser, setToken} from "@/utils";
+import {cacheRefreshToken, registerUser, setToken} from "@/utils/functions";
 import {storeInStorage} from "@/store";
 
 @Component

@@ -35,7 +35,7 @@
 import {Component, Vue} from 'vue-property-decorator';
 import {AuthResult, Credentials, StorageDescriptor} from "@/data_models/types";
 import dataBus from "@/databus";
-import {cacheRefreshToken, loginUser, parseJWT, setToken} from "@/utils";
+import {cacheRefreshToken, loginUser, parseJWT, setToken} from "@/utils/functions";
 import {storeInStorage} from "@/store";
 
 @Component

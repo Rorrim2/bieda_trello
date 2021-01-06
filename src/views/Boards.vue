@@ -48,7 +48,7 @@
 import SingleBoard from "@/components/SingleBoard.vue";
 import {Component, Vue} from "vue-property-decorator";
 import {BoardPreview, dummyBoardPreview, dummyUser, StorageDescriptor, User} from "@/data_models/types";
-import {createBoard, encodeUrl, fetchBoards} from "@/utils";
+import {createBoard, encodeUrl, fetchBoards} from "@/utils/functions";
 import {getFromStorage} from "@/store";
 
 @Component({

@@ -45,7 +45,7 @@
               </div>
             </b-dropdown-header>
             <b-dropdown-divider class="w-100 "></b-dropdown-divider>
-            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-name>
+            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-board-about>
               <b-button variant="outline-secondary" class="text-center border-0 w-100">
                 About
               </b-button>
@@ -74,7 +74,7 @@
               </b-button>
             </b-dropdown-item>
             <b-dropdown-divider class="w-100 "></b-dropdown-divider>
-            <b-dropdown-item class="w-100 p-0" href="#">
+            <b-dropdown-item class="w-100 p-0" v-b-modal.modal-board-close>
               <b-button variant="outline-danger" class="text-center border-0 w-100">
                 Close
               </b-button>
@@ -146,6 +146,15 @@
       </b-form-radio-group>
     </b-modal>
 
+    <b-modal ok-only id="modal-board-about">
+
+    </b-modal>
+
+    <b-modal title="Are you sure to close this board?" cancel-title="No" ok-title="Yes" cancel-variant="success"
+             ok-variant="danger" id="modal-board-close" @ok="closeBoard">
+
+    </b-modal>
+
     <b-container fluid class="position-relative p-0 mx-0 my-auto" style="flex-grow: 1; ">
       <div class="absolute-stretched">
         <b-row align-v="start" align-h="start"
@@ -199,7 +208,7 @@ import {
   SingleListModel,
   StorageDescriptor
 } from "@/data_models/types";
-import {createList, decodeUrl, fetchBoard} from "@/utils";
+import {createList, decodeUrl, fetchBoard} from "@/utils/functions";
 import {getFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
 import {BDropdown, BFormInput} from "bootstrap-vue";
@@ -295,6 +304,10 @@ export default class BoardView extends Vue {
 
   modalOkName(evt: Event) {
     this.handleName();
+  }
+
+  closeBoard(evt: Event){
+
   }
 
   modalOkBack(evt: Event) {
