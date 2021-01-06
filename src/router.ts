@@ -91,8 +91,9 @@ export default new Router({
       beforeEnter: (to, from, next) => {
           if(isLoggedIn()){
               next();
+          }else{
+              next('/');
           }
-          next('/');
       }
     },
     {
