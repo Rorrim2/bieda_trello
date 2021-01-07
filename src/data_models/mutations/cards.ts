@@ -10,6 +10,17 @@ export const CreateCardMutation = gql`
                 dueDate
                 title
                 positionInList
+                activities {
+                    id
+                    content
+                    createdOn
+                    type
+                    user {
+                        id
+                        name
+                        lastName
+                    }
+                }
             }
             success
         }
@@ -25,6 +36,17 @@ export const EditCardMutation = gql`
                 dueDate
                 title
                 positionInList
+                activities {
+                    content
+                    createdOn
+                    id
+                    type
+                    user {
+                        id
+                        name
+                        lastName
+                    }
+                }
             }
             success
         }

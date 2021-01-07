@@ -33,7 +33,7 @@
           <b-form-input type="text" class="mr-1" v-model="newComment" ref="newComment"
                         style="max-width: 150px;"/>
         </b-form>
-        <div v-for="activity in activities">
+        <div v-for="activity in card.activities">
           <activity-component :activity="activity"></activity-component>
         </div>
 
@@ -54,7 +54,7 @@ import ActivityComponent from "@/components/ActivityComponent.vue";
 })
 export default class SingleCard extends Vue{
   @Prop() card!: SingleCardModel;
-  private activities: Array<ActivityModel> = [];
+  // private activities: Array<ActivityModel> = [];
 
   private editCardModalName = 'edit-modal-card' + this.card.id;
   private isEditingTitle: boolean = false;
@@ -65,25 +65,14 @@ export default class SingleCard extends Vue{
   private isAddingComment: boolean = false;
 
   mounted(): void {
-    fetchActivitiesByCard(this.card.id, data => {
-      data.sort((a: ActivityModel, b: ActivityModel) => {
+      this.card.activities.sort((a: ActivityModel, b: ActivityModel) => {
         return (+new Date(b.createdOn)) - (+new Date(a.createdOn));
-
       })
-      this.activities = data;
-    }, error => {
-      console.log(error)
-    });
   }
 
   updateCard() {
     editCardsTitleAndDescription(this.card, data => {
       this.card = data.card;
-      fetchActivitiesByCard(this.card.id, data => {
-        this.activities = data;
-      }, error => {
-        console.log(error)
-      });
     }, error => {
       console.log(error)
     });
@@ -92,7 +81,7 @@ export default class SingleCard extends Vue{
   addComment() {
     createComment({card_id: this.card.id,
       content: this.newComment}, data => {
-        this.activities.unshift(data.activity);
+        this.card.activities.unshift(data.activity);
       }, error => {
         console.log(error)
       }
