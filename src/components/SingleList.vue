@@ -18,8 +18,24 @@
             <b-icon icon="three-dots-vertical">
             </b-icon>
           </template>
+          <b-dropdown-header>List options</b-dropdown-header>
+          <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item class="m-1 p-1" text-variant="light"
                            v-b-modal.modal-change-list-name>Edit list name
+          </b-dropdown-item>
+          <b-dropdown-item class="m-1 p-1">
+            Add card
+          </b-dropdown-item>
+          <b-dropdown-divider></b-dropdown-divider>
+          <b-dropdown-item class="m-1 p-1">
+            Move list
+          </b-dropdown-item>
+          <b-dropdown-item class="m-1 p-1">
+            Copy list
+          </b-dropdown-item>
+          <b-dropdown-divider v-if="!listModel.isHidden"></b-dropdown-divider>
+          <b-dropdown-item class="m-1 p-1" v-if="!listModel.isHidden">
+            Hide list
           </b-dropdown-item>
         </b-dropdown>
       </b-row>
@@ -86,6 +102,7 @@ import {BFormInput} from "bootstrap-vue";
 
 export default class SingleList extends Vue {
   @Prop() list!: SingleListPreview;
+  @Prop() canBeEdited!: boolean;
   private name: string = "";
   private listModel: SingleListModel = dummySingleListModel;
   private listName: string = "";
