@@ -28,7 +28,7 @@
     <template #footer>
       <b-button v-show="!creatingCard" @click=onAddCardClick variant="secondary"
                 class="w-100" type="button" v-text="`Add Card`"/>
-      <b-form  @focusout="creatingCard = false" class="py-0" v-show="creatingCard" @submit.prevent="onCreateCard">
+      <b-form  class="py-0" v-show="creatingCard" @submit.prevent="onCreateCard">
           <b-row align-v="center" align-h="center" class="flex-nowrap flex-row d-flex">
             <b-form-input ref="cardCreator" v-model="newCardTitle" :id=editCardModalName type="text"/>
             <b-button title="Save" type="submit" value="" class="p-0 ml-1 btn bg-primary border-0 text-light">
@@ -68,9 +68,7 @@ import SingleCard from "@/components/SingleCard.vue";
 import {Draggable, Container} from "vue-smooth-dnd";
 import {Component, Prop, Vue, Watch} from "vue-property-decorator";
 import {
-  dummySingleCardModel,
   dummySingleListModel,
-  SingleCardModel,
   SingleListModel,
   SingleListPreview
 } from "@/data_models/types";
@@ -89,9 +87,7 @@ import {BFormInput} from "bootstrap-vue";
 export default class SingleList extends Vue {
   @Prop() list!: SingleListPreview;
   private name: string = "";
-  private cardName: string = "";
   private listModel: SingleListModel = dummySingleListModel;
-  private card: SingleCardModel = dummySingleCardModel;
   private listName: string = "";
   private isEditingTitle: boolean = false;
   private creatingCard: boolean = false;

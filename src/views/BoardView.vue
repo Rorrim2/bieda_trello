@@ -215,20 +215,20 @@
               </Draggable>
               <Draggable>
                 <div class="d-inline-block single-list creator h-100">
-                  <b-card class="text-light" style="background-color: rgba(245,245,245, 0.3);"
-                          @submit.prevent="onCreate">
-                    <div class="card-body">
-                      <form>
-                        <p class="h3 text-center">Create list</p>
-                        <label for="defaultFormCardNameEx" class="font-weight-light">List name</label>
-                        <input type="text" v-model="list.title" id="defaultFormCardNameEx" class="form-control">
-                        <br>
-                        <div class="text-center" style="margin: 1vw;">
-                          <button class="btn bg-secondary text-light" type="submit">Create list</button>
-                        </div>
-                      </form>
-                    </div>
-                  </b-card>
+                  <div style="background-color: rgba(200,200,200, 0.6);" class="px-1 rounded">
+                    <b-button v-show="!creatingList" @click=onAddListClick class="font-weight-bolder w-100 btn text-dark border-0"
+                              v-text="`Add List`" style="background-color: rgba(200,200,200, 0.6);"/>
+                    <b-form class="py-0 px-0 mx-3" v-show="creatingList"
+                            @submit.prevent="onCreate($event)">
+                      <b-row style="max-width: 272px" align-v="center" align-h="between" class="flex-nowrap flex-row d-flex">
+                        <b-form-input ref="listCreator" v-model="list.title" type="text"/>
+                        <b-button title="Save" type="submit" value=""
+                                  class="p-0 ml-1 btn bg-primary border-0 text-light">
+                          <b-icon icon="plus-square-fill" class="p-0 m-0"/>
+                        </b-button>
+                      </b-row>
+                    </b-form>
+                  </div>
                 </div>
               </Draggable>
             </Container>
@@ -293,12 +293,21 @@ export default class BoardView extends Vue {
   private isEditingTitle: boolean = false;
   private show: boolean = false;
   private fetchLoading: boolean = true;
-
+  private creatingList: boolean = false;
   private upperDropPlaceholderOptions: DNDOptions = {
     className: 'cards-drop-preview',
     animationDuration: '150',
     showOnTop: true
   };
+
+  onAddListClick(event: Event) {
+    this.creatingList = true;
+    this.$nextTick(() => {
+      const elem: BFormInput = <BFormInput>this.$refs.listCreator;
+      elem.focus();
+    });
+  }
+
 
   onColumnDrop(dropResult: DragResult){
     if(dropResult.addedIndex === null || dropResult.removedIndex === null) return;
@@ -402,7 +411,13 @@ export default class BoardView extends Vue {
     this.updateBoard();
   }
 
-  onCreate() {
+  onCreate(event: Event) {
+    event.preventDefault();
+    if(!this.valid_title){
+      console.debug("DDDDDx2");
+      this.creatingList = false;
+      return;
+    }
     console.debug("DDDDD");
     this.list.boardId = this.board.id;
     this.list.positionOnBoard = this.board.lists.length;
@@ -411,8 +426,12 @@ export default class BoardView extends Vue {
     }, error => {
       console.log(error.message);
     });
-    //this.listOfLists.push(<SingleListModel>{name: this.list.name, listOfCards: []})
     this.list.title = ''
+    this.creatingList = false;
+  }
+
+  get valid_title(): boolean {
+    return !!this.list.title && this.list.title !== "";
   }
 
   show_overlay(evt: Event) {
