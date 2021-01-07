@@ -8,13 +8,17 @@ export const CreateActivityMutation = gql`
                 content
                 type
                 createdOn
+                user {
+                    name
+                    lastName
+                }
             }
         }
     }`;
 
 export const EditActivityMutation = gql`
-    mutation EditActivity($activityId: String!, $userId: String!, $cardId: String!, $content: String!) {
-        editactivity(activityId: $activityId, userId: $userId, cardId: $cardId, content: $content) {
+    mutation EditActivity($activityId: String!, $content: String!) {
+        editactivity(activityId: $activityId, content: $content) {
             activity {
                 user {
                     name

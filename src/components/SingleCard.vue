@@ -1,18 +1,18 @@
 <template>
     <div>
       <b-button variant="light" style="margin: 2px;" v-b-modal = "editCardModalName">{{card.title}}</b-button>
-      <b-modal :id=editCardModalName ok-only>
+      <b-modal :id=editCardModalName ok-only modal-tall>
         <template #modal-header="{ close }">
-          <b-button v-show="!isEditingTitle" v-text="card.title"
-                    class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
-                    @click="editTitle($event)">
-          </b-button>
-          <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)">
-            <b-form-input type="text" class="mr-1" v-model="card.title" ref="cardTitle"
-                          style="max-width: 150px;"/>
-          </b-form>
+            <b-button v-show="!isEditingTitle" v-text="card.title"
+                      class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
+                      @click="editTitle($event)">
+            </b-button>
+            <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)">
+              <b-form-input type="text" class="mr-1" v-model="card.title" ref="cardTitle"
+                            style="max-width: 150px;"/>
+            </b-form>
         </template>
-        <h3>Description</h3>
+        <h5><b-icon variant="primary" icon="archive-fill" /> Description</h5>
         <div v-if=this.isEditingDescription @focusout="onDescriptionSubmit($event)">
             <b-form-input v-model="card.description" rows="3" max-rows="6"></b-form-input>
           <b-button variant="success" @click="onDescriptionSubmit($event)">Save</b-button>
@@ -23,6 +23,12 @@
           <b-button variant="secondary" @click="editDescription($event)">Edit</b-button>
         </div>
 
+        <hr>
+        <h5><b-icon variant="primary" icon="book-half" /> Activities</h5>
+        <div v-for="activity in activities">
+          <activity-component :activity="activity"></activity-component>
+        </div>
+
       </b-modal>
     </div>
 </template>
@@ -30,19 +36,31 @@
 <script lang="ts">
 
 import {Component, Prop, Vue} from "vue-property-decorator";
-import {SingleCardModel} from "@/data_models/types";
+import {ActivityModel, SingleCardModel} from "@/data_models/types";
 import {BFormInput} from "bootstrap-vue";
 import {editCardsTitleAndDescription} from "@/utils/db_operations/cards";
-
-@Component
+import {fetchActivitiesByCard} from "@/utils/db_operations/activities";
+import ActivityComponent from "@/components/ActivityComponent.vue";
+@Component({
+  components: {ActivityComponent}
+})
 export default class SingleCard extends Vue{
   @Prop() card!: SingleCardModel;
+  private activities: Array<ActivityModel> = [];
 
   private editCardModalName = 'edit-modal-card' + this.card.id;
   private isEditingTitle: boolean = false;
   private isEditingDescription: boolean = false;
   private cardName: string = '';
   private description: string = '';
+
+  mounted(): void {
+    fetchActivitiesByCard(this.card.id, data => {
+      this.activities = data;
+    }, error => {
+      console.log(error)
+    });
+  }
 
   updateCard() {
     editCardsTitleAndDescription(this.card, data => {
