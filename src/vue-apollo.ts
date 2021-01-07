@@ -10,8 +10,8 @@ import {getToken} from "@/utils/functions";
 const httpLink = new HttpLink({
     // You should use an absolute URL here
     //TODO
-    //uri: 'http://127.0.0.1:8000/graphql/',
-    uri: 'https://bieda-trello-backend.herokuapp.com/graphql/',
+    uri: 'http://127.0.0.1:8000/graphql/',
+    // uri: 'https://bieda-trello-backend.herokuapp.com/graphql/',
 })
 
 const token_header = setContext( (_: any, {headers}: any) => {

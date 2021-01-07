@@ -4,12 +4,12 @@
       style="background-color: rgba(245,245,245, 0.3);"
       text-variant="light">
     <template #header>
-      <b-row>
-        <h4>{{ listModel.title }}</h4>
-        <b-dropdown text="..." no-caret right>
-          <b-dropdown-item class="m-1 p-1" text-variant="light" v-b-modal.modal-change-list-name>Edit list name
+      <b-row align-h="between">
+        <b-col cols="8" ><h4>{{ listModel.title }}</h4></b-col>
+        <b-col cols="4"><b-dropdown variant="primary" text="..." no-caret right>
+          <b-dropdown-item class="m-1 p-1" text-variant="light"  v-b-modal.modal-change-list-name>Edit list name
           </b-dropdown-item>
-        </b-dropdown>
+        </b-dropdown></b-col>
       </b-row>
     </template>
     <b-modal id="createnewcardmodal" class="bg-light"
