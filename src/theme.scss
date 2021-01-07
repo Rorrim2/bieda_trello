@@ -1,0 +1,166 @@
+// Options
+//
+// Quickly modify global styling by enabling or disabling optional features.
+
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+@import 'node_modules/bootstrap-vue/src/index.scss';
+@import 'node_modules/bootstrap/scss/functions';
+
+$enable-rounded:            true !default;
+$enable-shadows:            true;
+$enable-transitions:        true;
+$enable-hover-media-query:  false;
+$enable-grid-classes:       true;
+$enable-print-styles:       true;
+$enable-responsive-font-sizes: true;
+// Variables
+//
+
+
+// Colors
+
+$theme-colors: (
+  primary: #1b6ca8,
+  darker-primary: darken(#1b6ca8, 7%),
+  secondary: #0a97b0,
+  light: #e5fffe,
+  lighter: lighten(#e5fffe, 15%),
+  dark: #40514e,
+  info: #ffd3e1,
+  success: #28a988,
+  warning: #ff851f,
+  danger: #bd2130
+);
+
+$body-bg: white;
+$body-color: #333;
+
+@each $color, $value in $theme-colors {
+  @include bg-variant('.bg-#{$color}', $value);
+}
+
+$body-color-inverse: invert($body-color) !default;
+$link-color: #12bbad;
+
+// Fonts
+$font-family-base: Tahoma, Geneva, sans-serif;
+$headings-font-family: $font-family-base;
+$display-font-family: $font-family-base;
+$font-weight-normal: 200;
+$headings-font-weight: 200;
+$lead-font-size:   1.2rem;
+
+$spacer: 2rem;
+
+.semi-transparent {
+  background-color: rgba(0,0,0, 0.4);
+}
+
+@include media-breakpoint-up(sm) {
+  html {
+    font-size: 1.0rem;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  html {
+    font-size: 1rem;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  html {
+    font-size: 1.0rem;
+  }
+}
+.overflow-y {
+  overflow-y:auto;
+  -ms-overflow-y: auto;
+  -webkit-ovy:a;
+  overflow-x:hidden;
+  -ms-overflow-x: hidden;
+  -webkit-ovx:h;
+}
+
+.overflow-x {
+  overflow-x:auto;
+  -ms-overflow-x: auto;
+  -webkit-ovx:a;
+  overflow-y:hidden;
+  -ms-overflow-y: hidden;
+  -webkit-ovy:h;
+}
+
+.card-ghost {
+  transition: transform 0.18s ease;
+  transform: rotateZ(5deg)
+}
+
+.card-ghost-drop {
+  transition: transform 0.18s ease-in-out;
+  transform: rotateZ(0deg)
+}
+
+.card-scene {
+  padding: 50px;
+  /* background-color: #fff; */
+}
+
+.drop-preview {
+  background-color: rgba(150, 150, 200, 0.1);
+  border: 1px dashed #abc;
+  margin: 5px;
+}
+
+.cards-drop-preview {
+  background-color: rgba(150, 150, 200, 0.1);
+  border: 1px dashed #abc;
+  margin: 5px 45px 5px 5px;
+}
+
+.card-scene {
+  padding: 50px;
+  /* background-color: #fff; */
+}
+
+.card-container {
+  width: 320px;
+  padding: 10px;
+  margin: 5px 45px 5px 5px;
+  background-color: #f3f3f3;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.24);
+}
+
+.single-list {
+  min-width: 272px;
+  max-width: 272px;
+  width: 272px;
+  margin: 0 4px;
+  height: 100%;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.board-background {
+  background-position-x: center;
+  background-position-y: center;
+  background-size: cover;
+}
+
+.absolute-stretched {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.no-wrap-and-select {
+  user-select: none;
+  white-space: nowrap;
+}
+
+@import '~bootstrap';
+@import '~bootstrap-vue';
