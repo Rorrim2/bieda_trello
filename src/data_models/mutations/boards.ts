@@ -94,6 +94,9 @@ export const UpdateBoardMutation = gql`
                     name
                     email
                 }
+                lists{
+                    id
+                }
                 background
                 id
                 admins{
@@ -133,6 +136,9 @@ export const ChangeBoardVisibilityMutation = gql`
                         lastName
                         name
                         email
+                    }
+                    lists{
+                        id
                     }
                     isClosed
                     isVisible

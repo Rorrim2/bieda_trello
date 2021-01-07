@@ -12,7 +12,7 @@
                     class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
                     @click="editTitle($event)" v-text="board.title"/>
           <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)">
-            <b-form-input type="text" class="mr-1" v-model="board.title" ref="boardTitle"
+            <b-form-input type="text" class="mr-1" v-model="boardName" ref="boardTitle"
                           style="max-width: 150px;"/>
           </b-form>
         </b-navbar-brand>
@@ -58,7 +58,7 @@
               </b-button>
             </b-dropdown-item>
             <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-back>
-              <b-button variant="outline-dark" class="text-center border-0 w-100">
+              <b-button variant="outline-dark" @click="setupBackgroundModal($event)" class="text-center border-0 w-100">
                 Edit table background
               </b-button>
             </b-dropdown-item>
@@ -127,7 +127,7 @@
     <b-modal id="modal-change-board-name" @ok="modalOkName" title="Enter new table name">
       <b-form>
         <b-form-group @submit.prevent="handleName">
-          <b-form-input id="name-input" v-model="board.title" required></b-form-input>
+          <b-form-input id="name-input" v-model="boardName" required></b-form-input>
         </b-form-group>
       </b-form>
     </b-modal>
@@ -147,10 +147,14 @@
       </b-form-radio-group>
     </b-modal>
 
-    <b-modal ok-only id="modal-board-about">
+    <b-modal :title="`About ` + board.title.substring(0, 20) + `...`" ok-only id="modal-board-about">
 
     </b-modal>
+    <b-modal id="modal-board-activity" ok-only>
+      <b-container fluid>
 
+      </b-container>
+    </b-modal>
     <b-modal title="Are you sure to close this board?" cancel-title="No" ok-title="Yes" cancel-variant="success"
              ok-variant="danger" id="modal-board-close" @ok="closeBoard">
       You can reopen it again, whenever you want to, unless you delete it permanently.
@@ -178,9 +182,11 @@
                 </b-row>
               </b-container>
             </b-jumbotron>
-            <b-modal id="close-board" title="Are you sure to delete this board?" cancel-title="Nope" ok-title="Yes. Kill!" cancel-variant="success"
-                     ok-variant="danger"  @ok="deleteBoard">
-              The whole history of board's activity and all board's data would be removed. Please take in consideration, that this action cannot be undone.
+            <b-modal id="close-board" title="Are you sure to delete this board?" cancel-title="Nope"
+                     ok-title="Yes. Kill!" cancel-variant="success"
+                     ok-variant="danger" @ok="deleteBoard">
+              The whole history of board's activity and all board's data would be removed. Please take in consideration,
+              that this action cannot be undone.
             </b-modal>
 
           </b-row>
@@ -194,25 +200,38 @@
                class="position-relative h-100 mx-auto my-1 flex-nowrap d-flex"
                style="flex-grow: 1;">
           <div class="absolute-stretched no-wrap-and-select mb-2 pb-2 overflow-x">
-            <div class="single-list h-100" v-for="list_s in board.lists">
-              <single-list :list="list_s"></single-list>
-            </div>
-            <div class="single-list h-100">
-              <b-card class="text-light" style="background-color: rgba(245,245,245, 0.3);"
-                      @submit.prevent="onCreate">
-                <div class="card-body">
-                  <form>
-                    <p class="h3 text-center">Create list</p>
-                    <label for="defaultFormCardNameEx" class="font-weight-light">List name</label>
-                    <input type="text" v-model="list.title" id="defaultFormCardNameEx" class="form-control">
-                    <br>
-                    <div class="text-center" style="margin: 1vw;">
-                      <button class="btn bg-secondary text-light" type="submit">Create list</button>
-                    </div>
-                  </form>
+            <Container group-name="col" drag-class="card-ghost"
+                       drop-class="card-ghost-drop" orientation="horizontal"
+                       drag-handle-selector=".list-drag-header"
+                       :drop-placeholder="upperDropPlaceholderOptions"
+                       non-drag-area-selector=".creator"
+                       :class="{isActive: true}"
+                        @drop="onColumnDrop($event)">
+
+              <Draggable v-for="list_s in orderedList" :key="list_s.positionOnBoard" >
+                <div class="single-list h-100" >
+                  <single-list :list="list_s"></single-list>
                 </div>
-              </b-card>
-            </div>
+              </Draggable>
+              <Draggable>
+                <div class="d-inline-block single-list creator h-100">
+                  <div style="background-color: rgba(200,200,200, 0.6);" class="px-1 rounded">
+                    <b-button v-show="!creatingList" @click=onAddListClick class="font-weight-bolder w-100 btn text-dark border-0"
+                              v-text="`Add List`" style="background-color: rgba(200,200,200, 0.6);"/>
+                    <b-form class="py-0 px-0 mx-3" v-show="creatingList"
+                            @submit.prevent="onCreate($event)">
+                      <b-row style="max-width: 272px" align-v="center" align-h="between" class="flex-nowrap flex-row d-flex">
+                        <b-form-input ref="listCreator" v-model="list.title" type="text"/>
+                        <b-button title="Save" type="submit" value=""
+                                  class="p-0 ml-1 btn bg-primary border-0 text-light">
+                          <b-icon icon="plus-square-fill" class="p-0 m-0"/>
+                        </b-button>
+                      </b-row>
+                    </b-form>
+                  </div>
+                </div>
+              </Draggable>
+            </Container>
           </div>
         </b-row>
       </div>
@@ -235,10 +254,10 @@ import SingleList from "@/components/SingleList.vue";
 import SingleCard from "@/components/SingleCard.vue";
 import {Component, Vue} from "vue-property-decorator";
 import {
-  BoardModel,
+  BoardModel, DNDOptions, DragResult,
   dummyBoardModel,
   dummySingleListEntry,
-  SingleListEntry,
+  SingleListEntry, SingleListPreview,
   StorageDescriptor
 } from "@/data_models/types";
 import {
@@ -246,20 +265,23 @@ import {
   closeBoard,
   createList,
   decodeUrl,
-  deleteBoard,
+  deleteBoard, encodeUrl,
   fetchBoard,
   reopenBoard,
-  updateBoard
+  updateBoard, updatePositionOfList
 } from "@/utils/functions";
 import {getFromStorage, removeFromStorage} from "@/store";
 import UserBubble from "@/components/UserBubble.vue";
 import {BDropdown, BFormInput} from "bootstrap-vue";
-
+import {Container, Draggable} from "vue-smooth-dnd";
+import __ from "lodash";
 @Component({
   components: {
     UserBubble,
     SingleList,
     SingleCard,
+    Draggable,
+    Container
   }
 })
 export default class BoardView extends Vue {
@@ -271,6 +293,44 @@ export default class BoardView extends Vue {
   private isEditingTitle: boolean = false;
   private show: boolean = false;
   private fetchLoading: boolean = true;
+  private creatingList: boolean = false;
+  private upperDropPlaceholderOptions: DNDOptions = {
+    className: 'cards-drop-preview',
+    animationDuration: '150',
+    showOnTop: true
+  };
+
+  onAddListClick(event: Event) {
+    this.creatingList = true;
+    this.$nextTick(() => {
+      const elem: BFormInput = <BFormInput>this.$refs.listCreator;
+      elem.focus();
+    });
+  }
+
+
+  onColumnDrop(dropResult: DragResult){
+    if(dropResult.addedIndex === null || dropResult.removedIndex === null) return;
+    const board = [...this.orderedList];
+    let elem = board.splice(dropResult.removedIndex, 1)[0];
+    console.log(elem.positionOnBoard);
+    board.splice(dropResult.addedIndex, 0, elem);
+    for(let i = 0; i < board.length; ++i){
+      let previous = board[i].positionOnBoard;
+      board[i].positionOnBoard = i;
+      updatePositionOfList(board[i], data => {
+        console.log(data);
+        console.log(`updated list: old position (${previous}); new position(${data.positionOnBoard})`);
+      }, error => {
+        console.log(error);
+      });
+    }
+    this.board.lists = board;
+  }
+
+  get orderedList(): Array<SingleListPreview> {
+    return __.orderBy(this.board.lists, 'positionOnBoard');
+  }
 
   get decoded(): string {
     if (this.board !== dummyBoardModel && this.board.background !== undefined)
@@ -297,22 +357,29 @@ export default class BoardView extends Vue {
     });
   }
 
-  deleteBoard(event: Event){
+  deleteBoard(event: Event) {
     event.preventDefault();
     deleteBoard(this.board.id, data => {
       console.log(`is board of id: ${data.board.id} deleted? ${data.success}`);
-      if(data.success){
+      if (data.success) {
         removeFromStorage('opened-board', StorageDescriptor.session);
         this.$router.push('/');
       }
     }, error => {
-        console.log(error);
+      console.log(error);
     });
   }
 
   setupVisibilityModal(event: Event) {
     event.preventDefault();
     this.isVisible = this.board.isVisible ? 'Public' : 'Private';
+  }
+
+  setupBackgroundModal(event: Event) {
+    event.preventDefault();
+    console.log(this.board.background)
+    this.back = decodeUrl(this.board.background);
+    console.log(this.back)
   }
 
   editTitle(event: Event) {
@@ -330,19 +397,27 @@ export default class BoardView extends Vue {
     this.isEditingTitle = false;
     console.log(this.board.title);
 
-    if (this.board.title == undefined || this.board.title === "") {
-      this.board.title = this.boardName;
+    if (this.boardName == undefined || this.boardName === "") {
+      return;
     }
 
     if (this.board.title === this.boardName) {
       this.boardName = "";
       return;
     }
+
+    this.board.title = this.boardName;
     this.boardName = "";
     this.updateBoard();
   }
 
-  onCreate() {
+  onCreate(event: Event) {
+    event.preventDefault();
+    if(!this.valid_title){
+      console.debug("DDDDDx2");
+      this.creatingList = false;
+      return;
+    }
     console.debug("DDDDD");
     this.list.boardId = this.board.id;
     this.list.positionOnBoard = this.board.lists.length;
@@ -351,9 +426,12 @@ export default class BoardView extends Vue {
     }, error => {
       console.log(error.message);
     });
-    //this.listOfLists.push(<SingleListModel>{name: this.list.name, listOfCards: []})
     this.list.title = ''
-    console.log("BoardView")
+    this.creatingList = false;
+  }
+
+  get valid_title(): boolean {
+    return !!this.list.title && this.list.title !== "";
   }
 
   show_overlay(evt: Event) {
@@ -367,21 +445,31 @@ export default class BoardView extends Vue {
   }
 
   handleName() {
-    if (this.board.title == undefined || this.board.title === "") {
-      this.board.title = this.boardName;
+    if (this.boardName == undefined || this.boardName === "") {
+      return
     }
     if (this.board.title === this.boardName) {
       this.boardName = "";
       return;
     }
+    this.board.title = this.boardName;
     this.boardName = "";
     this.updateBoard();
   }
 
   handleBack() {
-    this.board.background = this.back;
+    if (this.back == undefined || this.back === "") {
+      return
+    }
+    let decoded = decodeUrl(this.board.background);
+    if (decoded === this.back) {
+      this.back = "";
+      return;
+    }
+    this.board.background = encodeUrl(this.back);
+    this.back = "";
     console.debug(this.board.background);
-
+    this.updateBoard();
   }
 
   modalOkName(evt: Event) {

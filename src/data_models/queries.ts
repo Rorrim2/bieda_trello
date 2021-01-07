@@ -104,6 +104,7 @@ export const BoardQuery = gql`
             }
             lists{
                 id
+                positionOnBoard
             }
         }
     }`;
