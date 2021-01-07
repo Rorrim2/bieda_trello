@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const CreateActivityMutation = gql`
-    mutation CraeteActivity($userId: String!, $cardId: String!, $createdOn: String, $content: String!, $typeVal: Int) {
-        createactivity(userId: $userId, cardId: $cardId, createdOn: $createdOn, content: $content, typeVal: $typeVal) {
+    mutation CraeteActivity($cardId: String!, $createdOn: String, $content: String!, $typeVal: Int) {
+        createactivity(cardId: $cardId, createdOn: $createdOn, content: $content, typeVal: $typeVal) {
             activity {
                 id
                 content

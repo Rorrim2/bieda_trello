@@ -25,6 +25,14 @@
 
         <hr>
         <h5><b-icon variant="primary" icon="book-half" /> Activities</h5>
+        <b-button v-show="!isAddingComment" v-text="newComment"
+                  class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
+                  @click="editComment($event)">
+        </b-button>
+        <b-form v-show="isAddingComment" @focusout.prevent="onFocusOutActivity($event)" @submit.prevent="onCommentSubmit($event)">
+          <b-form-input type="text" class="mr-1" v-model="newComment" ref="newComment"
+                        style="max-width: 150px;"/>
+        </b-form>
         <div v-for="activity in activities">
           <activity-component :activity="activity"></activity-component>
         </div>
@@ -39,7 +47,7 @@ import {Component, Prop, Vue} from "vue-property-decorator";
 import {ActivityModel, SingleCardModel} from "@/data_models/types";
 import {BFormInput} from "bootstrap-vue";
 import {editCardsTitleAndDescription} from "@/utils/db_operations/cards";
-import {fetchActivitiesByCard} from "@/utils/db_operations/activities";
+import {createComment, fetchActivitiesByCard} from "@/utils/db_operations/activities";
 import ActivityComponent from "@/components/ActivityComponent.vue";
 @Component({
   components: {ActivityComponent}
@@ -53,9 +61,15 @@ export default class SingleCard extends Vue{
   private isEditingDescription: boolean = false;
   private cardName: string = '';
   private description: string = '';
+  private newComment: string = 'Type comment here...';
+  private isAddingComment: boolean = false;
 
   mounted(): void {
     fetchActivitiesByCard(this.card.id, data => {
+      data.sort((a: ActivityModel, b: ActivityModel) => {
+        return (+new Date(b.createdOn)) - (+new Date(a.createdOn));
+
+      })
       this.activities = data;
     }, error => {
       console.log(error)
@@ -64,10 +78,45 @@ export default class SingleCard extends Vue{
 
   updateCard() {
     editCardsTitleAndDescription(this.card, data => {
-      this.card = data.card
+      this.card = data.card;
+      fetchActivitiesByCard(this.card.id, data => {
+        this.activities = data;
+      }, error => {
+        console.log(error)
+      });
     }, error => {
       console.log(error)
     });
+  }
+
+  addComment() {
+    createComment({card_id: this.card.id,
+      content: this.newComment}, data => {
+        this.activities.unshift(data.activity);
+      }, error => {
+        console.log(error)
+      }
+    )
+  }
+
+  editComment(event: Event) {
+    this.isAddingComment = true;
+    if(this.newComment === 'Type comment here...') {
+      this.newComment = '';
+    }
+
+    this.$nextTick(() => {
+      const elem: BFormInput = <BFormInput>this.$refs.newComment;
+      elem.focus();
+      console.log(elem);
+    })};
+
+  onCommentSubmit(event: Event) {
+    event.preventDefault();
+    this.isAddingComment = false;
+    console.log(this.newComment);
+    this.addComment();
+    this.newComment = 'Type comment here...';
   }
 
   editTitle(event: Event) {
@@ -122,6 +171,11 @@ export default class SingleCard extends Vue{
     this.isEditingDescription = false;
     this.description = '';
   }
+
+  onFocusOutActivity(event: Event) {
+    this.isAddingComment = !this.isAddingComment;
+  }
+
 }
 </script>
 

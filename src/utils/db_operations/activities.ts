@@ -57,19 +57,18 @@ export function fetchActivityByBoardQuery(board_id: string,
   })
 }
 
-export function createComment(data:{card_id: string, created_on: string, content: string},
+export function createComment(data:{card_id: string, content: string},
                                onResult: MutationCallback<{activity: ActivityModel}>,
                                onError: ErrorCallback){
   apolloClient.mutate({
     mutation:CreateActivityMutation,
     variables:{
       cardId: data.card_id,
-      created_on: data.created_on,
       content: data.content,
       typeVal: ActivityModelType.COMMENT_VAL
     }
   }).then(value => {
-    onResult(value.data.createnewboard);
+    onResult(value.data.createactivity);
   }).catch(reason => {
     onError(reason);
   })
