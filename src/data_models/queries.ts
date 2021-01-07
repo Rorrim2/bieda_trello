@@ -194,6 +194,17 @@ export const ListQuery = gql`
                 id
                 positionInList
                 title
+                activities {
+                    id
+                    content
+                    createdOn
+                    type
+                    user {
+                        id
+                        name
+                        lastName
+                    }
+                }
             }
         }
     }`;
