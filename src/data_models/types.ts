@@ -69,7 +69,9 @@ export interface RegisterCredentials extends Credentials{
     confirmPassword: string;
 }
 
-export interface SingleListPreview extends Node{}
+export interface SingleListPreview extends Node{
+    positionOnBoard: number;
+}
 
 export interface BoardModel extends Node{
     title: string;
@@ -98,6 +100,11 @@ export interface SingleListEntry {
     boardId:string;
     positionOnBoard:number;
     title: string;
+}
+
+export interface SingleListUpdate extends Node {
+    positionOnBoard: number,
+    title: string
 }
 
 export interface SingleListModel extends Node{
@@ -130,6 +137,18 @@ export interface DeletedBoardNode {
 export interface Node {
     id: string;
 }
+
+export type DragResult = {
+    removedIndex: number,
+    addedIndex: number,
+    payload: any
+};
+
+export type DNDOptions = {
+    className: string,
+    animationDuration: string,
+    showOnTop: boolean
+};
 
 export type MutationCallback<T> = (data: T) => void;
 export type QueryCallback<T> = (data: T) => void;

@@ -1,7 +1,14 @@
-import {ErrorCallback, MutationCallback, QueryCallback, SingleListEntry, SingleListModel} from "@/data_models/types";
+import {
+    ErrorCallback,
+    MutationCallback,
+    QueryCallback,
+    SingleListEntry,
+    SingleListModel, SingleListPreview,
+    SingleListUpdate
+} from "@/data_models/types";
 import {apolloClient} from "@/vue-apollo";
 import {ListQuery} from "@/data_models/queries";
-import {CreateListMutation} from "@/data_models/mutations/lists";
+import {CreateListMutation, UpdateListMutation} from "@/data_models/mutations/lists";
 
 export function fetchList(list_id:string, onResult:QueryCallback<SingleListModel>,
                           onError: ErrorCallback){
@@ -30,6 +37,34 @@ export function createList(data: SingleListEntry, onResult: MutationCallback<{li
         }
     }).then(value => {
         onResult(value.data.createnewlist);
+    }).catch(reason => {
+        onError(reason);
+    });
+}
+
+export function updatePositionOfList(list: SingleListPreview, onResult: MutationCallback<SingleListUpdate>, onError: ErrorCallback){
+    apolloClient.mutate({
+        mutation: UpdateListMutation,
+        variables: {
+            listId:list.id,
+            positionOnBoard:list.positionOnBoard
+        }
+    }).then(value => {
+        onResult(value.data.updatelist.list);
+    }).catch(reason => {
+        onError(reason);
+    });
+}
+
+export function updateTitleOfList(listId: string, title: string,  onResult: MutationCallback<SingleListUpdate>, onError: ErrorCallback){
+    apolloClient.mutate({
+        mutation: UpdateListMutation,
+        variables: {
+            listId:listId,
+            title:title
+        }
+    }).then(value => {
+        onResult(<SingleListUpdate> value.data.updatelist.list);
     }).catch(reason => {
         onError(reason);
     });
