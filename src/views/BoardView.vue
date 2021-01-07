@@ -202,6 +202,7 @@
           <div class="absolute-stretched no-wrap-and-select mb-2 pb-2 overflow-x">
             <Container group-name="col" drag-class="card-ghost"
                        drop-class="card-ghost-drop" orientation="horizontal"
+                       drag-handle-selector=".list-drag-header"
                        :drop-placeholder="upperDropPlaceholderOptions"
                        non-drag-area-selector=".creator"
                        :class="{isActive: true}"

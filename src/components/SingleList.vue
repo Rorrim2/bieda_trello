@@ -1,10 +1,18 @@
 <template>
-  <b-card
-      style="background-color: rgba(200,200,200, 0.6);"
-      text-variant="dark">
+  <b-card header-class="list-drag-header py-0" footer-class="py-1 my-0"
+          style="background-color: rgba(200,200,200, 0.6);"
+          text-variant="dark">
     <template #header>
       <b-row align-h="between" align-v="center">
-        <h6 :title="listModel.title" class="ml-2 text-truncate font-weight-bold" style="max-width: 202px;" >{{ listModel.title }}</h6>
+        <b-button v-show="!isEditingTitle" @click="editTitle($event)" :title="listModel.title" class="text-left btn border-0 bg-transparent
+          text-dark py-0 px-auto mx-0 px-1" style="max-width: 207px">
+          <h6 class="mx-0 text-truncate font-weight-bold"
+              style="max-width: 205px;">{{ listModel.title }}</h6>
+        </b-button>
+        <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)">
+          <b-form-input type="text" class="mr-1" v-model="listName" ref="listTitle"
+                        style="max-width: 207px;"/>
+        </b-form>
         <b-dropdown variant="dark" no-caret right toggle-class="bg-transparent">
           <template #button-content>
             <b-icon icon="three-dots-vertical">
@@ -19,37 +27,26 @@
 
     <template #footer>
       <b-button v-if="!creatingCard" @click=onAddCardClick variant="secondary"
-                style="margin: 1vw;" type="button" v-text="`Add Card`"/>
-      <form v-else @submit.prevent="onCreateCard">
-        <label :for=editCardModalName  class="grey-text font-weight-light">Card text</label>
-        <input type="text" v-model="newCardTitle" :id=editCardModalName class="form-control">
-        <div class="text-center" style="margin: 1vw;">
-          <input type="submit" value="Save" class="btn bg-primary text-light">
-        </div>
-      </form>
+                class="w-100" type="button" v-text="`Add Card`"/>
+      <b-form class="py-0" v-else @submit.prevent="onCreateCard">
+        <b-form-group class="py-0 my-0">
+          <b-row align-v="center" align-h="center" class="flex-nowrap flex-row d-flex">
+            <b-form-input v-model="newCardTitle" :id=editCardModalName type="text"/>
+            <b-button type="submit" value="" class="p-0 ml-1 btn bg-primary border-0 text-light">
+              <b-icon icon="plus-square-fill" class="p-0 m-0"/>
+            </b-button>
+          </b-row>
+        </b-form-group>
+      </b-form>
     </template>
 
     <div class="overflow-y">
-        <Container>
-          <Draggable v-for="card_s in listModel.cards" :key="card_s.id">
-            <single-card :card="card_s"></single-card>
-          </Draggable>
-        </Container>
+      <Container>
+        <Draggable v-for="card_s in listModel.cards" :key="card_s.id">
+          <single-card :card="card_s"></single-card>
+        </Draggable>
+      </Container>
     </div>
-
-    <b-modal id="createnewcardmodal" class="bg-light"
-             title="Create Card" @ok="modalOk($event)">
-      <b-form @submit.prevent="onCreateCard">
-        <b-card-header>
-          Card title
-        </b-card-header>
-        <b-form-group class="my-1" label="Title" label-for="titlecard">
-          <b-form-input type="text" id="titlecard" required :state="valid_title"
-                        v-model="cardName" placeholder="Enter title e.g. FooBar"/>
-        </b-form-group>
-      </b-form>
-    </b-modal>
-
     <b-modal id="modal-change-list-name" @ok="modalOkName" title="Enter new table name">
       <b-form>
         <b-form-group @submit.prevent="handleName">
@@ -61,7 +58,7 @@
   </b-card>
 </template>
 <style scoped>
-.card-body{
+.card-body {
   margin-top: 0;
   margin-bottom: 0;
   padding-bottom: 1px;
@@ -80,7 +77,8 @@ import {
   SingleListPreview
 } from "@/data_models/types";
 import {createCard} from '@/utils/db_operations/cards';
-import {fetchList} from '@/utils/db_operations/lists';
+import {fetchList, updateTitleOfList} from '@/utils/db_operations/lists';
+import {BFormInput} from "bootstrap-vue";
 
 @Component({
   components: {
@@ -96,7 +94,8 @@ export default class SingleList extends Vue {
   private cardName: string = "";
   private listModel: SingleListModel = dummySingleListModel;
   private card: SingleCardModel = dummySingleCardModel;
-
+  private listName: string = "";
+  private isEditingTitle: boolean = false;
   private creatingCard: boolean = false;
   private newCardTitle: string = "";
   private editCardModalName: string = "editCardModalName" + this.list.id;
@@ -105,7 +104,7 @@ export default class SingleList extends Vue {
     this.listChanged();
   }
 
-  @Watch('list', { immediate: true, deep: true })
+  @Watch('list', {immediate: true, deep: true})
   listChanged() {
     fetchList(this.list.id, data => {
       this.listModel = data;
@@ -115,13 +114,60 @@ export default class SingleList extends Vue {
     })
   }
 
+  setupNameModal(event: Event) {
+    event.preventDefault();
+    this.listName = String(this.listModel.title);
+  }
 
+  editTitle(event: Event) {
+    console.log('clicked list header')
+    this.isEditingTitle = true;
+    this.listName = String(this.listModel.title);
+    this.$nextTick(() => {
+      const elem: BFormInput = <BFormInput>this.$refs.listTitle;
+      elem.focus();
+      console.log(elem);
+    });
+  }
+
+  onTitleSubmit(event: Event) {
+    event.preventDefault();
+    this.isEditingTitle = false;
+    console.log(this.listModel.title);
+
+    if (this.listName == undefined || this.listName === "") {
+      return;
+    }
+
+    if (this.listModel.title === this.listName) {
+      this.listName = "";
+      return;
+    }
+
+    this.listModel.title = this.listName;
+
+    this.listName = "";
+    this.updateListName();
+  }
+
+  updateListName() {
+    updateTitleOfList(this.listModel.id, this.listModel.title, data => {
+      console.log(`updated list ${data}`)
+    }, error => {
+      console.log(error)
+    })
+  }
 
   onAddCardClick(event: Event) {
-    this.creatingCard = !this.creatingCard;
+    this.creatingCard = true;
   }
 
   onCreateCard(event: Event) {
+    if(!this.valid_title) {
+      this.newCardTitle = ''
+      this.creatingCard = false;
+      return;
+    }
     createCard({list_id: this.list.id, title: this.newCardTitle}, data => {
       this.listModel.cards.push(data.card)
     }, error => {
@@ -133,7 +179,7 @@ export default class SingleList extends Vue {
   }
 
   get valid_title(): boolean {
-    return !!this.card.title && this.card.title !== "";
+    return !!this.newCardTitle && this.newCardTitle !== "";
   }
 
   modalOk(evt: Event) {
