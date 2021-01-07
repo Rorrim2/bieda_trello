@@ -70,6 +70,16 @@ export default class SingleCard extends Vue{
       })
   }
 
+  fetchActivities() {
+    fetchActivitiesByCard(this.card.id, data=> {
+      this.card.activities = data.sort((a: ActivityModel, b: ActivityModel) => {
+        return (+new Date(b.createdOn)) - (+new Date(a.createdOn));
+      });
+    }, error =>{
+      console.log(error)
+    })
+  }
+
   updateCard() {
     editCardsTitleAndDescription(this.card, data => {
       this.card = data.card;
@@ -132,6 +142,7 @@ export default class SingleCard extends Vue{
     }
     this.cardName = "";
     this.updateCard();
+    this.fetchActivities();
   }
 
   editDescription(event: Event) {
@@ -154,6 +165,7 @@ export default class SingleCard extends Vue{
     }
     this.description = "";
     this.updateCard();
+    this.fetchActivities();
   }
 
   onCancelButton(event: Event) {

@@ -9,7 +9,7 @@ import {StorageDescriptor} from "@/data_models/types";
                 class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
                 @click="edit($event)">
       </b-button>
-      <b-form v-show="isEditing && isUserACommentCreator()" @focusout="onActivitySubmit($event)" @submit.prevent="onActivitySubmit($event)">
+      <b-form v-show="isEditing" @focusout="onActivitySubmit($event)" @submit.prevent="onActivitySubmit($event)">
         <b-form-input type="text" class="mr-1" v-model="activity.content" ref="activityContent"
                       style="max-width: 150px;"/>
       </b-form>
