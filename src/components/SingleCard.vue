@@ -26,6 +26,7 @@
         </template>
 
         <h3>Description</h3>
+        <tags></tags>
         <div v-if="this.editing">
 
             <b-form-textarea
@@ -49,8 +50,10 @@
 
 import {Component, Prop, Vue} from "vue-property-decorator";
 import {SingleCardModel} from "@/data_models/types";
-
-@Component
+import Tags from '@/components/Tags.vue';
+@Component({
+  components: {Tags}
+})
 export default class SingleCard extends Vue{
   @Prop() card!: SingleCardModel;
 

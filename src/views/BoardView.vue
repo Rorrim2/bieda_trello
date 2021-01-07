@@ -218,7 +218,6 @@ import {BDropdown, BFormInput} from "bootstrap-vue";
     UserBubble,
     SingleList,
     SingleCard,
-    Draggable
   }
 })
 export default class BoardView extends Vue {
