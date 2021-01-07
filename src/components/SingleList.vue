@@ -1,11 +1,10 @@
 <template>
   <b-card
-      :title="listModel.title"
       style="background-color: rgba(245,245,245, 0.3);"
       text-variant="light">
     <template #header>
       <b-row>
-        <h4>{{ listModel.title }}</h4>
+        <h4 class="text-truncate">{{ listModel.title }}</h4>
         <b-dropdown text="..." no-caret right>
           <b-dropdown-item class="m-1 p-1" text-variant="light" v-b-modal.modal-change-list-name>Edit list name
           </b-dropdown-item>

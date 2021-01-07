@@ -12,7 +12,7 @@
                     class="text-truncate text-nowrap btn border-0 bg-transparent h2 text-dark m-0 p-0 font-weight-bold"
                     @click="editTitle($event)" v-text="board.title"/>
           <b-form v-show="isEditingTitle" @focusout="onTitleSubmit($event)" @submit.prevent="onTitleSubmit($event)">
-            <b-form-input type="text" class="mr-1" v-model="board.title" ref="boardTitle"
+            <b-form-input type="text" class="mr-1" v-model="boardName" ref="boardTitle"
                           style="max-width: 150px;"/>
           </b-form>
         </b-navbar-brand>
@@ -58,7 +58,7 @@
               </b-button>
             </b-dropdown-item>
             <b-dropdown-item class="w-100 p-0" v-b-modal.modal-change-board-back>
-              <b-button variant="outline-dark" class="text-center border-0 w-100">
+              <b-button variant="outline-dark" @click="setupBackgroundModal($event)" class="text-center border-0 w-100">
                 Edit table background
               </b-button>
             </b-dropdown-item>
@@ -127,7 +127,7 @@
     <b-modal id="modal-change-board-name" @ok="modalOkName" title="Enter new table name">
       <b-form>
         <b-form-group @submit.prevent="handleName">
-          <b-form-input id="name-input" v-model="board.title" required></b-form-input>
+          <b-form-input id="name-input" v-model="boardName" required></b-form-input>
         </b-form-group>
       </b-form>
     </b-modal>
@@ -147,10 +147,14 @@
       </b-form-radio-group>
     </b-modal>
 
-    <b-modal ok-only id="modal-board-about">
+    <b-modal :title="`About ` + board.title.substring(0, 20) + `...`" ok-only id="modal-board-about">
 
     </b-modal>
-
+    <b-modal id="modal-board-activity" ok-only>
+      <b-container fluid>
+        
+      </b-container>
+    </b-modal>
     <b-modal title="Are you sure to close this board?" cancel-title="No" ok-title="Yes" cancel-variant="success"
              ok-variant="danger" id="modal-board-close" @ok="closeBoard">
       You can reopen it again, whenever you want to, unless you delete it permanently.
@@ -246,7 +250,7 @@ import {
   closeBoard,
   createList,
   decodeUrl,
-  deleteBoard,
+  deleteBoard, encodeUrl,
   fetchBoard,
   reopenBoard,
   updateBoard
@@ -315,6 +319,13 @@ export default class BoardView extends Vue {
     this.isVisible = this.board.isVisible ? 'Public' : 'Private';
   }
 
+  setupBackgroundModal(event: Event) {
+    event.preventDefault();
+    console.log(this.board.background)
+    this.back = decodeUrl(this.board.background);
+    console.log(this.back)
+  }
+
   editTitle(event: Event) {
     this.isEditingTitle = true;
     this.boardName = String(this.board.title);
@@ -330,14 +341,16 @@ export default class BoardView extends Vue {
     this.isEditingTitle = false;
     console.log(this.board.title);
 
-    if (this.board.title == undefined || this.board.title === "") {
-      this.board.title = this.boardName;
+    if (this.boardName == undefined || this.boardName === "" ) {
+      return;
     }
 
     if (this.board.title === this.boardName) {
       this.boardName = "";
       return;
     }
+
+    this.board.title = this.boardName;
     this.boardName = "";
     this.updateBoard();
   }
@@ -367,21 +380,31 @@ export default class BoardView extends Vue {
   }
 
   handleName() {
-    if (this.board.title == undefined || this.board.title === "") {
-      this.board.title = this.boardName;
+    if (this.boardName == undefined || this.boardName === "") {
+      return
     }
     if (this.board.title === this.boardName) {
       this.boardName = "";
       return;
     }
+    this.board.title = this.boardName;
     this.boardName = "";
     this.updateBoard();
   }
 
   handleBack() {
-    this.board.background = this.back;
+    if (this.back == undefined || this.back === "") {
+      return
+    }
+    let decoded = decodeUrl(this.board.background);
+    if (decoded === this.back) {
+      this.back = "";
+      return;
+    }
+    this.board.background = encodeUrl(this.back);
+    this.back = "";
     console.debug(this.board.background);
-
+    this.updateBoard();
   }
 
   modalOkName(evt: Event) {
