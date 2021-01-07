@@ -232,7 +232,6 @@
                 </div>
               </Draggable>
             </Container>
-
           </div>
         </b-row>
       </div>
@@ -276,7 +275,6 @@ import UserBubble from "@/components/UserBubble.vue";
 import {BDropdown, BFormInput} from "bootstrap-vue";
 import {Container, Draggable} from "vue-smooth-dnd";
 import __ from "lodash";
-const helpers = require('../helpers');
 @Component({
   components: {
     UserBubble,

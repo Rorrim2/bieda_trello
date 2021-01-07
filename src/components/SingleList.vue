@@ -26,17 +26,15 @@
     </template>
 
     <template #footer>
-      <b-button v-if="!creatingCard" @click=onAddCardClick variant="secondary"
+      <b-button v-show="!creatingCard" @click=onAddCardClick variant="secondary"
                 class="w-100" type="button" v-text="`Add Card`"/>
-      <b-form class="py-0" v-else @submit.prevent="onCreateCard">
-        <b-form-group class="py-0 my-0">
+      <b-form  @focusout="creatingCard = false" class="py-0" v-show="creatingCard" @submit.prevent="onCreateCard">
           <b-row align-v="center" align-h="center" class="flex-nowrap flex-row d-flex">
-            <b-form-input v-model="newCardTitle" :id=editCardModalName type="text"/>
-            <b-button type="submit" value="" class="p-0 ml-1 btn bg-primary border-0 text-light">
+            <b-form-input ref="cardCreator" v-model="newCardTitle" :id=editCardModalName type="text"/>
+            <b-button title="Save" type="submit" value="" class="p-0 ml-1 btn bg-primary border-0 text-light">
               <b-icon icon="plus-square-fill" class="p-0 m-0"/>
             </b-button>
           </b-row>
-        </b-form-group>
       </b-form>
     </template>
 
@@ -47,7 +45,7 @@
         </Draggable>
       </Container>
     </div>
-    <b-modal id="modal-change-list-name" @ok="modalOkName" title="Enter new table name">
+    <b-modal id="modal-change-list-name" @ok="modalOkName" title="Enter new list name">
       <b-form>
         <b-form-group @submit.prevent="handleName">
           <b-form-input id="name-input" v-model="name" required></b-form-input>
@@ -160,6 +158,11 @@ export default class SingleList extends Vue {
 
   onAddCardClick(event: Event) {
     this.creatingCard = true;
+    this.$nextTick(() => {
+      const elem: BFormInput = <BFormInput>this.$refs.cardCreator;
+      elem.focus();
+      console.log(elem);
+    });
   }
 
   onCreateCard(event: Event) {
