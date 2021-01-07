@@ -56,7 +56,7 @@ export default class SingleCard extends Vue{
 
   private creatingCard: boolean = true;
   private descriptionText: string = "Enter some text";
-  private editing: boolean = true;
+  private editing: boolean = false;
   private inputText: string = '';
   onCardCreate() {
       this.creatingCard = false
